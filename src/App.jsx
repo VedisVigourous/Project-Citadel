@@ -209,11 +209,16 @@ function App() {
     { type: 'output', text: "VADANTA_OS [Version 1.0.0]" },
     { type: 'output', text: "Type 'help' to see available system commands." }
   ]);
+  const [isTerminalFocused, setIsTerminalFocused] = useState(false);
+  const [isHudOpen, setIsHudOpen] = useState(false);
   
-  const terminalEndRef = useRef(null);
+  // NEW SCROLL LOGIC: Target the container, not an element
+  const terminalScrollRef = useRef(null);
   
   useEffect(() => {
-    terminalEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (terminalScrollRef.current) {
+      terminalScrollRef.current.scrollTop = terminalScrollRef.current.scrollHeight;
+    }
   }, [terminalHistory]);
 
 
@@ -293,7 +298,7 @@ function App() {
   }, [loading]);
 
   // OS State Management
-  const [isIdentityWindowOpen, setIsIdentityWindowOpen] = useState(true);
+  const [isIdentityWindowOpen, setIsIdentityWindowOpen] = useState(false);
   const [isSystemMenuOpen, setIsSystemMenuOpen] = useState(false);
   const [isShuttingDown, setIsShuttingDown] = useState(false);
   const [isProjectsWindowOpen, setIsProjectsWindowOpen] = useState(false);
@@ -377,12 +382,22 @@ const handleCompile = () => {
         // Do nothing for empty enter
       } else if (cmd === 'clear') {
         newHistory = [];
+      } else if (cmd === 'cls') {
+        newHistory = [];
       } else if (cmd === 'help') {
-        newHistory.push({ type: 'output', text: 'AVAILABLE COMMANDS: help, clear, ls, whoami, date, open projects' });
+        newHistory.push({ 
+          type: 'output', 
+          text: 'AVAILABLE COMMANDS:\n  • help\n  • clear\n  • ls\n  • whoami\n  • date\n  • open projects' 
+        });
       } else if (cmd === 'ls') {
-        newHistory.push({ type: 'output', text: 'IDENTITY.exe   PROJECTS.dir   CERTS.dat   RESUME.tex' });
+        newHistory.push({ 
+          type: 'output', 
+          text: 'DIRECTORY LISTING:\n  • IDENTITY.exe\n  • PROJECTS.dir\n  • CERTS.dat\n  • RESUME.tex' 
+        });
       } else if (cmd === 'whoami') {
-        newHistory.push({ type: 'output', text: 'Vadanta Kumar Chauhaan - Computer Science & Engineering Student.' });
+        setIsIdentityWindowOpen(true);
+        newHistory.push({ type: 'output', text: 'Vadanta Kumar Chauhaan\n • A Computer Science Major' });
+        newHistory.push({ type: 'output', text: 'Executing IDENTITY.exe...' });
       } else if (cmd === 'date') {
         newHistory.push({ type: 'output', text: new Date().toString() });
       } else if (cmd === 'open projects') {
@@ -668,15 +683,12 @@ const handleCompile = () => {
                     <span className="text-xs font-bold text-[#22c55e]">
                       /sys/users/vadanta_root
                     </span>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setIsIdentityWindowOpen(false);
-                      }}
-                      className="text-[#22c55e]/70 hover:text-red-500 font-bold transition-colors cursor-pointer"
-                    >
-                      [X]
-                    </button>
+                    <button 
+                    onClick={() => setIsIdentityWindowOpen(false)} 
+                    className="text-[#22c55e] hover:text-[#ff3333] hover:bg-[#ff3333]/10 px-2 py-0.5 rounded transition-all duration-200 text-xs font-bold"
+                  >
+                    [X]
+                  </button>
                   </div>
 
                   {/* Window Content */}
@@ -704,7 +716,7 @@ const handleCompile = () => {
                   <span className="text-[#22c55e] font-bold text-xs tracking-widest">/sys/users/vadanta/PROJECTS.dir</span>
                   <button 
                     onClick={() => setIsProjectsWindowOpen(false)} 
-                    className="text-[#22c55e] hover:text-white hover:bg-red-500/80 px-2 rounded transition-all text-xs"
+                    className="text-[#22c55e] hover:text-[#ff3333] hover:bg-[#ff3333]/10 px-2 py-0.5 rounded transition-all duration-200 text-xs font-bold"
                   >
                     [X]
                   </button>
@@ -851,32 +863,101 @@ const handleCompile = () => {
             )}
           </div>
 
-          {/* --- TERMINAL COMMAND LINE --- */}
-          <div className="absolute bottom-12 left-4 right-4 z-[50] font-mono text-xs max-w-3xl">
+          {/* --- TERMINAL COMMAND LINE & GITHUB HUD --- */}
+          <div 
+            className={`absolute left-0 right-0 z-[70] font-mono text-xs transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden ${
+              isTerminalFocused 
+                ? 'bottom-0 max-h-[50vh] bg-[#050505]/95 backdrop-blur-md border-t border-[#22c55e]/30 shadow-[0_-10px_30px_rgba(34,197,94,0.15)]' 
+                : 'bottom-0 max-h-[44px] bg-[#050505]/60 backdrop-blur-sm border-t border-[#22c55e]/20 shadow-none'
+            }`}
+          >
             
-            {/* Terminal History Output */}
-            <div className="max-h-28 overflow-y-auto flex flex-col gap-1 mb-2 no-scrollbar pointer-events-none">
-              {terminalHistory.map((line, index) => (
-                <div key={index} className={`${line.type === 'input' ? 'text-[#22c55e]' : 'text-[#22c55e]/70'}`}>
-                  {line.text}
-                </div>
-              ))}
-              <div ref={terminalEndRef} />
+            {/* 1. IDLE STATE CLUE (Only visible when terminal is closed) */}
+            <div className={`absolute right-4 top-0 bottom-0 flex items-center gap-3 transition-all duration-500 ${
+              isTerminalFocused ? 'opacity-0 translate-x-8 pointer-events-none' : 'opacity-100 translate-x-0'
+            }`}>
+              <div className="flex items-center gap-2 text-[#22c55e]/50">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#22c55e] animate-ping"></span>
+                <span className="text-[10px] tracking-widest hidden sm:block">SYS_SYNC // RECENT: [{recentCommits[0].hash}] {recentCommits[0].repo}</span>
+              </div>
             </div>
 
-            {/* Active Input Line */}
-            <div className="flex items-center gap-2 text-[#22c55e]">
-              <span className="font-bold whitespace-nowrap">root@vadanta:~$</span>
-              <input 
-                type="text" 
-                value={terminalInput}
-                onChange={(e) => setTerminalInput(e.target.value)}
-                onKeyDown={handleTerminalSubmit}
-                className="bg-transparent border-none outline-none flex-1 text-[#22c55e] placeholder-[#22c55e]/30 focus:ring-0"
-                placeholder="type a command..."
-                autoFocus
-                spellCheck="false"
-              />
+            {/* 2. ACTIVE GITHUB HUD (Only visible when terminal is open) */}
+            <div className={`absolute right-0 top-0 bottom-0 w-[320px] border-l border-[#22c55e]/20 bg-gradient-to-r from-transparent to-[#050505]/80 p-5 flex flex-col justify-end transition-all duration-700 delay-100 ${
+              isTerminalFocused ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12 pointer-events-none'
+            }`}>
+              <div className="flex items-center justify-between border-b border-[#22c55e]/20 pb-3 mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="h-2 w-2 bg-[#22c55e] animate-pulse"></div>
+                  <span className="text-[#22c55e] text-[10px] font-bold tracking-[0.2em]">GITHUB.NET // UPLINK</span>
+                </div>
+                <span className="text-[#22c55e]/40 text-[9px]">[LIVE]</span>
+              </div>
+              
+              <div className="flex flex-col gap-4 overflow-y-auto no-scrollbar max-h-[35vh]">
+                {recentCommits.map((commit) => (
+                  <div key={commit.id} className="group relative pl-4 border-l-2 border-[#22c55e]/20 hover:border-[#22c55e] transition-colors duration-300">
+                    <div className="absolute -left-[5px] top-1.5 h-2 w-2 rounded-sm bg-[#050505] border border-[#22c55e] group-hover:bg-[#22c55e] transition-colors duration-300 shadow-[0_0_8px_rgba(34,197,94,0)] group-hover:shadow-[0_0_8px_rgba(34,197,94,0.8)]"></div>
+                    <div className="text-[10px] text-[#22c55e]/60 mb-1 font-bold tracking-wider flex items-center justify-between">
+                      <span className="truncate pr-2">{commit.repo}</span>
+                      <span className="text-[#22c55e] shrink-0">[{commit.hash}]</span>
+                    </div>
+                    <div className="text-[#22c55e]/90 text-[11px] leading-relaxed">
+                      &gt; {commit.msg}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {/* HUD Decorative Footer */}
+              <div className="w-full flex items-center justify-between mt-5 pt-3 border-t border-[#22c55e]/10">
+                <span className="text-[9px] text-[#22c55e]/40 tracking-widest">ENCRYPTED_CHANNEL</span>
+                <span className="text-[9px] text-[#22c55e]/40">SECURE</span>
+              </div>
+            </div>
+
+            {/* 3. TERMINAL CHAT AREA (Dynamically shrinks when HUD opens) */}
+            <div className={`w-full h-full px-4 py-3 flex flex-col justify-end transition-all duration-700 ${
+              isTerminalFocused ? 'pr-[340px]' : 'pr-4'
+            }`}>
+              
+              {/* Terminal History */}
+              <div 
+                ref={terminalScrollRef}
+                className={`overflow-y-auto flex flex-col pr-2 transition-all duration-500 ease-in-out ${
+                  isTerminalFocused ? 'opacity-100 max-h-[40vh] mb-3' : 'opacity-0 max-h-0 mb-0'
+                }`}
+              >
+                {terminalHistory.map((line, index) => (
+                  <div key={index} className="border-b border-[#22c55e]/15 pb-2 mb-2 last:border-0 last:pb-0 last:mb-0 flex flex-col gap-1">
+                    {line.type === 'input' ? (
+                      <div className="text-[#22c55e] font-bold">
+                        {line.text}
+                      </div>
+                    ) : (
+                      <div className="text-[#22c55e]/80 pl-2 leading-relaxed whitespace-pre-wrap">
+                        {line.text}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Active Input Line */}
+              <div className="flex items-center gap-2 text-[#22c55e] shrink-0 h-5">
+                <span className="font-bold whitespace-nowrap">root@vadanta:~$</span>
+                <input 
+                  type="text" 
+                  value={terminalInput}
+                  onChange={(e) => setTerminalInput(e.target.value)}
+                  onKeyDown={handleTerminalSubmit}
+                  onFocus={() => setIsTerminalFocused(true)}
+                  onBlur={() => setIsTerminalFocused(false)}
+                  className="bg-transparent border-none outline-none flex-1 text-[#22c55e] placeholder-[#22c55e]/40 focus:ring-0"
+                  placeholder={isTerminalFocused ? "type a command..." : "click to initialize terminal..."}
+                  spellCheck="false"
+                />
+              </div>
             </div>
           </div>
 
