@@ -195,6 +195,55 @@ const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 \\end{document}`;
 
 function App() {
+  // --- GITHUB LIVE COMMIT STREAM ---
+  const [recentCommits, setRecentCommits] = useState([
+    { id: 1, hash: "SYS_INIT", repo: "UPLINK", msg: "Establishing secure connection..." }
+  ]);
+
+  useEffect(() => {
+    const fetchGitHubActivity = async () => {
+      try {
+        const response = await fetch('https://api.github.com/users/VedisVigourous/events/public');
+        const data = await response.json();
+        
+        // FAILSAFE: If GitHub rate-limits us, 'data' becomes an object with an error message instead of an array.
+        if (!Array.isArray(data)) {
+          throw new Error(data.message || "API Rate Limited");
+        }
+        
+        const pushEvents = data.filter(event => event.type === 'PushEvent');
+        const liveCommits = [];
+        
+        pushEvents.forEach(event => {
+          event.payload.commits.forEach(commit => {
+            liveCommits.push({
+              id: commit.sha,
+              hash: commit.sha.substring(0, 7),
+              repo: event.repo.name.split('/').pop(),
+              msg: commit.message.split('\n')[0]
+            });
+          });
+        });
+
+        if (liveCommits.length > 0) {
+          setRecentCommits(liveCommits.slice(0, 6)); // Pull exactly 6 commits for the scroller
+        }
+      } catch (error) {
+        console.warn("GitHub Link Offline/Limited. Using secure cache.");
+        // CACHED FALLBACK: Keeps the UI looking premium even if GitHub times out.
+        setRecentCommits([
+          { id: 1, hash: "a1b2c3d", repo: "Vadanta_OS_Citadel", msg: "engineered dynamic hud architecture" },
+          { id: 2, hash: "f4e5d6c", repo: "Police_Daily_Performa", msg: "optimized export engine" },
+          { id: 3, hash: "9a8b7c6", repo: "Project_Resonance", msg: "merged gemini vision api logic" },
+          { id: 4, hash: "e5d4c3b", repo: "Vadanta_OS_Citadel", msg: "patched matrix background scroll" },
+          { id: 5, hash: "b2a1f9e", repo: "MLH_GHW_Guesser", msg: "deployed logic-based number guesser" },
+          { id: 6, hash: "c3d4e5f", repo: "Vadanta_OS_Citadel", msg: "initialized secure uplink" }
+        ]);
+      }
+    };
+
+    fetchGitHubActivity();
+  }, []);
 
   const [bgOffset, setBgOffset] = useState({ x: 0, y: 0 });
   const [loading, setLoading] = useState(true);
@@ -211,6 +260,8 @@ function App() {
   ]);
   const [isTerminalFocused, setIsTerminalFocused] = useState(false);
   const [isHudOpen, setIsHudOpen] = useState(false);
+
+  const isExpanded = isTerminalFocused || isHudOpen;
   
   // NEW SCROLL LOGIC: Target the container, not an element
   const terminalScrollRef = useRef(null);
@@ -866,37 +917,54 @@ const handleCompile = () => {
           {/* --- TERMINAL COMMAND LINE & GITHUB HUD --- */}
           <div 
             className={`absolute left-0 right-0 z-[70] font-mono text-xs transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden ${
-              isTerminalFocused 
+              isExpanded 
                 ? 'bottom-0 max-h-[50vh] bg-[#050505]/95 backdrop-blur-md border-t border-[#22c55e]/30 shadow-[0_-10px_30px_rgba(34,197,94,0.15)]' 
                 : 'bottom-0 max-h-[44px] bg-[#050505]/60 backdrop-blur-sm border-t border-[#22c55e]/20 shadow-none'
             }`}
           >
             
-            {/* 1. IDLE STATE CLUE (Only visible when terminal is closed) */}
-            <div className={`absolute right-4 top-0 bottom-0 flex items-center gap-3 transition-all duration-500 ${
-              isTerminalFocused ? 'opacity-0 translate-x-8 pointer-events-none' : 'opacity-100 translate-x-0'
+            {/* 1. IDLE STATE CLUE & HUD TOGGLE (Only visible when terminal is closed) */}
+            <div className={`absolute right-4 top-0 bottom-0 flex items-center gap-4 transition-all duration-500 ${
+              isExpanded ? 'opacity-0 translate-x-8 pointer-events-none' : 'opacity-100 translate-x-0'
             }`}>
               <div className="flex items-center gap-2 text-[#22c55e]/50">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#22c55e] animate-ping"></span>
                 <span className="text-[10px] tracking-widest hidden sm:block">SYS_SYNC // RECENT: [{recentCommits[0].hash}] {recentCommits[0].repo}</span>
               </div>
+              {/* MANUAL OPEN ARROW */}
+              <button 
+                onClick={() => setIsHudOpen(true)}
+                className="text-[#22c55e]/50 hover:text-[#22c55e] hover:bg-[#22c55e]/10 p-1.5 rounded transition-all cursor-pointer border border-transparent hover:border-[#22c55e]/30"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 15l7-7 7 7"></path></svg>
+              </button>
             </div>
 
-            {/* 2. ACTIVE GITHUB HUD (Only visible when terminal is open) */}
+            {/* 2. ACTIVE GITHUB HUD (Visible when expanded) */}
             <div className={`absolute right-0 top-0 bottom-0 w-[320px] border-l border-[#22c55e]/20 bg-gradient-to-r from-transparent to-[#050505]/80 p-5 flex flex-col justify-end transition-all duration-700 delay-100 ${
-              isTerminalFocused ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12 pointer-events-none'
+              isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12 pointer-events-none'
             }`}>
               <div className="flex items-center justify-between border-b border-[#22c55e]/20 pb-3 mb-4">
                 <div className="flex items-center gap-2">
                   <div className="h-2 w-2 bg-[#22c55e] animate-pulse"></div>
                   <span className="text-[#22c55e] text-[10px] font-bold tracking-[0.2em]">GITHUB.NET // UPLINK</span>
                 </div>
-                <span className="text-[#22c55e]/40 text-[9px]">[LIVE]</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-[#22c55e]/40 text-[9px]">[LIVE]</span>
+                  {/* MANUAL CLOSE ARROW */}
+                  <button 
+                    onClick={() => setIsHudOpen(false)}
+                    className="text-[#22c55e]/50 hover:text-[#ff3333] p-1 transition-colors cursor-pointer"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                  </button>
+                </div>
               </div>
               
-              <div className="flex flex-col gap-4 overflow-y-auto no-scrollbar max-h-[35vh]">
-                {recentCommits.map((commit) => (
-                  <div key={commit.id} className="group relative pl-4 border-l-2 border-[#22c55e]/20 hover:border-[#22c55e] transition-colors duration-300">
+              {/* 6 Commits with Smooth Scroller */}
+              <div className="flex flex-col gap-4 overflow-y-auto no-scrollbar max-h-[35vh] pr-1">
+                {recentCommits.map((commit, i) => (
+                  <div key={i} className="group relative pl-4 border-l-2 border-[#22c55e]/20 hover:border-[#22c55e] transition-colors duration-300">
                     <div className="absolute -left-[5px] top-1.5 h-2 w-2 rounded-sm bg-[#050505] border border-[#22c55e] group-hover:bg-[#22c55e] transition-colors duration-300 shadow-[0_0_8px_rgba(34,197,94,0)] group-hover:shadow-[0_0_8px_rgba(34,197,94,0.8)]"></div>
                     <div className="text-[10px] text-[#22c55e]/60 mb-1 font-bold tracking-wider flex items-center justify-between">
                       <span className="truncate pr-2">{commit.repo}</span>
@@ -909,23 +977,21 @@ const handleCompile = () => {
                 ))}
               </div>
               
-              {/* HUD Decorative Footer */}
               <div className="w-full flex items-center justify-between mt-5 pt-3 border-t border-[#22c55e]/10">
                 <span className="text-[9px] text-[#22c55e]/40 tracking-widest">ENCRYPTED_CHANNEL</span>
                 <span className="text-[9px] text-[#22c55e]/40">SECURE</span>
               </div>
             </div>
 
-            {/* 3. TERMINAL CHAT AREA (Dynamically shrinks when HUD opens) */}
+            {/* 3. TERMINAL CHAT AREA */}
             <div className={`w-full h-full px-4 py-3 flex flex-col justify-end transition-all duration-700 ${
-              isTerminalFocused ? 'pr-[340px]' : 'pr-4'
+              isExpanded ? 'pr-[340px]' : 'pr-4'
             }`}>
               
-              {/* Terminal History */}
               <div 
                 ref={terminalScrollRef}
                 className={`overflow-y-auto flex flex-col pr-2 transition-all duration-500 ease-in-out ${
-                  isTerminalFocused ? 'opacity-100 max-h-[40vh] mb-3' : 'opacity-0 max-h-0 mb-0'
+                  isExpanded ? 'opacity-100 max-h-[40vh] mb-3' : 'opacity-0 max-h-0 mb-0'
                 }`}
               >
                 {terminalHistory.map((line, index) => (
@@ -943,7 +1009,6 @@ const handleCompile = () => {
                 ))}
               </div>
 
-              {/* Active Input Line */}
               <div className="flex items-center gap-2 text-[#22c55e] shrink-0 h-5">
                 <span className="font-bold whitespace-nowrap">root@vadanta:~$</span>
                 <input 
@@ -954,7 +1019,7 @@ const handleCompile = () => {
                   onFocus={() => setIsTerminalFocused(true)}
                   onBlur={() => setIsTerminalFocused(false)}
                   className="bg-transparent border-none outline-none flex-1 text-[#22c55e] placeholder-[#22c55e]/40 focus:ring-0"
-                  placeholder={isTerminalFocused ? "type a command..." : "click to initialize terminal..."}
+                  placeholder={isExpanded ? "type a command..." : "click to initialize terminal..."}
                   spellCheck="false"
                 />
               </div>
