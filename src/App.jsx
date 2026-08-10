@@ -195,6 +195,16 @@ const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 \\end{document}`;
 
 function App() {
+
+  // --- WINDOW MEMORY (react-rnd state) ---
+  const [identityConfig, setIdentityConfig] = useState({
+    x: 140, y: 30, width: 325, height: 390
+  });
+  
+  const [projectsConfig, setProjectsConfig] = useState({
+    x: 150, y: 120, width: 500, height: 450
+  });
+  
   // --- GITHUB LIVE COMMIT STREAM ---
   const [recentCommits, setRecentCommits] = useState([
     { id: 1, hash: "SYS_INIT", repo: "UPLINK", msg: "Establishing secure connection..." }
@@ -203,7 +213,7 @@ function App() {
   useEffect(() => {
     const fetchGitHubActivity = async () => {
       try {
-        const response = await fetch('https://api.github.com/users/VedisVigourous/events/public');
+        const response = await fetch('https://api.github.com/users/torvalds/events/public?per_page=100');
         const data = await response.json();
         
         // FAILSAFE: If GitHub rate-limits us, it returns an object, not an array.
@@ -628,103 +638,162 @@ const handleCompile = () => {
           <div className="flex-grow p-4 relative">
             {/* Desktop Icons */}
             <div className="flex flex-col space-y-6 w-24 mt-4">
-              {/* IDENTITY.exe */}
-              <div
-                className="flex flex-col items-center cursor-pointer group"
-                onClick={() => setIsIdentityWindowOpen(true)}
-              >
-                <div className="w-12 h-12 bg-black border border-[#22c55e]/40 group-hover:border-[#22c55e] group-hover:bg-[#22c55e]/10 flex items-center justify-center mb-2 transition-all">
-                  <svg
-                    className="w-6 h-6 text-[#22c55e]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                    ></path>
-                  </svg>
-                </div>
-                <span className="text-xs bg-black/80 px-1 border border-transparent group-hover:border-[#22c55e]/50 text-center">
-                  IDENTITY.exe
-                </span>
+              {/* --- IDENTITY.exe (PREMIUM PAN, ZOOM & NEON SWEEP EDITION) --- */}
+          <div 
+            className="flex flex-col items-center cursor-pointer group w-24"
+            onClick={() => setIsIdentityWindowOpen(prev => !prev)}
+          >
+            {/* The 3D Icon Wrapper */}
+            <div className="relative w-12 h-12 mb-3">
+              
+              {/* Layer 1 (Back) - Pans Down-Left */}
+              <div className="absolute inset-0 rounded border border-[#22c55e]/20 bg-transparent flex items-center justify-center text-[#22c55e]/20 transition-all duration-500 ease-out group-hover:-translate-x-2 group-hover:translate-y-2 group-hover:scale-105 z-0">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
               </div>
+
+              {/* Layer 2 (Middle) - Pans Slightly Down-Left */}
+              <div className="absolute inset-0 rounded border border-[#22c55e]/40 bg-transparent flex items-center justify-center text-[#22c55e]/40 transition-all duration-500 ease-out group-hover:-translate-x-1 group-hover:translate-y-1 group-hover:scale-110 z-10">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+              </div>
+
+              {/* Layer 3 (Front) - Pans Up-Right, Glows, and SWEEPS */}
+              <div className="absolute inset-0 rounded border border-[#22c55e]/80 bg-[#050505] flex items-center justify-center text-[#22c55e] transition-all duration-500 ease-out group-hover:translate-x-1.5 group-hover:-translate-y-1.5 group-hover:scale-[1.15] group-hover:border-[#22c55e] group-hover:shadow-[0_0_20px_rgba(34,197,94,0.4)] group-active:scale-95 z-20 overflow-hidden">
+                <svg className="w-6 h-6 group-hover:text-white transition-colors duration-500 relative z-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                
+                {/* The Neon Light Sweep (Flashes across on hover) */}
+                <div className="absolute top-0 -left-[150%] w-full h-full bg-gradient-to-r from-transparent via-[#22c55e]/60 to-transparent skew-x-[-45deg] transition-all duration-700 ease-in-out group-hover:left-[150%] z-20"></div>
+              </div>
+              
+            </div>
+            
+            {/* The Label */}
+            <span className="text-xs bg-black/80 px-2 py-0.5 rounded border border-transparent group-hover:border-[#22c55e]/50 text-[#22c55e]/70 group-hover:text-white group-hover:drop-shadow-[0_0_8px_rgba(34,197,94,0.8)] text-center transition-all duration-500 tracking-wider group-hover:-translate-y-1">
+              IDENTITY.exe
+            </span>
+          </div>
 
               {/* Desktop Icon: PROJECTS.dir */}
-            <div 
-              className="flex flex-col items-center justify-start gap-1 cursor-pointer group w-24 text-center"
-              onClick={() => setIsProjectsWindowOpen(true)}
-            >
-              <div className="p-3 bg-black/40 border border-[#22c55e]/30 rounded group-hover:bg-[#22c55e]/20 group-hover:border-[#22c55e] transition-all">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-6 h-6 text-[#22c55e]">
-                  <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                </svg>
-              </div>
-              <span className="text-[10px] tracking-wider bg-black/60 px-1 rounded w-full break-words">PROJECTS.dir</span>
-            </div>
-
-              {/* CERTS.dat */}
-              <div className="flex flex-col items-center cursor-pointer group">
-                <div className="w-12 h-12 bg-black border border-[#22c55e]/40 group-hover:border-[#22c55e] group-hover:bg-[#22c55e]/10 flex items-center justify-center mb-2 transition-all">
-                  <svg
-                    className="w-6 h-6 text-[#22c55e]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-                    ></path>
-                  </svg>
-                </div>
-                <span className="text-xs bg-black/80 px-1 border border-transparent group-hover:border-[#22c55e]/50 text-center">
-                  CERTS.dat
-                </span>
+          <div 
+            className="flex flex-col items-center cursor-pointer group w-24 mb-4"
+            onClick={() => setIsProjectsWindowOpen(prev => !prev)}
+          >
+            {/* The 3D Icon Wrapper */}
+            <div className="relative w-12 h-12 mb-3">
+              
+              {/* Layer 1 (Back) */}
+              <div className="absolute inset-0 rounded border border-[#22c55e]/20 bg-transparent flex items-center justify-center text-[#22c55e]/20 transition-all duration-500 ease-out group-hover:-translate-x-2 group-hover:translate-y-2 group-hover:scale-105 z-0">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
               </div>
 
-              {/* RESUME.tex */}
-              <div
-                className="flex flex-col items-center cursor-pointer group mt-2"
-                onClick={() => setIsResumeWindowOpen(true)}
-              >
-                <div className="w-12 h-12 bg-black border border-blue-500/40 group-hover:border-blue-500 group-hover:bg-blue-500/10 flex items-center justify-center mb-2 transition-all">
-                  <svg
-                    className="w-6 h-6 text-blue-500"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    ></path>
-                  </svg>
-                </div>
-                <span className="text-xs bg-black/80 px-1 border border-transparent group-hover:border-blue-500/50 text-center text-blue-400">
-                  RESUME.tex
-                </span>
+              {/* Layer 2 (Middle) */}
+              <div className="absolute inset-0 rounded border border-[#22c55e]/40 bg-transparent flex items-center justify-center text-[#22c55e]/40 transition-all duration-500 ease-out group-hover:-translate-x-1 group-hover:translate-y-1 group-hover:scale-110 z-10">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
               </div>
+
+              {/* Layer 3 (Front) & Neon Sweep */}
+              <div className="absolute inset-0 rounded border border-[#22c55e]/80 bg-[#050505] flex items-center justify-center text-[#22c55e] transition-all duration-500 ease-out group-hover:translate-x-1.5 group-hover:-translate-y-1.5 group-hover:scale-[1.15] group-hover:border-[#22c55e] group-hover:shadow-[0_0_20px_rgba(34,197,94,0.4)] group-active:scale-95 z-20 overflow-hidden">
+                <svg className="w-6 h-6 group-hover:text-white transition-colors duration-500 relative z-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                
+                {/* The Neon Light Sweep */}
+                <div className="absolute top-0 -left-[150%] w-full h-full bg-gradient-to-r from-transparent via-[#22c55e]/60 to-transparent skew-x-[-45deg] transition-all duration-700 ease-in-out group-hover:left-[150%] z-20"></div>
+              </div>
+              
             </div>
+            
+            {/* The Label */}
+            <span className="text-xs bg-black/80 px-2 py-0.5 rounded border border-transparent group-hover:border-[#22c55e]/50 text-[#22c55e]/70 group-hover:text-white group-hover:drop-shadow-[0_0_8px_rgba(34,197,94,0.8)] text-center transition-all duration-500 tracking-wider group-hover:-translate-y-1">
+              PROJECTS.dir
+            </span>
+          </div>
+
+              {/* Desktop Icon: CERTS.dat */}
+          <div 
+            className="flex flex-col items-center cursor-pointer group w-24 mb-4"
+            onClick={() => setIsCertsWindowOpen(prev => !prev)}
+          >
+            {/* The 3D Icon Wrapper */}
+            <div className="relative w-12 h-12 mb-3">
+              
+              {/* Layer 1 (Back) */}
+              <div className="absolute inset-0 rounded border border-[#22c55e]/20 bg-transparent flex items-center justify-center text-[#22c55e]/20 transition-all duration-500 ease-out group-hover:-translate-x-2 group-hover:translate-y-2 group-hover:scale-105 z-0">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              </div>
+
+              {/* Layer 2 (Middle) */}
+              <div className="absolute inset-0 rounded border border-[#22c55e]/40 bg-transparent flex items-center justify-center text-[#22c55e]/40 transition-all duration-500 ease-out group-hover:-translate-x-1 group-hover:translate-y-1 group-hover:scale-110 z-10">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              </div>
+
+              {/* Layer 3 (Front) & Neon Sweep */}
+              <div className="absolute inset-0 rounded border border-[#22c55e]/80 bg-[#050505] flex items-center justify-center text-[#22c55e] transition-all duration-500 ease-out group-hover:translate-x-1.5 group-hover:-translate-y-1.5 group-hover:scale-[1.15] group-hover:border-[#22c55e] group-hover:shadow-[0_0_20px_rgba(34,197,94,0.4)] group-active:scale-95 z-20 overflow-hidden">
+                <svg className="w-6 h-6 group-hover:text-white transition-colors duration-500 relative z-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                
+                {/* The Neon Light Sweep */}
+                <div className="absolute top-0 -left-[150%] w-full h-full bg-gradient-to-r from-transparent via-[#22c55e]/60 to-transparent skew-x-[-45deg] transition-all duration-700 ease-in-out group-hover:left-[150%] z-20"></div>
+              </div>
+              
+            </div>
+            
+            {/* The Label */}
+            <span className="text-xs bg-black/80 px-2 py-0.5 rounded border border-transparent group-hover:border-[#22c55e]/50 text-[#22c55e]/70 group-hover:text-white group-hover:drop-shadow-[0_0_8px_rgba(34,197,94,0.8)] text-center transition-all duration-500 tracking-wider group-hover:-translate-y-1">
+              CERTS.dat
+            </span>
+          </div>
+
+              {/* --- RESUME.tex (BLUE EDITION) --- */}
+          <div 
+            className="flex flex-col items-center cursor-pointer group w-24 mb-4"
+            onClick={() => setIsResumeWindowOpen(prev => !prev)}
+          >
+            {/* The 3D Icon Wrapper */}
+            <div className="relative w-12 h-12 mb-3">
+              
+              {/* Layer 1 (Back) */}
+              <div className="absolute inset-0 rounded border border-[#3b82f6]/20 bg-transparent flex items-center justify-center text-[#3b82f6]/20 transition-all duration-500 ease-out group-hover:-translate-x-2 group-hover:translate-y-2 group-hover:scale-105 z-0">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+              </div>
+
+              {/* Layer 2 (Middle) */}
+              <div className="absolute inset-0 rounded border border-[#3b82f6]/40 bg-transparent flex items-center justify-center text-[#3b82f6]/40 transition-all duration-500 ease-out group-hover:-translate-x-1 group-hover:translate-y-1 group-hover:scale-110 z-10">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+              </div>
+
+              {/* Layer 3 (Front) & Neon Sweep */}
+              <div className="absolute inset-0 rounded border border-[#3b82f6]/80 bg-[#050505] flex items-center justify-center text-[#3b82f6] transition-all duration-500 ease-out group-hover:translate-x-1.5 group-hover:-translate-y-1.5 group-hover:scale-[1.15] group-hover:border-[#3b82f6] group-hover:shadow-[0_0_20px_rgba(59,130,246,0.4)] group-active:scale-95 z-20 overflow-hidden">
+                <svg className="w-6 h-6 group-hover:text-white transition-colors duration-500 relative z-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                
+                {/* The Neon Light Sweep */}
+                <div className="absolute top-0 -left-[150%] w-full h-full bg-gradient-to-r from-transparent via-[#3b82f6]/60 to-transparent skew-x-[-45deg] transition-all duration-700 ease-in-out group-hover:left-[150%] z-20"></div>
+              </div>
+              
+            </div>
+            
+            {/* The Label */}
+            <span className="text-xs bg-black/80 px-2 py-0.5 rounded border border-transparent group-hover:border-[#3b82f6]/50 text-[#3b82f6]/70 group-hover:text-white group-hover:drop-shadow-[0_0_8px_rgba(59,130,246,0.8)] text-center transition-all duration-500 tracking-wider group-hover:-translate-y-1">
+              RESUME.tex
+            </span>
+            </div>
+          </div>
 
             {/* IDENTITY PROFILE WINDOW (Upgraded with Drag Physics) */}
             {isIdentityWindowOpen && (
               <Rnd
-                default={{
-                  x: window.innerWidth > 640 ? 150 : 50,
-                  y: 50,
-                  width: 320,
-                  height: "auto",
-                }}
-                minWidth={300}
-                bounds="parent"
+                size={{ width: identityConfig.width, height: identityConfig.height }}
+                position={{ x: identityConfig.x, y: identityConfig.y }}
+                onDragStop={(e, d) => {
+                setIdentityConfig(prev => ({ ...prev, x: d.x, y: d.y }));
+              }}
+              onResizeStop={(e, direction, ref, delta, position) => {
+              setIdentityConfig({
+                width: ref.style.width,
+                height: ref.style.height,
+                x: position.x,
+                y: position.y
+              });
+            }}
+            minWidth={300}
+              minHeight={250}
+              bounds="parent"
                 dragHandleClassName="drag-handle"
                 className="absolute z-40"
               >
@@ -753,7 +822,19 @@ const handleCompile = () => {
             {/* --- PROJECTS.dir WINDOW --- */}
           {isProjectsWindowOpen && (
             <Rnd
-              default={{ x: window.innerWidth / 2 - 300, y: window.innerHeight / 2 - 250, width: 600, height: 500 }}
+              size={{ width: projectsConfig.width, height: projectsConfig.height }}
+              position={{ x: projectsConfig.x, y: projectsConfig.y }}
+              onDragStop={(e, d) => {
+                setProjectsConfig(prev => ({ ...prev, x: d.x, y: d.y }));
+              }}
+              onResizeStop={(e, direction, ref, delta, position) => {
+                setProjectsConfig({
+                  width: parseInt(ref.style.width, 10),
+                  height: parseInt(ref.style.height, 10),
+                  x: position.x,
+                  y: position.y
+                });
+              }}
               minWidth={450}
               minHeight={350}
               bounds="parent"
@@ -774,8 +855,8 @@ const handleCompile = () => {
                 </div>
                 
                 {/* Projects Content Area */}
-                <div className="flex-1 p-5 overflow-y-auto">
-                  <div className="text-xs opacity-70 mb-4 tracking-widest border-b border-[#22c55e]/20 pb-2">
+                <div className="flex-1 p-5 overflow-y-auto custom-scrollbar">
+                  <div className="text-xs opacity-70 mb-4 tracking-widest border-b border-[#22c55e]/20 pb-2 text-[#22c55e]">
                     EXECUTABLE_ARCHIVES [7 ITEMS]
                   </div>
                   
@@ -789,11 +870,11 @@ const handleCompile = () => {
                           <span className="font-bold text-sm text-[#22c55e] group-hover:text-white transition-colors">
                             {project.name}
                           </span>
-                          <span className="text-[10px] uppercase tracking-widest opacity-60 bg-[#22c55e]/10 px-2 py-0.5 rounded border border-[#22c55e]/20">
+                          <span className="text-[10px] uppercase tracking-widest text-[#22c55e] opacity-60 bg-[#22c55e]/10 px-2 py-0.5 rounded border border-[#22c55e]/20">
                             {project.tech}
                           </span>
                         </div>
-                        <span className="text-xs opacity-70 leading-relaxed pr-24">
+                        <span className="text-xs text-[#22c55e] opacity-70 leading-relaxed pr-24">
                           {project.desc}
                         </span>
                         
@@ -1032,7 +1113,7 @@ const handleCompile = () => {
                           {line.text}
                         </div>
                       ) : (
-                        <div className="text-[#22c55e]/80 pl-2 leading-relaxed whitespace-pre-wrap">
+                        <div className="text-gray-300 pl-2 leading-relaxed whitespace-pre-wrap drop-shadow-sm">
                           {line.text}
                         </div>
                       )}
