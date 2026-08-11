@@ -956,10 +956,10 @@ const handleCompile = () => {
                       </div>
                       <div className="grid grid-cols-1 gap-2">
                         {[
-                          { name: "Generative AI Professional", issuer: "Oracle", path: "/milestones/Oracle_GenAI.pdf" },
-                          { name: "Technology Job Simulation", issuer: "Deloitte", path: "/milestones/Deloitte_TechnologyJobSimulation.pdf" },
-                          { name: "Hackdays Hackathon", issuer: "Major League Hacking - Hackdays", path: "/milestones/Hackathon_01_Hackdays.pdf" },
-                          { name: "Student Ambassador Program", issuer: "Google", path: "/milestones/Google_StudentAmbassador.pdf" }
+                          { name: "Generative AI Professional", issuer: "Oracle", path: "/milestones/Oracle_GenAI.png" },
+                          { name: "Technology Job Simulation", issuer: "Deloitte", path: "/milestones/Deloitte_TechnologyJobSimulation.png" },
+                          { name: "Hackdays Hackathon", issuer: "Hackdays", path: "/milestones/Hackathon_01_Hackdays.png" },
+                          { name: "Student Ambassador Program", issuer: "Google", path: "/milestones/Google_StudentAmbassador.png" }
                         ].map((cert, idx) => (
                           <div key={idx} className="group flex justify-between items-center border border-[#22c55e]/20 bg-black/40 p-3 rounded hover:border-[#22c55e]/60 hover:bg-[#22c55e]/5 transition-all">
                             <div className="flex flex-col">
@@ -1016,8 +1016,8 @@ const handleCompile = () => {
                           <div className="text-[#22c55e] font-bold text-xs mb-2 group-hover:text-white transition-colors">HackerRank & freeCodeCamp</div>
                           <div className="flex gap-2 flex-wrap">
                             {[
-                              { name: "Basic Problem Solving", path: "/milestones/HackerRank_PS_Basic.pdf" },
-                              { name: "JavaScript Basic", path: "/milestones/HackerRank_Js_Basic.pdf" },
+                              { name: "Basic Problem Solving", path: "/milestones/HackerRank_PS_Basic.png" },
+                              { name: "JavaScript Basic", path: "/milestones/HackerRank_Js_Basic.png" },
                               { name: "Legacy Responsive Web Design", path: "/milestones/FreeCodeCamp_WebDesignV8.png" }
                             ].map((cert, i) => (
                               <button 
@@ -1035,14 +1035,13 @@ const handleCompile = () => {
                           </div>
                         </div>
                         
-                        {/* New SimpliLearn Category Found in Local Files! */}
                         <div className="group">
                           <div className="text-[#22c55e] font-bold text-xs mb-2 group-hover:text-white transition-colors">Frontend Foundations (SimpliLearn)</div>
                           <div className="flex gap-2 flex-wrap">
                             {[
-                              { name: "HTML", path: "/milestones/SimpliLearn_HTML.pdf" },
-                              { name: "CSS", path: "/milestones/SimpliLearn_CSS.pdf" },
-                              { name: "React", path: "/milestones/SimpliLearn_React.pdf" }
+                              { name: "HTML", path: "/milestones/SimpliLearn_HTML.png" },
+                              { name: "CSS", path: "/milestones/SimpliLearn_CSS.png" },
+                              { name: "React", path: "/milestones/SimpliLearn_React.png" }
                             ].map((cert, i) => (
                               <button 
                                 key={i} 
@@ -1137,21 +1136,13 @@ const handleCompile = () => {
                     </div>
                   </div>
                 ) : (
-                  <div className="flex-1 bg-black/90 border border-[#22c55e] shadow-[0_0_60px_rgba(34,197,94,0.3)] p-1 animate-[fadeIn_0.3s_ease-out] flex items-center justify-center">
-                    {/* Smart File Renderer */}
-                    {activeCert.path.toLowerCase().endsWith('.pdf') ? (
-                      <iframe 
-                        src={activeCert.path} 
-                        className="w-full h-full border-none opacity-90 hover:opacity-100 transition-opacity bg-white"
-                        title={activeCert.name}
-                      ></iframe>
-                    ) : (
-                      <img 
-                        src={activeCert.path} 
-                        alt={activeCert.name}
-                        className="w-full h-full object-contain opacity-90 hover:opacity-100 transition-opacity bg-black/40"
-                      />
-                    )}
+                  <div className="flex-1 min-h-0 overflow-hidden bg-black/90 border border-[#22c55e] shadow-[0_0_60px_rgba(34,197,94,0.3)] p-2 animate-[fadeIn_0.3s_ease-out] flex items-center justify-center">
+                    {/* Pure Image Renderer - Flexbox Lock Applied */}
+                    <img 
+                      src={activeCert.path} 
+                      alt={activeCert.name}
+                      className="w-full h-full max-w-full max-h-full object-contain opacity-90 hover:opacity-100 transition-opacity"
+                    />
                   </div>
                 )}
               </div>
