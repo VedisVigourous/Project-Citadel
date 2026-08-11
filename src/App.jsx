@@ -195,6 +195,16 @@ const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 \\end{document}`;
 
 function App() {
+  // Certification States
+
+  // --- DECRYPTION INSPECTOR STATES ---
+  const [activeCert, setActiveCert] = useState(null);
+  const [isDecrypting, setIsDecrypting] = useState(false);
+
+  const [isCertsWindowOpen, setIsCertsWindowOpen] = useState(false);
+  const [certsConfig, setCertsConfig] = useState({
+    x: 200, y: 150, width: 550, height: 450
+  });
 
   // --- WINDOW MEMORY (react-rnd state) ---
   const [identityConfig, setIdentityConfig] = useState({
@@ -896,6 +906,256 @@ const handleCompile = () => {
 
               </div>
             </Rnd>
+          )}
+
+          {/* --- CERTS.dat WINDOW --- */}
+          {isCertsWindowOpen && (
+            <Rnd
+              size={{ width: certsConfig.width, height: certsConfig.height }}
+              position={{ x: certsConfig.x, y: certsConfig.y }}
+              onDragStop={(e, d) => setCertsConfig(prev => ({ ...prev, x: d.x, y: d.y }))}
+              onResizeStop={(e, direction, ref, delta, position) => {
+                setCertsConfig({
+                  width: parseInt(ref.style.width, 10),
+                  height: parseInt(ref.style.height, 10),
+                  x: position.x,
+                  y: position.y
+                });
+              }}
+              minWidth={450}
+              minHeight={400}
+              bounds="parent"
+              dragHandleClassName="certs-drag-handle"
+              className="z-[60]"
+            >
+              <div className="w-full h-full bg-[#050505]/95 border border-[#22c55e]/50 rounded shadow-[0_0_30px_rgba(34,197,94,0.15)] flex flex-col overflow-hidden backdrop-blur-md">
+                
+                {/* Title Bar */}
+                <div className="certs-drag-handle w-full h-8 bg-[#22c55e]/10 border-b border-[#22c55e]/30 flex items-center justify-between px-3 cursor-move">
+                  <span className="text-[#22c55e] font-bold text-xs tracking-widest">/sys/users/vadanta/CERTS.dat</span>
+                  <button 
+                    onClick={() => setIsCertsWindowOpen(false)} 
+                    className="text-[#22c55e] hover:text-[#ff3333] hover:bg-[#ff3333]/10 px-2 py-0.5 rounded transition-all duration-200 text-xs font-bold"
+                  >
+                    [X]
+                  </button>
+                </div>
+                
+                {/* Vault Content Area */}
+                <div className="flex-1 p-5 overflow-y-auto custom-scrollbar">
+                  <div className="text-xs opacity-70 mb-5 tracking-widest border-b border-[#22c55e]/20 pb-2 text-[#22c55e]">
+                    SECURE_VAULT // DECRYPTED_RECORDS
+                  </div>
+                  
+                  <div className="flex flex-col gap-6">
+                    
+                    {/* CATEGORY 1: FEATURED */}
+                    <div>
+                      <div className="text-[10px] text-[#22c55e]/60 tracking-widest mb-3 uppercase">
+                        [{'>'}] Level 1: Featured_Credentials
+                      </div>
+                      <div className="grid grid-cols-1 gap-2">
+                        {[
+                          { name: "Generative AI Professional", issuer: "Oracle", path: "/milestones/Oracle_GenAI.pdf" },
+                          { name: "Technology Job Simulation", issuer: "Deloitte", path: "/milestones/Deloitte_TechnologyJobSimulation.pdf" },
+                          { name: "Hackdays Hackathon", issuer: "Major League Hacking - Hackdays", path: "/milestones/Hackathon_01_Hackdays.pdf" },
+                          { name: "Student Ambassador Program", issuer: "Google", path: "/milestones/Google_StudentAmbassador.pdf" }
+                        ].map((cert, idx) => (
+                          <div key={idx} className="group flex justify-between items-center border border-[#22c55e]/20 bg-black/40 p-3 rounded hover:border-[#22c55e]/60 hover:bg-[#22c55e]/5 transition-all">
+                            <div className="flex flex-col">
+                              <span className="text-[#22c55e] font-bold text-sm group-hover:text-white transition-colors">{cert.name}</span>
+                              <span className="text-[#22c55e]/60 text-[10px] tracking-widest uppercase mt-1">ISSUER: {cert.issuer}</span>
+                            </div>
+                            <button 
+                              onClick={() => {
+                                setActiveCert({ name: cert.name, path: cert.path });
+                                setIsDecrypting(true);
+                                setTimeout(() => setIsDecrypting(false), 2000);
+                              }}
+                              className="text-[9px] border border-[#22c55e]/40 px-2 py-1 rounded text-[#22c55e] hover:bg-[#22c55e] hover:text-black font-bold tracking-widest transition-all"
+                            >
+                              [ DECRYPT ]
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* CATEGORY 2: AI & CORE TECH */}
+                    <div>
+                      <div className="text-[10px] text-[#22c55e]/60 tracking-widest mb-3 uppercase">
+                        [{'>'}] Level 2: AI & Core_Technical
+                      </div>
+                      <div className="flex flex-col gap-3 border-l-2 border-[#22c55e]/30 pl-3">
+                        
+                        <div className="group">
+                          <div className="text-[#22c55e] font-bold text-xs mb-2 group-hover:text-white transition-colors">AI & Modern Developer Workflows (Wilco)</div>
+                          <div className="flex gap-2 flex-wrap">
+                            {[
+                              { name: "Prompt Engineering", path: "/milestones/WilcoLabs/prompt_engineering.png" },
+                              { name: "Copilot Integration", path: "/milestones/WilcoLabs/copilot_integration.png" },
+                              { name: "Magic Quest", path: "/milestones/WilcoLabs/magic_quest.png" },
+                              { name: "Code Smarter", path: "/milestones/WilcoLabs/code-smarter.png" }
+                            ].map((cert, i) => (
+                              <button 
+                                key={i} 
+                                onClick={() => {
+                                  setActiveCert({ name: cert.name, path: cert.path });
+                                  setIsDecrypting(true);
+                                  setTimeout(() => setIsDecrypting(false), 2000);
+                                }}
+                                className="text-[9px] text-[#22c55e]/70 bg-[#22c55e]/10 border border-[#22c55e]/20 px-1.5 py-0.5 rounded uppercase tracking-wider cursor-pointer hover:bg-[#22c55e] hover:text-black hover:font-bold transition-all"
+                              >
+                                {cert.name}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="group">
+                          <div className="text-[#22c55e] font-bold text-xs mb-2 group-hover:text-white transition-colors">HackerRank & freeCodeCamp</div>
+                          <div className="flex gap-2 flex-wrap">
+                            {[
+                              { name: "Basic Problem Solving", path: "/milestones/HackerRank_PS_Basic.pdf" },
+                              { name: "JavaScript Basic", path: "/milestones/HackerRank_Js_Basic.pdf" },
+                              { name: "Legacy Responsive Web Design", path: "/milestones/FreeCodeCamp_WebDesignV8.png" }
+                            ].map((cert, i) => (
+                              <button 
+                                key={i} 
+                                onClick={() => {
+                                  setActiveCert({ name: cert.name, path: cert.path });
+                                  setIsDecrypting(true);
+                                  setTimeout(() => setIsDecrypting(false), 2000);
+                                }}
+                                className="text-[9px] text-[#22c55e]/70 bg-[#22c55e]/10 border border-[#22c55e]/20 px-1.5 py-0.5 rounded uppercase tracking-wider cursor-pointer hover:bg-[#22c55e] hover:text-black hover:font-bold transition-all"
+                              >
+                                {cert.name}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        {/* New SimpliLearn Category Found in Local Files! */}
+                        <div className="group">
+                          <div className="text-[#22c55e] font-bold text-xs mb-2 group-hover:text-white transition-colors">Frontend Foundations (SimpliLearn)</div>
+                          <div className="flex gap-2 flex-wrap">
+                            {[
+                              { name: "HTML", path: "/milestones/SimpliLearn_HTML.pdf" },
+                              { name: "CSS", path: "/milestones/SimpliLearn_CSS.pdf" },
+                              { name: "React", path: "/milestones/SimpliLearn_React.pdf" }
+                            ].map((cert, i) => (
+                              <button 
+                                key={i} 
+                                onClick={() => {
+                                  setActiveCert({ name: cert.name, path: cert.path });
+                                  setIsDecrypting(true);
+                                  setTimeout(() => setIsDecrypting(false), 2000);
+                                }}
+                                className="text-[9px] text-[#22c55e]/70 bg-[#22c55e]/10 border border-[#22c55e]/20 px-1.5 py-0.5 rounded uppercase tracking-wider cursor-pointer hover:bg-[#22c55e] hover:text-black hover:font-bold transition-all"
+                              >
+                                {cert.name}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+
+                    {/* CATEGORY 3: COMPETITIONS */}
+                    <div>
+                      <div className="text-[10px] text-[#22c55e]/60 tracking-widest mb-3 uppercase">
+                        [{'>'}] Level 3: Hackathons & Community
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        {[
+                          { name: "CodeChef: Clash of Coders", path: "/milestones/Codechef_ClashOfCoders.jpg" },
+                          { name: "IIT Roorkee E-Cell: Participation", path: "/milestones/IITRoorkie_Ecell.png" },
+                          { name: "HackerRank Events: CodeWizard", path: "/milestones/Hackerran_CodeWizard.png" }
+                        ].map((event, idx) => (
+                          <button 
+                            key={idx} 
+                            onClick={() => {
+                              setActiveCert({ name: event.name, path: event.path });
+                              setIsDecrypting(true);
+                              setTimeout(() => setIsDecrypting(false), 2000);
+                            }}
+                            className="flex items-center gap-3 text-xs text-[#22c55e]/80 hover:text-black hover:bg-[#22c55e] hover:font-bold transition-all bg-black/30 p-2 rounded border border-transparent hover:border-[#22c55e]"
+                          >
+                            <span className="opacity-50">&gt;&gt;</span> 
+                            <span>{event.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
+            </Rnd>
+          )}
+
+          {/* --- DECRYPTION INSPECTOR (TACTICAL HUD) --- */}
+          {activeCert && (
+            <div className="absolute inset-0 z-[70] flex items-center justify-center p-8 bg-black/60 backdrop-blur-sm">
+              <div className="relative w-full max-w-4xl h-full max-h-[80vh] flex flex-col">
+                
+                {/* HUD Corners (Sniper Scope Aesthetics) */}
+                <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-[#22c55e] z-10"></div>
+                <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-[#22c55e] z-10"></div>
+                <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-[#22c55e] z-10"></div>
+                <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-[#22c55e] z-10"></div>
+
+                {/* Close Button Override */}
+                <button 
+                  onClick={() => setActiveCert(null)}
+                  className="absolute -top-10 right-0 text-[#22c55e] border border-[#22c55e]/50 px-4 py-1 hover:bg-red-600/80 hover:text-white hover:border-red-500 transition-colors font-mono text-xs tracking-widest z-20"
+                >
+                  [ ABORT_INSPECTION ]
+                </button>
+
+                {/* The Sequence */}
+                {isDecrypting ? (
+                  <div className="flex-1 bg-[#050505]/95 border border-[#22c55e]/30 shadow-[0_0_50px_rgba(34,197,94,0.2)] flex flex-col items-center justify-center relative overflow-hidden">
+                    {/* Scanning Laser Line */}
+                    <div className="absolute top-0 left-0 w-full h-1 bg-[#22c55e] opacity-50 shadow-[0_0_20px_#22c55e] animate-[scan_2s_ease-in-out_infinite]"></div>
+                    
+                    {/* Hacking Terminal Output */}
+                    <div className="font-mono text-center">
+                      <div className="text-red-500 text-xl font-bold tracking-widest mb-4 animate-pulse">
+                        &gt;&gt; BRUTE_FORCING_ENCRYPTION_KEY...
+                      </div>
+                      <div className="text-[#22c55e]/70 text-xs text-left w-64 mx-auto space-y-1">
+                        <div>[ SYS ] TARGET: {activeCert.name}</div>
+                        <div>[ SYS ] INJECTING PAYLOAD... <span className="text-white">OK</span></div>
+                        <div>[ SYS ] BYPASSING FIREWALL... <span className="text-white animate-ping inline-block">_</span></div>
+                        <div className="w-full h-1 bg-gray-800 mt-4 rounded overflow-hidden">
+                          <div className="h-full bg-red-500 w-full animate-[shrink_2s_linear_forwards]"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex-1 bg-black/90 border border-[#22c55e] shadow-[0_0_60px_rgba(34,197,94,0.3)] p-1 animate-[fadeIn_0.3s_ease-out] flex items-center justify-center">
+                    {/* Smart File Renderer */}
+                    {activeCert.path.toLowerCase().endsWith('.pdf') ? (
+                      <iframe 
+                        src={activeCert.path} 
+                        className="w-full h-full border-none opacity-90 hover:opacity-100 transition-opacity bg-white"
+                        title={activeCert.name}
+                      ></iframe>
+                    ) : (
+                      <img 
+                        src={activeCert.path} 
+                        alt={activeCert.name}
+                        className="w-full h-full object-contain opacity-90 hover:opacity-100 transition-opacity bg-black/40"
+                      />
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
           )}
 
             {/* RESUME.tex EDITOR WINDOW */}
