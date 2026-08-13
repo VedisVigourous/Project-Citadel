@@ -228,6 +228,61 @@ function App() {
     }, 12500); 
   };
 
+  const handleExportLogs = () => {
+    try {
+      // 1. Safely grab your exact terminal state
+      const safeHistory = typeof terminalHistory !== 'undefined' && Array.isArray(terminalHistory) ? terminalHistory : [];
+      
+      // 2. Map through it safely
+      const dynamicHistory = safeHistory.map(entry => {
+        if (entry && entry.type === 'input') {
+          return `root@vadanta:~$ ${entry.text}`;
+        } else if (entry && entry.text) {
+          return `  > ${entry.text}`;
+        }
+        return `  > ${entry}`; 
+      }).join('\n'); 
+
+      // 3. Build the final text file content
+      const logContent = `
+==================================================
+ VADANTA_OS // SECURE_SESSION_LOG
+==================================================
+ [TIMESTAMP] : ${new Date().toLocaleString()}
+ [TARGET]    : Vadanta Kumar Chauhaan
+ [ROLE]      : Frontend Architect & AI Engineer
+ 
+==================================================
+ --- LIVE TERMINAL SESSION HISTORY ---
+==================================================
+
+${dynamicHistory || '  > No terminal commands executed during this session.'}
+ 
+==================================================
+ END OF LOG.
+==================================================`;
+
+      // 4. Generate and download the Blob
+      const blob = new Blob([logContent], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `VADANTA_SESSION_${new Date().getTime()}.txt`; 
+      document.body.appendChild(a);
+      a.click();
+      
+      // 5. Cleanup
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 100);
+
+    } catch (error) {
+      console.error("BRO, EXPORT FAILED! Check this error:", error);
+    }
+  };
+
   // --- DECRYPTION INSPECTOR STATES ---
   const [activeCert, setActiveCert] = useState(null);
   const [isDecrypting, setIsDecrypting] = useState(false);
@@ -620,31 +675,31 @@ const handleCompile = () => {
                   )}
                 </div>
 
-                {/* File Menu */}
-                <div className="relative hidden sm:block">
-                  <span
-                    onClick={() =>
-                      setActiveMenu(activeMenu === "file" ? null : "file")
-                    }
-                    className={`cursor-pointer transition-colors ${activeMenu === "file" ? "text-[#22c55e]" : "text-slate-500 hover:text-[#22c55e]"}`}
-                  >
-                    File
-                  </span>
-                  {activeMenu === "file" && (
-                    <div className="absolute top-full left-0 mt-3 w-48 bg-black/95 border border-[#22c55e]/50 shadow-[0_0_15px_rgba(34,197,94,0.2)] py-2 flex flex-col gap-1 z-[9999] backdrop-blur-md text-xs font-mono">
-                      <a
-                        href="/resume.pdf"
-                        download
-                        className="block px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors"
-                      >
-                        &gt; Extract_Dossier
-                      </a>
-                      <div className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors">
-                        &gt; Wipe_Footprint
-                      </div>
-                    </div>
-                  )}
+          {/* File Menu */}
+          <div className="relative hidden sm:block">
+            <span 
+              onClick={() => setActiveMenu(activeMenu === 'file' ? null : 'file')}
+              className={`cursor-pointer transition-colors ${activeMenu === 'file' ? 'text-[#22c55e]' : 'text-slate-500 hover:text-[#22c55e]'}`}
+            >
+              File
+            </span>
+            {activeMenu === 'file' && (
+              <div className="absolute top-full left-0 mt-3 w-60 bg-black/95 border border-[#22c55e]/50 shadow-[0_0_15px_rgba(34,197,94,0.2)] py-2 flex flex-col gap-1 z-[9999] backdrop-blur-md text-xs font-mono">
+                <a href="/resume.pdf" download className="block px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors">
+                  &gt; Extract_Dossier
+                </a>
+                <div 
+                  onClick={() => { setActiveMenu(null); handleExportLogs(); }}
+                  className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors"
+                >
+                  &gt; Export_Session_Logs
                 </div>
+                <div className="px-4 py-2 text-purple-400 hover:bg-purple-900/30 cursor-pointer transition-colors border-t border-dashed border-[#22c55e]/30 mt-1 pt-2 font-bold">
+                  &gt; Inject_Visual_Payload
+                </div>
+              </div>
+            )}
+          </div>
 
                 {/* System Menu */}
                 <div className="relative hidden sm:block">
