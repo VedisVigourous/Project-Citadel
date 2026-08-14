@@ -195,6 +195,38 @@ const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 \\end{document}`;
 
 function App() {
+  // --- GITHUB DRIVE ---
+  const [isGitHubMounted, setIsGitHubMounted] = useState(false);
+  const [githubData, setGithubData] = useState(null);
+  const [mountText, setMountText] = useState("");
+
+  const handleMountGitHub = async () => {
+    setIsGitHubMounted(true);
+    setGithubData(null);
+    setMountText("Mounting External Drive: GITHUB...");
+
+    setTimeout(() => setMountText("Bypassing OAuth constraints... [OK]"), 1200);
+    setTimeout(() => setMountText("Decrypting Public Repositories... [OK]"), 2400);
+    setTimeout(() => setMountText("Establishing Secure Uplink..."), 3600);
+
+    try {
+      const response = await fetch('https://api.github.com/users/vedisvigourous');
+      if (!response.ok) {
+        throw new Error(`API Rate Limit Exceeded (${response.status})`);
+      }
+      const data = await response.json();
+      
+      setTimeout(() => {
+        setGithubData(data);
+      }, 5200);
+    } catch (error) {
+      console.error("GitHub mount failed:", error);
+      setTimeout(() => {
+        setMountText("ERR: API CONNECTION REJECTED (RATE LIMIT). Try again later.");
+      }, 5200);
+    }
+  };
+
   // --- TOP RIBBON & DOSSIER STATES ---
   const [activeMenu, setActiveMenu] = useState(null);
   const [isCoreIdentityOpen, setIsCoreIdentityOpen] = useState(false);
@@ -668,9 +700,12 @@ const handleCompile = () => {
                       >
                         [ Breach_Protocol ]
                       </div>
-                      <div className="px-4 py-2 text-orange-500 hover:bg-orange-900/40 cursor-pointer transition-colors font-bold border-t border-dashed border-[#22c55e]/30 mt-1 pt-2">
-                        [ Execute_Horde_Mode ]
-                      </div>
+                      <div 
+                  onClick={() => { setActiveMenu(null); handleMountGitHub(); }}
+                  className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors font-bold border-t border-dashed border-[#22c55e]/30 mt-1 pt-2"
+                >
+                  &gt; Mount_GitHub_Drive
+                </div>
                     </div>
                   )}
                 </div>
@@ -2107,6 +2142,81 @@ const handleCompile = () => {
               😂
             </div>
           ))}
+        </div>
+      )}
+
+      {/* GITHUB EXTERNAL DRIVE MODAL */}
+      {isGitHubMounted && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-[fadeIn_0.3s_ease-out]">
+          <div className="relative w-full max-w-lg bg-gradient-to-br from-[#050505] to-[#0a0a0a] border-2 border-blue-500/40 shadow-[0_0_50px_rgba(59,130,246,0.2)] p-1 overflow-hidden">
+            
+            {/* Animated scanning line */}
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-500/10 to-transparent w-full h-full animate-[scan_3s_linear_infinite] pointer-events-none"></div>
+
+            <div className="p-6 relative z-10 font-mono text-blue-400">
+              {/* Header */}
+              <div className="flex justify-between items-center mb-6 border-b border-blue-500/30 pb-3">
+                <div className="flex items-center gap-3">
+                  <span className="animate-spin text-lg">⚙</span>
+                  <span className="font-bold tracking-widest text-white text-sm">EXTERNAL_DRIVE // GITHUB_API</span>
+                </div>
+                <button onClick={() => { setIsGitHubMounted(false); setGithubData(null); }} className="hover:text-red-500 font-bold text-xs tracking-wider transition-colors cursor-pointer">
+                  [UNMOUNT]
+                </button>
+              </div>
+
+              {/* Cinematic Boot-up Area */}
+              {!githubData ? (
+                <div className="py-12 flex flex-col items-center justify-center space-y-4">
+                  <div className="w-12 h-12 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
+                  <div className="text-xs tracking-widest animate-pulse">&gt; {mountText}</div>
+                </div>
+              ) : (
+                <div className="animate-[cinematicUnfold_0.5s_forwards]">
+                  
+                  {/* Profile Layout */}
+                  <div className="flex gap-6 mb-6">
+                    <div className="w-24 h-24 border border-blue-500/50 p-1 flex-shrink-0 relative group">
+                      <div className="absolute inset-0 bg-blue-500/20 animate-pulse pointer-events-none"></div>
+                      <img src={githubData.avatar_url} alt="GitHub Avatar" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" />
+                    </div>
+                    
+                    <div className="flex-1 text-sm">
+                      <div className="text-white font-bold text-xl mb-1 tracking-wider">{githubData.name || githubData.login}</div>
+                      <div className="text-blue-500/80 mb-3 text-xs tracking-widest">@{githubData.login}</div>
+                      
+                      <div className="grid grid-cols-2 gap-4 text-xs">
+                        <div className="bg-blue-900/20 border border-blue-500/20 p-2 rounded">
+                          <div className="text-white/40 mb-1">REPOSITORIES</div>
+                          <div className="text-lg text-white font-bold">{githubData.public_repos}</div>
+                        </div>
+                        <div className="bg-blue-900/20 border border-blue-500/20 p-2 rounded">
+                          <div className="text-white/40 mb-1">FOLLOWERS</div>
+                          <div className="text-lg text-white font-bold">{githubData.followers}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bio Block */}
+                  <div className="mb-6 bg-blue-900/10 border border-blue-500/20 p-3 rounded text-xs">
+                    <span className="text-white/40 tracking-widest uppercase mb-1 block text-[9px]">Dossier / Bio</span>
+                    <span className="text-blue-300/80 leading-relaxed">{githubData.bio || "System engineer actively deploying code."}</span>
+                  </div>
+
+                  {/* Action Link */}
+                  <a 
+                    href={githubData.html_url} 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="block w-full text-center py-3 border border-blue-500/50 hover:bg-blue-500/20 transition-all duration-300 text-xs tracking-widest text-white hover:shadow-[0_0_20px_rgba(59,130,246,0.4)] cursor-pointer"
+                  >
+                    INITIALIZE_DIRECT_UPLINK
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>
