@@ -195,6 +195,10 @@ const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 \\end{document}`;
 
 function App() {
+  // --- OS THEME CONFIGURATOR ---
+  const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
+  const [themeHue, setThemeHue] = useState(0); // 0 = Default Cyber Green
+
   // --- GITHUB DRIVE ---
   const [isGitHubMounted, setIsGitHubMounted] = useState(false);
   const [githubData, setGithubData] = useState(null);
@@ -602,7 +606,10 @@ const handleCompile = () => {
   };
 
   return (
-    <div className="bg-slate-950 min-h-screen text-[#22c55e] font-mono overflow-hidden selection:bg-[#22c55e] selection:text-black">
+    <div 
+      className="bg-slate-950 min-h-screen text-[#22c55e] font-mono overflow-hidden selection:bg-[#22c55e] selection:text-black"
+      style={{ filter: `hue-rotate(${themeHue}deg)`, transition: 'filter 0.5s ease-in-out' }}
+    >
       {loading ? (
         <ChronosSplash onComplete={() => setLoading(false)} />
       ) : (
@@ -729,8 +736,11 @@ const handleCompile = () => {
                 >
                   &gt; Export_Session_Logs
                 </div>
-                <div className="px-4 py-2 text-purple-400 hover:bg-purple-900/30 cursor-pointer transition-colors border-t border-dashed border-[#22c55e]/30 mt-1 pt-2 font-bold">
-                  &gt; Inject_Visual_Payload
+                <div 
+                  onClick={() => { setActiveMenu(null); setIsThemeModalOpen(true); }}
+                  className="px-4 py-2 text-[#BF40BF] hover:bg-[#22c55e]/20 cursor-pointer transition-colors border-t border-dashed border-[#BF40BF]/30 mt-1 pt-2"
+                >
+                  &gt; Customize_OS_Theme
                 </div>
               </div>
             )}
@@ -2142,6 +2152,60 @@ const handleCompile = () => {
               😂
             </div>
           ))}
+        </div>
+      )}
+
+      {/* OS THEME CONFIGURATOR */}
+      {isThemeModalOpen && (
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-[fadeIn_0.2s_ease-out]">
+          <div className="w-full max-w-sm bg-[#050505] border-2 border-[#22c55e] shadow-[0_0_30px_rgba(34,197,94,0.15)] relative p-6 font-mono text-[#22c55e]">
+            
+            {/* Header */}
+            <div className="flex justify-between items-center mb-6 border-b border-[#22c55e]/30 pb-2">
+              <span className="font-bold tracking-widest text-sm text-white">APPEARANCE_CONFIG</span>
+              <button onClick={() => setIsThemeModalOpen(false)} className="hover:text-red-500 font-bold text-xs transition-colors cursor-pointer">
+                [CLOSE]
+              </button>
+            </div>
+
+            {/* Live Slider */}
+            <div className="mb-6 relative z-10">
+              <label className="text-xs mb-3 block text-white/70 tracking-widest uppercase">Global Phosphor Shift</label>
+              <input 
+                type="range" 
+                min="0" 
+                max="360" 
+                value={themeHue} 
+                onChange={(e) => setThemeHue(e.target.value)}
+                className="w-full h-2 bg-[#22c55e]/50 rounded-lg appearance-none cursor-pointer outline-none hover:bg-[#22c55e] transition-all relative z-20"
+              />
+              <div className="flex justify-between text-[10px] mt-2 text-white/40">
+                <span>0°</span>
+                <span>HUE: {themeHue}°</span>
+                <span>360°</span>
+              </div>
+            </div>
+
+            {/* Presets */}
+            <div className="space-y-3 relative z-10">
+              <div className="text-[10px] text-white/50 tracking-widest uppercase mb-2">Presets</div>
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <button onClick={() => setThemeHue(0)} className="p-2 border border-[#22c55e]/50 hover:bg-[#22c55e]/20 transition-all cursor-pointer">
+                  Cyber Green
+                </button>
+                <button onClick={() => setThemeHue(185)} className="p-2 border border-[#22c55e]/50 hover:bg-[#22c55e]/20 transition-all cursor-pointer">
+                  Neon Cyan
+                </button>
+                <button onClick={() => setThemeHue(280)} className="p-2 border border-[#22c55e]/50 hover:bg-[#22c55e]/20 transition-all cursor-pointer">
+                  Synthwave
+                </button>
+                <button onClick={() => setThemeHue(320)} className="p-2 border border-[#22c55e]/50 hover:bg-[#22c55e]/20 transition-all cursor-pointer">
+                  Retro Amber
+                </button>
+              </div>
+            </div>
+
+          </div>
         </div>
       )}
 
