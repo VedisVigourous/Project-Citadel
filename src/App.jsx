@@ -195,6 +195,11 @@ const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 \\end{document}`;
 
 function App() {
+  // --- TERMINAL CONTACT & SECRETS STATES ---
+  const [terminalMode, setTerminalMode] = useState('NORMAL'); // 'NORMAL', 'PING_EMAIL', 'PING_MSG'
+  const [pingData, setPingData] = useState({ email: '', message: '' });
+  const [isRacerActive, setIsRacerActive] = useState(false);
+
   // --- OS THEME CONFIGURATOR ---
   const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
   const [themeHue, setThemeHue] = useState(0); // 0 = Default Cyber Green
@@ -568,36 +573,117 @@ const handleCompile = () => {
   // --- TERMINAL COMMAND PARSER ---
   const handleTerminalSubmit = (e) => {
     if (e.key === 'Enter') {
-      const cmd = terminalInput.trim().toLowerCase();
-      let newHistory = [...terminalHistory, { type: 'input', text: `root@vadanta:~$ ${terminalInput}` }];
+      const rawCmd = terminalInput.trim();
+      const lowerCmd = rawCmd.toLowerCase();
+      const cmdParts = lowerCmd.split(' ');
+      const baseCmd = cmdParts[0];
+      
+      let newHistory = [...terminalHistory];
 
-      if (cmd === '') {
-        // Do nothing for empty enter
-      } else if (cmd === 'clear') {
-        newHistory = [];
-      } else if (cmd === 'cls') {
-        newHistory = [];
-      } else if (cmd === 'help') {
-        newHistory.push({ 
-          type: 'output', 
-          text: 'AVAILABLE COMMANDS:\n  • help\n  • clear\n  • ls\n  • whoami\n  • date\n  • open projects' 
-        });
-      } else if (cmd === 'ls') {
-        newHistory.push({ 
-          type: 'output', 
-          text: 'DIRECTORY LISTING:\n  • IDENTITY.exe\n  • PROJECTS.dir\n  • CERTS.dat\n  • RESUME.tex' 
-        });
-      } else if (cmd === 'whoami') {
-        setIsIdentityWindowOpen(true);
-        newHistory.push({ type: 'output', text: 'Vadanta Kumar Chauhaan\n • A Computer Science Major' });
-        newHistory.push({ type: 'output', text: 'Executing IDENTITY.exe...' });
-      } else if (cmd === 'date') {
-        newHistory.push({ type: 'output', text: new Date().toString() });
-      } else if (cmd === 'open projects') {
-        setIsProjectsWindowOpen(true);
-        newHistory.push({ type: 'output', text: 'Executing PROJECTS.dir...' });
-      } else {
-        newHistory.push({ type: 'output', text: `bash: ${cmd}: command not found` });
+      // Format input line based on mode
+      if (terminalMode === 'NORMAL') {
+        newHistory.push({ type: 'input', text: `root@vadanta:~$ ${rawCmd}` });
+      } else if (terminalMode === 'PING_EMAIL') {
+        newHistory.push({ type: 'input', text: `Email: ${rawCmd}` });
+      } else if (terminalMode === 'PING_MSG') {
+        newHistory.push({ type: 'input', text: `Message: ${rawCmd}` });
+      }
+
+      // --- PING MULTI-STEP LOGIC ---
+      if (terminalMode === 'PING_EMAIL') {
+        setPingData({ ...pingData, email: rawCmd });
+        setTerminalMode('PING_MSG');
+        newHistory.push({ type: 'output', text: 'Enter your message (Press Enter to send):' });
+      } 
+      else if (terminalMode === 'PING_MSG') {
+        newHistory.push({ type: 'output', text: `[SYSTEM] Encrypting payload from ${pingData.email}...` });
+        
+        // TODO: EmailJS real transmission goes here (See Step 2 below)
+        
+        newHistory.push({ type: 'output', text: `[SYSTEM] Routing to server... [OK]` });
+        newHistory.push({ type: 'output', text: 'TRANSMISSION SUCCESSFUL. I will get back to you shortly.' });
+        
+        setTerminalMode('NORMAL');
+        setPingData({ email: '', message: '' });
+      }
+      
+      // --- NORMAL COMMANDS ---
+      else {
+        if (lowerCmd === '') {
+          // Do nothing
+        } else if (lowerCmd === 'clear' || lowerCmd === 'cls') {
+          newHistory = [];
+        } else if (lowerCmd === 'help') {
+          newHistory.push({ 
+            type: 'output', 
+            text: `AVAILABLE COMMANDS:
+  • help           - Displays this system manual
+  • clear / cls    - Clears the terminal screen
+  • ls             - Lists available system files
+  • whoami         - Outputs current user identity
+  • date           - Displays system date and time
+  • open projects  - Mounts the PROJECTS.dir executable
+  • mount github   - Initializes GitHub API uplink
+  • ping           - Opens a direct comms link to my inbox
+  • cat workspace  - Outputs current development pipeline
+  • theme <deg>    - Shifts global UI hue (e.g., 'theme 180')
+  • traceroute     - Pings server node location
+  • sudo su        - Attempts root escalation
+  
+  * Do you like surprises? Try typing: racer` 
+          });
+        } else if (lowerCmd === 'ls') {
+          newHistory.push({ 
+            type: 'output', 
+            text: 'DIRECTORY LISTING:\n  • IDENTITY.exe\n  • PROJECTS.dir\n  • CERTS.dat\n  • RESUME.tex' 
+          });
+        } else if (lowerCmd === 'whoami') {
+          setIsIdentityWindowOpen(true);
+          newHistory.push({ type: 'output', text: 'Vadanta Kumar Chauhaan\n • System Architect & CSE Major' });
+          newHistory.push({ type: 'output', text: 'Executing IDENTITY.exe...' });
+        } else if (lowerCmd === 'date') {
+          newHistory.push({ type: 'output', text: new Date().toString() });
+        } else if (lowerCmd === 'open projects') {
+          setIsProjectsWindowOpen(true);
+          newHistory.push({ type: 'output', text: 'Executing PROJECTS.dir...' });
+        } else if (lowerCmd === 'mount github') {
+          handleMountGitHub();
+          newHistory.push({ type: 'output', text: 'Initiating external GitHub uplink...' });
+        } else if (lowerCmd === 'ping') {
+          setTerminalMode('PING_EMAIL');
+          newHistory.push({ type: 'output', text: 'INITIALIZING SECURE COMMS LINK...' });
+          newHistory.push({ type: 'output', text: 'Please enter your contact email:' });
+        } else if (lowerCmd === 'cat workspace') {
+          newHistory.push({ 
+            type: 'output', 
+            text: `[ CURRENT_PIPELINE ]:
+ > Architecting scalable Java backend systems
+ > Executing advanced DSA & Problem Solving computations
+ > Exploring Cloud-native deployments & API integrations
+ > Open-Source Targets: GSoC / GSSoC` 
+          });
+        } else if (lowerCmd === 'racer') {
+          newHistory.push({ type: 'output', text: 'INITIATING ASCII HIGHWAY PROTOCOL...' });
+          setIsRacerActive(true);
+        } else if (baseCmd === 'theme') {
+          const hue = parseInt(cmdParts[1]);
+          if (!isNaN(hue)) {
+            setThemeHue(hue);
+            newHistory.push({ type: 'output', text: `[SYSTEM] Global Phosphor Shift applied: ${hue}°` });
+          } else {
+            newHistory.push({ type: 'output', text: `Usage: theme <number 0-360>` });
+          }
+        } else if (lowerCmd === 'traceroute') {
+          newHistory.push({ type: 'output', text: 'Tracing route to Node_Local...' });
+          newHistory.push({ type: 'output', text: 'Hop 1: 192.168.1.1 [OK]' });
+          newHistory.push({ type: 'output', text: 'Hop 2: UP-SERVER-R03 [OK]' });
+          newHistory.push({ type: 'output', text: 'Hop 3: Delhi_Sector_01_Gateway' });
+          newHistory.push({ type: 'output', text: 'Status: [ SECURE CONNECTION ESTABLISHED ]' });
+        } else if (lowerCmd === 'sudo su') {
+          newHistory.push({ type: 'output', text: 'CRITICAL ERR: ACCESS DENIED. Unauthorized attempt logged and reported to sysadmin.' });
+        } else {
+          newHistory.push({ type: 'output', text: `bash: ${rawCmd}: command not found` });
+        }
       }
 
       setTerminalHistory(newHistory);
@@ -1911,9 +1997,10 @@ const handleCompile = () => {
                   </div>
 
                   <div className="flex items-center gap-2 text-[#22c55e] shrink-0 h-5">
-                    <span className="font-bold whitespace-nowrap">
-                      root@vadanta:~$
-                    </span>
+                    <span className="text-white mr-2">
+    {terminalMode === 'NORMAL' ? 'root@vadanta:~$' : 
+     terminalMode === 'PING_EMAIL' ? 'Email:' : 'Message:'}
+  </span>
                     <input
                       type="text"
                       value={terminalInput}
