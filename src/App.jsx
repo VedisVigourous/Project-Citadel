@@ -1266,8 +1266,15 @@ const handleCompile = () => {
           {/* Mail.conn Desktop Icon */}
           <div 
             className="flex flex-col items-center cursor-pointer group w-24"
-            onClick={() => setIsCommsWindowOpen(true)}
-          >
+            onClick={() => {
+              if (isCommsWindowOpen) {
+                setIsCommsWindowOpen(false);
+                setGuiPingStatus('IDLE'); 
+              } else {
+                setIsCommsWindowOpen(true);
+              }
+            }}
+            >
             {/* The 3D Icon Wrapper */}
             <div className="relative w-12 h-12 mb-3">
               {/* Layer 1 (Back) - Pans Down-Right (Reversed) */}
@@ -1766,13 +1773,14 @@ const handleCompile = () => {
                       </div>
                     ) : (
                       <div className="flex-1 min-h-0 overflow-hidden bg-black/90 border border-[#22c55e] shadow-[0_0_60px_rgba(34,197,94,0.3)] p-2 animate-[fadeIn_0.3s_ease-out] flex items-center justify-center">
-                        {/* Pure Image Renderer - Flexbox Lock Applied */}
-                        <img
-                          src={activeCert.path}
-                          alt={activeCert.name}
-                          className="w-full h-full max-w-full max-h-full object-contain opacity-90 hover:opacity-100 transition-opacity"
-                        />
-                      </div>
+                {/* Pure Image Renderer - Flexbox Lock Applied */}
+                <img
+                  src={activeCert.path}
+                  alt={activeCert.name}
+                  className="w-full h-full max-w-full max-h-full object-contain opacity-90 hover:opacity-100 transition-opacity"
+                  style={{ filter: `hue-rotate(-${themeHue}deg)` }} 
+                />
+              </div>
                     )}
                   </div>
                 </div>
@@ -2229,29 +2237,30 @@ const handleCompile = () => {
       {isCoreIdentityOpen && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-[fadeIn_0.3s_ease-out]">
           
-          <div className="animate-cinematic relative w-full max-w-xl rounded-3xl bg-gradient-to-br from-white/10 via-white/5 to-transparent border border-white/20 shadow-[0_0_50px_rgba(255,255,255,0.1)] p-8 overflow-hidden backdrop-blur-xl group hover:shadow-[0_0_80px_rgba(34,197,94,0.3)] transition-shadow duration-700">
-
-            {/* Ambient Background Glows */}
-            <div className="absolute -top-20 -right-20 w-64 h-64 bg-purple-500/30 rounded-full blur-3xl group-hover:bg-green-500/20 transition-colors duration-700"></div>
+          <div 
+          className="animate-cinematic relative w-full max-w-xl rounded-3xl bg-gradient-to-br from-white/10 via-white/5 to-transparent border border-white/20 shadow-[0_0_50px_rgba(255,255,255,0.1)] p-8 overflow-hidden backdrop-blur-xl group hover:shadow-[0_0_80px_rgba(34,197,94,0.3)] transition-shadow duration-700"
+        >
+          {/* Ambient Background Glows */}
+          <div className="absolute -top-20 -right-20 w-64 h-64 bg-purple-500/30 rounded-full blur-3xl group-hover:bg-green-500/20 transition-colors duration-700"></div>
             <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-blue-500/30 rounded-full blur-3xl group-hover:bg-[#22c55e]/30 transition-colors duration-700"></div>
 
             <div className="relative z-10 flex flex-col items-center text-center">
               
               {/* Floating Avatar Ring with Real Profile Photo */}
-              <div className="w-32 h-32 rounded-full p-1 bg-gradient-to-tr from-blue-500 via-purple-500 to-[#22c55e] animate-[spin_6s_linear_infinite] mb-6 shadow-2xl relative">
-                <div className="w-full h-full bg-[#050505] rounded-full overflow-hidden flex items-center justify-center animate-[spin_6s_linear_infinite_reverse]">
-                  <img 
-                    src="/profile.png" 
-                    alt="Vadanta Kumar Chauhaan" 
-                    className="w-full h-full object-cover rounded-full"
-                    onError={(e) => {
-                      // Fallback if image path is not added yet
-                      e.target.onerror = null; 
-                      e.target.src = "https://ui-avatars.com/api/?name=Vadanta+Chauhaan&background=0D8ABC&color=fff";
-                    }}
-                  />
-                </div>
-              </div>
+                    <div className="w-32 h-32 rounded-full p-1 bg-gradient-to-tr from-blue-500 via-purple-500 to-[#22c55e] animate-[spin_6s_linear_infinite] mb-6 shadow-2xl relative">
+                      <div className="w-full h-full bg-[#050505] rounded-full overflow-hidden flex items-center justify-center animate-[spin_6s_linear_infinite_reverse]">
+                        <img 
+                          src="/profile.png" 
+                          alt="Vadanta Kumar Chauhaan" 
+                          className="w-full h-full object-cover rounded-full"
+                          style={{ filter: `hue-rotate(-${themeHue}deg)` }} 
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "https://ui-avatars.com/api/?name=Vadanta+Chauhaan&background=0D8ABC&color=fff";
+                          }}
+                        />
+                      </div>
+                    </div>
 
               {/* Name & Title */}
               <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-gray-300 mb-2 tracking-wide">
