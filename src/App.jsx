@@ -5,6 +5,7 @@ import { Rnd } from "react-rnd";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { useState, useEffect, useRef } from 'react';
+import emailjs from '@emailjs/browser';
 
 const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 
@@ -195,6 +196,11 @@ const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 \\end{document}`;
 
 function App() {
+  // EMAIL APPLLICATION 
+  const [isCommsWindowOpen, setIsCommsWindowOpen] = useState(false);
+  const [guiPingData, setGuiPingData] = useState({ email: '', message: '' });
+  const [guiPingStatus, setGuiPingStatus] = useState('IDLE'); 
+  
   // --- TERMINAL CONTACT & SECRETS STATES ---
   const [terminalMode, setTerminalMode] = useState('NORMAL'); // 'NORMAL', 'PING_EMAIL', 'PING_MSG'
   const [pingData, setPingData] = useState({ email: '', message: '' });
@@ -331,6 +337,14 @@ ${dynamicHistory || '  > No terminal commands executed during this session.'}
   const [isCertsWindowOpen, setIsCertsWindowOpen] = useState(false);
   const [certsConfig, setCertsConfig] = useState({
     x: 200, y: 150, width: 550, height: 450
+  });
+
+  // --- MAIL.CONN WINDOW MEMORY (react-rnd state) ---
+  const [commsConfig, setCommsConfig] = useState({
+    x: window.innerWidth > 768 ? (window.innerWidth / 2) - 225 : 20,
+    y: window.innerHeight > 768 ? (window.innerHeight / 2) - 200 : 40,
+    width: 450,
+    height: 400
   });
 
   // --- WINDOW MEMORY (react-rnd state) ---
@@ -586,14 +600,40 @@ const handleCompile = () => {
       } else if (terminalMode === 'PING_EMAIL') {
         newHistory.push({ type: 'input', text: `Email: ${rawCmd}` });
       } else if (terminalMode === 'PING_MSG') {
-        newHistory.push({ type: 'input', text: `Message: ${rawCmd}` });
+        newHistory.push({ type: 'output', text: `[SYSTEM] Encrypting payload from ${pingData.email}...` });
+        
+        // --- REAL EMAILJS TRANSMISSION ---
+        emailjs.send(
+          'service_7259ksh',   
+          'template_6c5menn',  
+          { 
+            from_email: pingData.email, 
+            message: rawCmd 
+          }, 
+          'yWVDlVd10PKZ4Q9l6'      
+        );
+        
+        newHistory.push({ type: 'output', text: `[SYSTEM] Routing to server... [OK]` });
+        newHistory.push({ type: 'output', text: 'TRANSMISSION SUCCESSFUL. I will get back to you shortly.' });
+        
+        setTerminalMode('NORMAL');
+        setPingData({ email: '', message: '' });
       }
 
       // --- PING MULTI-STEP LOGIC ---
       if (terminalMode === 'PING_EMAIL') {
-        setPingData({ ...pingData, email: rawCmd });
-        setTerminalMode('PING_MSG');
-        newHistory.push({ type: 'output', text: 'Enter your message (Press Enter to send):' });
+        // Strict Regex to validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        
+        if (emailRegex.test(rawCmd)) {
+          setPingData({ ...pingData, email: rawCmd });
+          setTerminalMode('PING_MSG');
+          newHistory.push({ type: 'output', text: 'Enter your message (Press Enter to send):' });
+        } else {
+          // The Rejection Loophole Closer
+          newHistory.push({ type: 'output', text: `[SYSTEM] CRITICAL: '${rawCmd}' is an invalid address format.` });
+          newHistory.push({ type: 'output', text: 'Please enter a valid contact email:' });
+        }
       } 
       else if (terminalMode === 'PING_MSG') {
         newHistory.push({ type: 'output', text: `[SYSTEM] Encrypting payload from ${pingData.email}...` });
@@ -1219,6 +1259,48 @@ const handleCompile = () => {
                   </span>
                 </div>
               </div>
+
+        {/* --- RIGHT SIDE ICONS (New Utilities) --- */}
+        <div className="absolute top-4 right-4 mt-4 flex flex-col space-y-6 w-24 items-center z-40">
+          
+          {/* Mail.conn Desktop Icon */}
+          <div 
+            className="flex flex-col items-center cursor-pointer group w-24"
+            onClick={() => setIsCommsWindowOpen(true)}
+          >
+            {/* The 3D Icon Wrapper */}
+            <div className="relative w-12 h-12 mb-3">
+              {/* Layer 1 (Back) - Pans Down-Right (Reversed) */}
+              <div className="absolute inset-0 rounded border border-[#22c55e]/20 bg-transparent flex items-center justify-center text-[#22c55e]/20 transition-all duration-500 ease-out group-hover:translate-x-2 group-hover:translate-y-2 group-hover:scale-105 z-0">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+              </div>
+
+              {/* Layer 2 (Middle) - Pans Slightly Down-Right (Reversed) */}
+              <div className="absolute inset-0 rounded border border-[#22c55e]/40 bg-transparent flex items-center justify-center text-[#22c55e]/40 transition-all duration-500 ease-out group-hover:translate-x-1 group-hover:translate-y-1 group-hover:scale-110 z-10">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+              </div>
+
+              {/* Layer 3 (Front) - Pans Up-Left, Glows, and SWEEPS (Reversed) */}
+              <div className="absolute inset-0 rounded border border-[#22c55e]/80 bg-[#050505] flex items-center justify-center text-[#22c55e] transition-all duration-500 ease-out group-hover:-translate-x-1.5 group-hover:-translate-y-1.5 group-hover:scale-[1.15] group-hover:border-[#22c55e] group-hover:shadow-[0_0_20px_rgba(34,197,94,0.4)] group-active:scale-95 z-20 overflow-hidden">
+                <svg className="w-6 h-6 group-hover:text-white transition-colors duration-500 relative z-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+                {/* The Neon Light Sweep */}
+                <div className="absolute top-0 -left-[150%] w-full h-full bg-gradient-to-r from-transparent via-[#22c55e]/60 to-transparent skew-x-[-45deg] transition-all duration-700 ease-in-out group-hover:left-[150%] z-20"></div>
+              </div>
+            </div>
+
+            {/* The Label */}
+            <span className="text-xs bg-black/80 px-2 py-0.5 rounded border border-transparent group-hover:border-[#22c55e]/50 text-[#22c55e]/70 group-hover:text-white group-hover:drop-shadow-[0_0_8px_rgba(34,197,94,0.8)] text-center transition-all duration-500 tracking-wider group-hover:-translate-y-1">
+              Mail.conn
+            </span>
+          </div>
+
+        </div>
 
               {/* IDENTITY PROFILE WINDOW (Upgraded with Drag Physics) */}
               {isIdentityWindowOpen && (
@@ -2370,6 +2452,144 @@ const handleCompile = () => {
           </div>
         </div>
       )}
+
+      {/* Mail.conn GUI WINDOW */}
+      {isCommsWindowOpen && (
+        <Rnd
+          size={{ width: commsConfig.width, height: commsConfig.height }}
+          position={{ x: commsConfig.x, y: commsConfig.y }}
+          onDragStop={(e, d) => setCommsConfig((prev) => ({ ...prev, x: d.x, y: d.y }))}
+          onResizeStop={(e, direction, ref, delta, position) => {
+            setCommsConfig({
+              width: parseInt(ref.style.width, 10),
+              height: parseInt(ref.style.height, 10),
+              x: position.x,
+              y: position.y,
+            });
+          }}
+          minWidth={350}
+          minHeight={350}
+          bounds="parent"
+          dragHandleClassName="comms-drag-handle"
+          className="z-[999] absolute"
+        >
+          <div className="w-full h-full bg-[#050505]/95 border border-[#22c55e]/50 shadow-[0_0_30px_rgba(34,197,94,0.15)] flex flex-col font-mono backdrop-blur-md overflow-hidden">
+            
+            {/* Window Header (The Drag Handle) */}
+            <div className="comms-drag-handle h-8 bg-[#22c55e]/10 border-b border-[#22c55e]/30 flex items-center justify-between px-3 cursor-move hover:bg-[#22c55e]/20 transition-colors shrink-0">
+              <span className="font-bold text-xs tracking-widest text-[#22c55e]">
+                Mail.conn // SECURE_UPLINK
+              </span>
+              <button 
+                onClick={(e) => { 
+                  e.stopPropagation(); 
+                  setIsCommsWindowOpen(false); 
+                  setGuiPingStatus('IDLE'); 
+                }} 
+                className="text-[#22c55e] hover:text-[#ff3333] hover:bg-[#ff3333]/10 px-2 py-0.5 rounded transition-all duration-200 text-xs font-bold cursor-pointer"
+              >
+                [X]
+              </button>
+            </div>
+
+            {/* Window Body - Flex layout for stretching */}
+            <div className="flex-1 p-5 text-[#22c55e] flex flex-col overflow-y-auto custom-scrollbar">
+              {guiPingStatus === 'SUCCESS' ? (
+                <div className="flex-1 flex flex-col items-center justify-center space-y-4">
+                  <div className="text-4xl animate-pulse">✓</div>
+                  <div className="font-bold tracking-widest text-white text-center">TRANSMISSION SUCCESSFUL</div>
+                  <div className="text-xs text-[#22c55e]/70 text-center px-4">Payload securely routed to vadanta592007@hotmail.com</div>
+                  <button 
+                    onClick={() => setGuiPingStatus('IDLE')}
+                    className="mt-4 border border-[#22c55e] px-4 py-2 hover:bg-[#22c55e] hover:text-black transition-colors text-xs font-bold shrink-0"
+                  >
+                    INITIALIZE_NEW_PING
+                  </button>
+                </div>
+              ) : (
+                <div className="flex flex-col h-full space-y-4">
+                  
+                  {/* Email Input */}
+                  <div className="shrink-0">
+                    <label className="block text-[10px] uppercase tracking-widest mb-1 text-white/70">Return Address (Email)</label>
+                    <input 
+                      type="email"
+                      value={guiPingData.email}
+                      onChange={(e) => {
+                        setGuiPingData({ ...guiPingData, email: e.target.value });
+                        // Clear any error state when typing resumes
+                        if(guiPingStatus === 'INVALID_EMAIL' || guiPingStatus === 'API_ERROR') setGuiPingStatus('IDLE');
+                      }}
+                      className="w-full bg-[#0a0a0a] border border-[#22c55e]/50 text-white p-2 outline-none focus:border-[#22c55e] transition-colors text-sm"
+                      placeholder="recruiter@company.com"
+                    />
+                  </div>
+                  
+                  {/* Message Input */}
+                  <div className="flex-1 flex flex-col min-h-[100px]">
+                    <label className="block text-[10px] uppercase tracking-widest mb-1 text-white/70">Encrypted Payload (Message)</label>
+                    <textarea 
+                      value={guiPingData.message}
+                      onChange={(e) => setGuiPingData({ ...guiPingData, message: e.target.value })}
+                      className="w-full flex-1 bg-[#0a0a0a] border border-[#22c55e]/50 text-white p-2 outline-none focus:border-[#22c55e] transition-colors text-sm resize-none custom-scrollbar"
+                      placeholder="Enter transmission data here..."
+                    />
+                  </div>
+
+                  {/* DYNAMIC ERROR MESSAGES */}
+                  {guiPingStatus === 'INVALID_EMAIL' && (
+                    <div className="shrink-0 text-red-500 text-xs font-bold tracking-widest bg-red-500/10 p-2 border border-red-500/30 text-center">
+                      ERR: INVALID EMAIL FORMAT
+                    </div>
+                  )}
+                  {guiPingStatus === 'API_ERROR' && (
+                    <div className="shrink-0 text-red-500 text-xs font-bold tracking-widest bg-red-500/10 p-2 border border-red-500/30 text-center">
+                      ERR: TRANSMISSION FAILED (Check API Keys/Rate Limit)
+                    </div>
+                  )}
+
+                  {/* Submit Button */}
+                  <button 
+                    onClick={() => {
+                      const cleanEmail = guiPingData.email.trim(); 
+                      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                      
+                      if (!emailRegex.test(cleanEmail)) {
+                        setGuiPingStatus('INVALID_EMAIL');
+                        return;
+                      }
+                      
+                      setGuiPingStatus('SENDING');
+                      
+                      // Using your exact working keys from the terminal parser!
+                      emailjs.send(
+                        'service_7259ksh', 
+                        'template_6c5menn',
+                        { 
+                          from_email: cleanEmail, 
+                          message: guiPingData.message 
+                        }, 
+                        'yWVDlVd10PKZ4Q9l6'
+                      ).then(() => {
+                        setGuiPingStatus('SUCCESS');
+                        setGuiPingData({ email: '', message: '' });
+                      }).catch((err) => {
+                        console.error('Comms Error:', err);
+                        setGuiPingStatus('API_ERROR');
+                      });
+                    }}
+                    disabled={guiPingStatus === 'SENDING'}
+                    className="shrink-0 w-full bg-[#22c55e]/20 border border-[#22c55e] hover:bg-[#22c55e] hover:text-black transition-colors py-2 font-bold tracking-widest text-sm"
+                  >
+                    {guiPingStatus === 'SENDING' ? 'ENCRYPTING & ROUTING...' : 'EXECUTE_TRANSMISSION'}
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </Rnd>
+      )}
+
     </div>
   );
 }
