@@ -2,10 +2,10 @@ import ChronosSplash from "./components/ChronosSplash";
 import TerminalProfile from "./components/TerminalProfile";
 import SurveillanceLogo from "./components/SurveillanceLogo";
 import { Rnd } from "react-rnd";
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { atomDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
-import { useState, useEffect, useRef } from 'react';
-import emailjs from '@emailjs/browser';
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { atomDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { useState, useEffect, useRef } from "react";
+import emailjs from "@emailjs/browser";
 
 const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 
@@ -196,14 +196,18 @@ const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 \\end{document}`;
 
 function App() {
-  // EMAIL APPLLICATION 
+  // --- OS THEME CONFIGURATOR ---
+  const [isJokerTrapActive, setIsJokerTrapActive] = useState(false);
+  const [isBlindingLightMode, setIsBlindingLightMode] = useState(false); // The Flashbang
+
+  // EMAIL APPLLICATION
   const [isCommsWindowOpen, setIsCommsWindowOpen] = useState(false);
-  const [guiPingData, setGuiPingData] = useState({ email: '', message: '' });
-  const [guiPingStatus, setGuiPingStatus] = useState('IDLE'); 
-  
+  const [guiPingData, setGuiPingData] = useState({ email: "", message: "" });
+  const [guiPingStatus, setGuiPingStatus] = useState("IDLE");
+
   // --- TERMINAL CONTACT & SECRETS STATES ---
-  const [terminalMode, setTerminalMode] = useState('NORMAL'); // 'NORMAL', 'PING_EMAIL', 'PING_MSG'
-  const [pingData, setPingData] = useState({ email: '', message: '' });
+  const [terminalMode, setTerminalMode] = useState("NORMAL"); // 'NORMAL', 'PING_EMAIL', 'PING_MSG'
+  const [pingData, setPingData] = useState({ email: "", message: "" });
   const [isRacerActive, setIsRacerActive] = useState(false);
 
   // --- OS THEME CONFIGURATOR ---
@@ -221,23 +225,30 @@ function App() {
     setMountText("Mounting External Drive: GITHUB...");
 
     setTimeout(() => setMountText("Bypassing OAuth constraints... [OK]"), 1200);
-    setTimeout(() => setMountText("Decrypting Public Repositories... [OK]"), 2400);
+    setTimeout(
+      () => setMountText("Decrypting Public Repositories... [OK]"),
+      2400,
+    );
     setTimeout(() => setMountText("Establishing Secure Uplink..."), 3600);
 
     try {
-      const response = await fetch('https://api.github.com/users/vedisvigourous');
+      const response = await fetch(
+        "https://api.github.com/users/vedisvigourous",
+      );
       if (!response.ok) {
         throw new Error(`API Rate Limit Exceeded (${response.status})`);
       }
       const data = await response.json();
-      
+
       setTimeout(() => {
         setGithubData(data);
       }, 5200);
     } catch (error) {
       console.error("GitHub mount failed:", error);
       setTimeout(() => {
-        setMountText("ERR: API CONNECTION REJECTED (RATE LIMIT). Try again later.");
+        setMountText(
+          "ERR: API CONNECTION REJECTED (RATE LIMIT). Try again later.",
+        );
       }, 5200);
     }
   };
@@ -252,43 +263,80 @@ function App() {
   const triggerTraceRoute = () => {
     setIsTracing(true);
     setTraceText("Initiating secure handshake...\n");
-    
-    setTimeout(() => setTraceText(prev => prev + "Bypassing subnet firewalls... [OK]\n"), 1200);
-    setTimeout(() => setTraceText(prev => prev + "Acquiring target IPv4/IPv6 addresses... [OK]\n"), 2400);
-    setTimeout(() => setTraceText(prev => prev + "Hijacking local device camera stream...\n"), 3600);
-    setTimeout(() => setTraceText(prev => prev + "Downloading unencrypted browser history... 100%\n"), 4800);
-    setTimeout(() => setTraceText(prev => prev + "\n[!] TARGET_ACQUIRED: VISITOR_SESSION_EXPOSED [!]\n"), 6200);
-    
+
+    setTimeout(
+      () =>
+        setTraceText((prev) => prev + "Bypassing subnet firewalls... [OK]\n"),
+      1200,
+    );
+    setTimeout(
+      () =>
+        setTraceText(
+          (prev) => prev + "Acquiring target IPv4/IPv6 addresses... [OK]\n",
+        ),
+      2400,
+    );
+    setTimeout(
+      () =>
+        setTraceText(
+          (prev) => prev + "Hijacking local device camera stream...\n",
+        ),
+      3600,
+    );
+    setTimeout(
+      () =>
+        setTraceText(
+          (prev) => prev + "Downloading unencrypted browser history... 100%\n",
+        ),
+      4800,
+    );
+    setTimeout(
+      () =>
+        setTraceText(
+          (prev) =>
+            prev + "\n[!] TARGET_ACQUIRED: VISITOR_SESSION_EXPOSED [!]\n",
+        ),
+      6200,
+    );
+
     // The Joke & Smooth Rain Trigger
     setTimeout(() => {
-      setTraceText(prev => prev + "\n...Just kidding! Enjoy the portfolio! 😂\n\n" +
-        "   (•_•) \n" +
-        "   <)  )╯\n" +
-        "    /  \\ \n"
+      setTraceText(
+        (prev) =>
+          prev +
+          "\n...Just kidding! Enjoy the portfolio! 😂\n\n" +
+          "   (•_•) \n" +
+          "   <)  )╯\n" +
+          "    /  \\ \n",
       );
       setIsRainingEmojis(true);
     }, 7800);
-    
+
     setTimeout(() => {
       setIsTracing(false);
       setIsRainingEmojis(false);
-    }, 12500); 
+    }, 12500);
   };
 
   const handleExportLogs = () => {
     try {
       // 1. Safely grab your exact terminal state
-      const safeHistory = typeof terminalHistory !== 'undefined' && Array.isArray(terminalHistory) ? terminalHistory : [];
-      
+      const safeHistory =
+        typeof terminalHistory !== "undefined" && Array.isArray(terminalHistory)
+          ? terminalHistory
+          : [];
+
       // 2. Map through it safely
-      const dynamicHistory = safeHistory.map(entry => {
-        if (entry && entry.type === 'input') {
-          return `root@vadanta:~$ ${entry.text}`;
-        } else if (entry && entry.text) {
-          return `  > ${entry.text}`;
-        }
-        return `  > ${entry}`; 
-      }).join('\n'); 
+      const dynamicHistory = safeHistory
+        .map((entry) => {
+          if (entry && entry.type === "input") {
+            return `root@vadanta:~$ ${entry.text}`;
+          } else if (entry && entry.text) {
+            return `  > ${entry.text}`;
+          }
+          return `  > ${entry}`;
+        })
+        .join("\n");
 
       // 3. Build the final text file content
       const logContent = `
@@ -303,28 +351,27 @@ function App() {
  --- LIVE TERMINAL SESSION HISTORY ---
 ==================================================
 
-${dynamicHistory || '  > No terminal commands executed during this session.'}
+${dynamicHistory || "  > No terminal commands executed during this session."}
  
 ==================================================
  END OF LOG.
 ==================================================`;
 
       // 4. Generate and download the Blob
-      const blob = new Blob([logContent], { type: 'text/plain' });
+      const blob = new Blob([logContent], { type: "text/plain" });
       const url = URL.createObjectURL(blob);
-      
-      const a = document.createElement('a');
+
+      const a = document.createElement("a");
       a.href = url;
-      a.download = `VADANTA_SESSION_${new Date().getTime()}.txt`; 
+      a.download = `VADANTA_SESSION_${new Date().getTime()}.txt`;
       document.body.appendChild(a);
       a.click();
-      
+
       // 5. Cleanup
       setTimeout(() => {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
       }, 100);
-
     } catch (error) {
       console.error("BRO, EXPORT FAILED! Check this error:", error);
     }
@@ -336,69 +383,115 @@ ${dynamicHistory || '  > No terminal commands executed during this session.'}
 
   const [isCertsWindowOpen, setIsCertsWindowOpen] = useState(false);
   const [certsConfig, setCertsConfig] = useState({
-    x: 200, y: 150, width: 550, height: 450
+    x: 200,
+    y: 150,
+    width: 550,
+    height: 450,
   });
 
   // --- MAIL.CONN WINDOW MEMORY (react-rnd state) ---
   const [commsConfig, setCommsConfig] = useState({
-    x: window.innerWidth > 768 ? (window.innerWidth / 2) - 225 : 20,
-    y: window.innerHeight > 768 ? (window.innerHeight / 2) - 200 : 40,
+    x: window.innerWidth > 768 ? window.innerWidth / 2 - 225 : 20,
+    y: window.innerHeight > 768 ? window.innerHeight / 2 - 200 : 40,
     width: 450,
-    height: 400
+    height: 400,
   });
 
   // --- WINDOW MEMORY (react-rnd state) ---
   const [identityConfig, setIdentityConfig] = useState({
-    x: 140, y: 30, width: 325, height: 390
+    x: 140,
+    y: 30,
+    width: 325,
+    height: 390,
   });
-  
+
   const [projectsConfig, setProjectsConfig] = useState({
-    x: 150, y: 120, width: 500, height: 450
+    x: 150,
+    y: 120,
+    width: 500,
+    height: 450,
   });
-  
+
   // --- GITHUB LIVE COMMIT STREAM ---
   const [recentCommits, setRecentCommits] = useState([
-    { id: 1, hash: "SYS_INIT", repo: "UPLINK", msg: "Establishing secure connection..." }
+    {
+      id: 1,
+      hash: "SYS_INIT",
+      repo: "UPLINK",
+      msg: "Establishing secure connection...",
+    },
   ]);
 
   useEffect(() => {
     const fetchGitHubActivity = async () => {
       try {
-        const response = await fetch('https://api.github.com/users/torvalds/events/public?per_page=100');
+        const response = await fetch(
+          "https://api.github.com/users/torvalds/events/public?per_page=100",
+        );
         const data = await response.json();
-        
+
         // FAILSAFE: If GitHub rate-limits us, it returns an object, not an array.
         if (!Array.isArray(data)) {
           throw new Error(data.message || "API Rate Limited");
         }
-        
-        const pushEvents = data.filter(event => event.type === 'PushEvent');
+
+        const pushEvents = data.filter((event) => event.type === "PushEvent");
         const liveCommits = [];
-        
-        pushEvents.forEach(event => {
-          event.payload?.commits?.forEach(commit => {
+
+        pushEvents.forEach((event) => {
+          event.payload?.commits?.forEach((commit) => {
             liveCommits.push({
               id: commit.sha,
               hash: commit.sha.substring(0, 7),
-              repo: event.repo.name.split('/').pop(),
-              msg: commit.message.split('\n')[0]
+              repo: event.repo.name.split("/").pop(),
+              msg: commit.message.split("\n")[0],
             });
           });
         });
 
         if (liveCommits.length > 0) {
-          setRecentCommits(liveCommits.slice(0, 6)); 
+          setRecentCommits(liveCommits.slice(0, 6));
         }
       } catch (error) {
         console.warn("GitHub Link Offline/Limited. Using secure cache.");
         // CACHED FALLBACK: Keeps the UI looking premium even if GitHub times out.
         setRecentCommits([
-          { id: 1, hash: "a1b2c3d", repo: "Vadanta_OS_Citadel", msg: "engineered dynamic hud architecture" },
-          { id: 2, hash: "f4e5d6c", repo: "Police_Daily_Performa", msg: "optimized export engine" },
-          { id: 3, hash: "9a8b7c6", repo: "Project_Resonance", msg: "merged gemini vision api logic" },
-          { id: 4, hash: "e5d4c3b", repo: "Vadanta_OS_Citadel", msg: "patched matrix background scroll" },
-          { id: 5, hash: "b2a1f9e", repo: "MLH_GHW_Guesser", msg: "deployed logic-based number guesser" },
-          { id: 6, hash: "c3d4e5f", repo: "Vadanta_OS_Citadel", msg: "initialized secure uplink" }
+          {
+            id: 1,
+            hash: "a1b2c3d",
+            repo: "Vadanta_OS_Citadel",
+            msg: "engineered dynamic hud architecture",
+          },
+          {
+            id: 2,
+            hash: "f4e5d6c",
+            repo: "Police_Daily_Performa",
+            msg: "optimized export engine",
+          },
+          {
+            id: 3,
+            hash: "9a8b7c6",
+            repo: "Project_Resonance",
+            msg: "merged gemini vision api logic",
+          },
+          {
+            id: 4,
+            hash: "e5d4c3b",
+            repo: "Vadanta_OS_Citadel",
+            msg: "patched matrix background scroll",
+          },
+          {
+            id: 5,
+            hash: "b2a1f9e",
+            repo: "MLH_GHW_Guesser",
+            msg: "deployed logic-based number guesser",
+          },
+          {
+            id: 6,
+            hash: "c3d4e5f",
+            repo: "Vadanta_OS_Citadel",
+            msg: "initialized secure uplink",
+          },
         ]);
       }
     };
@@ -414,79 +507,93 @@ ${dynamicHistory || '  > No terminal commands executed during this session.'}
   const [is24Hour, setIs24Hour] = useState(true);
 
   // --- TERMINAL ENGINE STATES & AUTO-SCROLL ---
-  const [terminalInput, setTerminalInput] = useState('');
+  const [terminalInput, setTerminalInput] = useState("");
   const [terminalHistory, setTerminalHistory] = useState([
-    { type: 'output', text: "VADANTA_OS [Version 1.0.0]" },
-    { type: 'output', text: "Type 'help' to see available system commands." }
+    { type: "output", text: "VADANTA_OS [Version 1.0.0]" },
+    { type: "output", text: "Type 'help' to see available system commands." },
   ]);
   const [isTerminalFocused, setIsTerminalFocused] = useState(false);
   const [isHudOpen, setIsHudOpen] = useState(false);
 
   const isExpanded = isTerminalFocused || isHudOpen;
-  
+
   // NEW SCROLL LOGIC: Target the container, not an element
   const terminalScrollRef = useRef(null);
-  
+  const terminalInputRef = useRef(null);
+
   useEffect(() => {
     if (terminalScrollRef.current) {
-      terminalScrollRef.current.scrollTop = terminalScrollRef.current.scrollHeight;
+      terminalScrollRef.current.scrollTop =
+        terminalScrollRef.current.scrollHeight;
     }
   }, [terminalHistory]);
 
-
-  
   // --- PROJECT VAULT DATA ---
   const projectsData = [
-    { 
-      id: "01", name: "Project_Resonance.crx", tech: "JS / Gemini 1.5 / Chrome API", 
+    {
+      id: "01",
+      name: "Project_Resonance.crx",
+      tech: "JS / Gemini 1.5 / Chrome API",
       desc: "AI-powered accessibility Chrome Extension bridging digital culture gaps. MLH HackDays Top 33.",
-      link: "https://github.com/hobo7676/hackdays-spiker" 
+      link: "https://github.com/hobo7676/hackdays-spiker",
     },
-    { 
-      id: "02", name: "Police_Daily_Performa.exe", tech: "Web / UI", 
+    {
+      id: "02",
+      name: "Police_Daily_Performa.exe",
+      tech: "Web / UI",
       desc: "Live web app engineered for Delhi Police staff to efficiently fill, download, and export daily performas.",
-      link: "https://github.com/VedisVigourous/Police-Daily-Performa" 
+      link: "https://github.com/VedisVigourous/Police-Daily-Performa",
     },
-    { 
-      id: "03", name: "Vadanta_OS_Citadel.exe", tech: "React / Tailwind", 
+    {
+      id: "03",
+      name: "Vadanta_OS_Citadel.exe",
+      tech: "React / Tailwind",
       desc: "Highly interactive, state-driven operating system portfolio with a custom window management architecture.",
-      link: "https://github.com/VedisVigourous/project-citadel" 
+      link: "https://github.com/VedisVigourous/project-citadel",
     },
-    { 
-      id: "04", name: "MLH_GHW_Guesser.bat", tech: "JS / HTML / CSS", 
+    {
+      id: "04",
+      name: "MLH_GHW_Guesser.bat",
+      tech: "JS / HTML / CSS",
       desc: "Logic-based number guessing engine developed and deployed for Major League Hacking's Global Hack Week.",
-      link: "https://github.com/VedisVigourous/vedisvigourous.github.io" 
+      link: "https://github.com/VedisVigourous/vedisvigourous.github.io",
     },
-    { 
-      id: "05", name: "Java_OOP_Game_Suite.jar", tech: "Java / OOP", 
+    {
+      id: "05",
+      name: "Java_OOP_Game_Suite.jar",
+      tech: "Java / OOP",
       desc: "Modular console-based game suite implementing core encapsulation and inheritance principles.",
-      link: "https://github.com/VedisVigourous/LearnJava" 
+      link: "https://github.com/VedisVigourous/LearnJava",
     },
-    { 
-      id: "06", name: "Edu_Roadmap_AI.sys", tech: "GenAI / Arch (WIP)", 
+    {
+      id: "06",
+      name: "Edu_Roadmap_AI.sys",
+      tech: "GenAI / Arch (WIP)",
       desc: "Upcoming AI assistant specialized in generating dynamic, personalized education roadmaps.",
-      link: "#" 
+      link: "#",
     },
-    { 
-      id: "07", name: "DSA_Algorithm_Vault.lib", tech: "Java / C++/ DSA", 
+    {
+      id: "07",
+      name: "DSA_Algorithm_Vault.lib",
+      tech: "Java / C++/ DSA",
       desc: "Comprehensive archive of optimized algorithmic solutions for HackerRank, CodeChef, and competitive programming challenges.",
-      link: "https://github.com/VedisVigourous/Code-Solutions" 
-    }
+      link: "https://github.com/VedisVigourous/Code-Solutions",
+    },
   ];
 
   // 1. THE FOOLPROOF MOUSE TRACKER
   useEffect(() => {
     const handleGlobalMouseMove = (e) => {
       // The check goes INSIDE the function now!
-      if (loading) return; 
-      
-      const x = (e.clientX / window.innerWidth - 0.5) * 20; 
+      if (loading) return;
+
+      const x = (e.clientX / window.innerWidth - 0.5) * 20;
       const y = (e.clientY / window.innerHeight - 0.5) * 20;
       setBgOffset({ x, y });
     };
-    
-    window.addEventListener('mousemove', handleGlobalMouseMove);
-    return () => window.removeEventListener('mousemove', handleGlobalMouseMove);
+
+    window.addEventListener("mousemove", handleGlobalMouseMove);
+    return () => window.removeEventListener("mousemove", handleGlobalMouseMove);
   }, [loading]);
 
   // ---> NEW CLOCK & NETWORK EFFECT GOES HERE <---
@@ -495,11 +602,11 @@ ${dynamicHistory || '  > No terminal commands executed during this session.'}
     if (loading) return;
 
     const clockInterval = setInterval(() => setTime(new Date()), 1000);
-    
+
     const netInterval = setInterval(() => {
       setNetSpeed({
         ping: Math.floor(Math.random() * 15) + 10,
-        dl: Math.floor(Math.random() * 80) + 120 
+        dl: Math.floor(Math.random() * 80) + 120,
       });
     }, 3000);
 
@@ -516,21 +623,23 @@ ${dynamicHistory || '  > No terminal commands executed during this session.'}
   const [isProjectsWindowOpen, setIsProjectsWindowOpen] = useState(false);
   const [isResumeWindowOpen, setIsResumeWindowOpen] = useState(false);
 
-// --- RESUME COMPILATION STATES ---
-const [isPdfCompiled, setIsPdfCompiled] = useState(false);
-const [compileStatus, setCompileStatus] = useState("Status: Uncompiled raw source");
+  // --- RESUME COMPILATION STATES ---
+  const [isPdfCompiled, setIsPdfCompiled] = useState(false);
+  const [compileStatus, setCompileStatus] = useState(
+    "Status: Uncompiled raw source",
+  );
 
-const handleCompile = () => {
-  // Hacker build sequence simulation
-  setCompileStatus("Status: Compiling dependencies...");
-  setTimeout(() => {
-    setCompileStatus("Status: Linking objects & rendering fonts...");
+  const handleCompile = () => {
+    // Hacker build sequence simulation
+    setCompileStatus("Status: Compiling dependencies...");
     setTimeout(() => {
-      setCompileStatus("Status: Build successful. Outputting PDF...");
-      setIsPdfCompiled(true);
+      setCompileStatus("Status: Linking objects & rendering fonts...");
+      setTimeout(() => {
+        setCompileStatus("Status: Build successful. Outputting PDF...");
+        setIsPdfCompiled(true);
+      }, 800);
     }, 800);
-  }, 800);
-};
+  };
 
   // --- NEW HACKER CONFIRMATION DIALOG STATES ---
   const [pendingAction, setPendingAction] = useState(null);
@@ -572,90 +681,116 @@ const handleCompile = () => {
       setIsShuttingDown(true);
     }
   };
-  
+
   // FLIP CLOCK FORMATTING
   const rawHours = time.getHours();
-  const ampm = rawHours >= 12 ? 'PM' : 'AM';
-  
+  const ampm = rawHours >= 12 ? "PM" : "AM";
+
   // If 24H mode, use raw. If 12H mode, use modulo 12 (and convert 0 to 12).
-  const displayHours = is24Hour ? rawHours : (rawHours % 12 || 12);
-  
-  const hours = displayHours.toString().padStart(2, '0');
-  const mins = time.getMinutes().toString().padStart(2, '0');
-  const secs = time.getSeconds().toString().padStart(2, '0');
+  const displayHours = is24Hour ? rawHours : rawHours % 12 || 12;
+
+  const hours = displayHours.toString().padStart(2, "0");
+  const mins = time.getMinutes().toString().padStart(2, "0");
+  const secs = time.getSeconds().toString().padStart(2, "0");
 
   // --- TERMINAL COMMAND PARSER ---
   const handleTerminalSubmit = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       const rawCmd = terminalInput.trim();
       const lowerCmd = rawCmd.toLowerCase();
-      const cmdParts = lowerCmd.split(' ');
+      const cmdParts = lowerCmd.split(" ");
       const baseCmd = cmdParts[0];
-      
+
       let newHistory = [...terminalHistory];
 
       // Format input line based on mode
-      if (terminalMode === 'NORMAL') {
-        newHistory.push({ type: 'input', text: `root@vadanta:~$ ${rawCmd}` });
-      } else if (terminalMode === 'PING_EMAIL') {
-        newHistory.push({ type: 'input', text: `Email: ${rawCmd}` });
-      } else if (terminalMode === 'PING_MSG') {
-        newHistory.push({ type: 'output', text: `[SYSTEM] Encrypting payload from ${pingData.email}...` });
-        
+      if (terminalMode === "NORMAL") {
+        newHistory.push({ type: "input", text: `root@vadanta:~$ ${rawCmd}` });
+      } else if (terminalMode === "PING_EMAIL") {
+        newHistory.push({ type: "input", text: `Email: ${rawCmd}` });
+      } else if (terminalMode === "PING_MSG") {
+        newHistory.push({
+          type: "output",
+          text: `[SYSTEM] Encrypting payload from ${pingData.email}...`,
+        });
+
         // --- REAL EMAILJS TRANSMISSION ---
         emailjs.send(
-          'service_7259ksh',   
-          'template_6c5menn',  
-          { 
-            from_email: pingData.email, 
-            message: rawCmd 
-          }, 
-          'yWVDlVd10PKZ4Q9l6'      
+          "service_7259ksh",
+          "template_6c5menn",
+          {
+            from_email: pingData.email,
+            message: rawCmd,
+          },
+          "yWVDlVd10PKZ4Q9l6",
         );
-        
-        newHistory.push({ type: 'output', text: `[SYSTEM] Routing to server... [OK]` });
-        newHistory.push({ type: 'output', text: 'TRANSMISSION SUCCESSFUL. I will get back to you shortly.' });
-        
-        setTerminalMode('NORMAL');
-        setPingData({ email: '', message: '' });
+
+        newHistory.push({
+          type: "output",
+          text: `[SYSTEM] Routing to server... [OK]`,
+        });
+        newHistory.push({
+          type: "output",
+          text: "TRANSMISSION SUCCESSFUL. I will get back to you shortly.",
+        });
+
+        setTerminalMode("NORMAL");
+        setPingData({ email: "", message: "" });
       }
 
       // --- PING MULTI-STEP LOGIC ---
-      if (terminalMode === 'PING_EMAIL') {
+      if (terminalMode === "PING_EMAIL") {
         // Strict Regex to validate email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        
+
         if (emailRegex.test(rawCmd)) {
           setPingData({ ...pingData, email: rawCmd });
-          setTerminalMode('PING_MSG');
-          newHistory.push({ type: 'output', text: 'Enter your message (Press Enter to send):' });
+          setTerminalMode("PING_MSG");
+          newHistory.push({
+            type: "output",
+            text: "Enter your message (Press Enter to send):",
+          });
         } else {
           // The Rejection Loophole Closer
-          newHistory.push({ type: 'output', text: `[SYSTEM] CRITICAL: '${rawCmd}' is an invalid address format.` });
-          newHistory.push({ type: 'output', text: 'Please enter a valid contact email:' });
+          newHistory.push({
+            type: "output",
+            text: `[SYSTEM] CRITICAL: '${rawCmd}' is an invalid address format.`,
+          });
+          newHistory.push({
+            type: "output",
+            text: "Please enter a valid contact email:",
+          });
         }
-      } 
-      else if (terminalMode === 'PING_MSG') {
-        newHistory.push({ type: 'output', text: `[SYSTEM] Encrypting payload from ${pingData.email}...` });
-        
+      } else if (terminalMode === "PING_MSG") {
+        newHistory.push({
+          type: "output",
+          text: `[SYSTEM] Encrypting payload from ${pingData.email}...`,
+        });
+
         // TODO: EmailJS real transmission goes here (See Step 2 below)
-        
-        newHistory.push({ type: 'output', text: `[SYSTEM] Routing to server... [OK]` });
-        newHistory.push({ type: 'output', text: 'TRANSMISSION SUCCESSFUL. I will get back to you shortly.' });
-        
-        setTerminalMode('NORMAL');
-        setPingData({ email: '', message: '' });
+
+        newHistory.push({
+          type: "output",
+          text: `[SYSTEM] Routing to server... [OK]`,
+        });
+        newHistory.push({
+          type: "output",
+          text: "TRANSMISSION SUCCESSFUL. I will get back to you shortly.",
+        });
+
+        setTerminalMode("NORMAL");
+        setPingData({ email: "", message: "" });
       }
-      
+
       // --- NORMAL COMMANDS ---
       else {
-        if (lowerCmd === '') {
+        if (lowerCmd === "") {
           // Do nothing
-        } else if (lowerCmd === 'clear' || lowerCmd === 'cls') {
+        } else if (lowerCmd === "clear" || lowerCmd === "cls") {
           newHistory = [];
-        } else if (lowerCmd === 'help') {
-          newHistory.push({ 
-            type: 'output', 
+        } else if (lowerCmd === "help") {
+          newHistory.push({
+            type: "output",
             text: `AVAILABLE COMMANDS:
   • help           - Displays this system manual
   • clear / cls    - Clears the terminal screen
@@ -670,71 +805,121 @@ const handleCompile = () => {
   • traceroute     - Pings server node location
   • sudo su        - Attempts root escalation
   
-  * Do you like surprises? Try typing: racer` 
+  * Do you like surprises? Try typing: racer`,
           });
-        } else if (lowerCmd === 'ls') {
-          newHistory.push({ 
-            type: 'output', 
-            text: 'DIRECTORY LISTING:\n  • IDENTITY.exe\n  • PROJECTS.dir\n  • CERTS.dat\n  • RESUME.tex' 
+        } else if (lowerCmd === "ls") {
+          newHistory.push({
+            type: "output",
+            text: "DIRECTORY LISTING:\n  • IDENTITY.exe\n  • PROJECTS.dir\n  • CERTS.dat\n  • RESUME.tex",
           });
-        } else if (lowerCmd === 'whoami') {
+        } else if (lowerCmd === "whoami") {
           setIsIdentityWindowOpen(true);
-          newHistory.push({ type: 'output', text: 'Vadanta Kumar Chauhaan\n • System Architect & CSE Major' });
-          newHistory.push({ type: 'output', text: 'Executing IDENTITY.exe...' });
-        } else if (lowerCmd === 'date') {
-          newHistory.push({ type: 'output', text: new Date().toString() });
-        } else if (lowerCmd === 'open projects') {
+          newHistory.push({
+            type: "output",
+            text: "Vadanta Kumar Chauhaan\n • System Architect & CSE Major",
+          });
+          newHistory.push({
+            type: "output",
+            text: "Executing IDENTITY.exe...",
+          });
+        } else if (lowerCmd === "date") {
+          newHistory.push({ type: "output", text: new Date().toString() });
+        } else if (lowerCmd === "open projects") {
           setIsProjectsWindowOpen(true);
-          newHistory.push({ type: 'output', text: 'Executing PROJECTS.dir...' });
-        } else if (lowerCmd === 'mount github') {
+          newHistory.push({
+            type: "output",
+            text: "Executing PROJECTS.dir...",
+          });
+        } else if (lowerCmd === "mount github") {
           handleMountGitHub();
-          newHistory.push({ type: 'output', text: 'Initiating external GitHub uplink...' });
-        } else if (lowerCmd === 'ping') {
-          setTerminalMode('PING_EMAIL');
-          newHistory.push({ type: 'output', text: 'INITIALIZING SECURE COMMS LINK...' });
-          newHistory.push({ type: 'output', text: 'Please enter your contact email:' });
-        } else if (lowerCmd === 'cat workspace') {
-          newHistory.push({ 
-            type: 'output', 
+          newHistory.push({
+            type: "output",
+            text: "Initiating external GitHub uplink...",
+          });
+        } else if (lowerCmd === "ping") {
+          setTerminalMode("PING_EMAIL");
+          newHistory.push({
+            type: "output",
+            text: "INITIALIZING SECURE COMMS LINK...",
+          });
+          newHistory.push({
+            type: "output",
+            text: "Please enter your contact email:",
+          });
+        } else if (lowerCmd === "cat workspace") {
+          newHistory.push({
+            type: "output",
             text: `[ CURRENT_PIPELINE ]:
  > Architecting scalable Java backend systems
  > Executing advanced DSA & Problem Solving computations
  > Exploring Cloud-native deployments & API integrations
- > Open-Source Targets: GSoC / GSSoC` 
+ > Open-Source Targets: GSoC / GSSoC`,
           });
-        } else if (lowerCmd === 'racer') {
-          newHistory.push({ type: 'output', text: 'INITIATING ASCII HIGHWAY PROTOCOL...' });
+        } else if (lowerCmd === "racer") {
+          newHistory.push({
+            type: "output",
+            text: "INITIATING ASCII HIGHWAY PROTOCOL...",
+          });
           setIsRacerActive(true);
-        } else if (baseCmd === 'theme') {
+        } else if (baseCmd === "theme") {
           const hue = parseInt(cmdParts[1]);
           if (!isNaN(hue)) {
             setThemeHue(hue);
-            newHistory.push({ type: 'output', text: `[SYSTEM] Global Phosphor Shift applied: ${hue}°` });
+            newHistory.push({
+              type: "output",
+              text: `[SYSTEM] Global Phosphor Shift applied: ${hue}°`,
+            });
           } else {
-            newHistory.push({ type: 'output', text: `Usage: theme <number 0-360>` });
+            newHistory.push({
+              type: "output",
+              text: `Usage: theme <number 0-360>`,
+            });
           }
-        } else if (lowerCmd === 'traceroute') {
-          newHistory.push({ type: 'output', text: 'Tracing route to Node_Local...' });
-          newHistory.push({ type: 'output', text: 'Hop 1: 192.168.1.1 [OK]' });
-          newHistory.push({ type: 'output', text: 'Hop 2: UP-SERVER-R03 [OK]' });
-          newHistory.push({ type: 'output', text: 'Hop 3: Delhi_Sector_01_Gateway' });
-          newHistory.push({ type: 'output', text: 'Status: [ SECURE CONNECTION ESTABLISHED ]' });
-        } else if (lowerCmd === 'sudo su') {
-          newHistory.push({ type: 'output', text: 'CRITICAL ERR: ACCESS DENIED. Unauthorized attempt logged and reported to sysadmin.' });
+        } else if (lowerCmd === "traceroute") {
+          newHistory.push({
+            type: "output",
+            text: "Tracing route to Node_Local...",
+          });
+          newHistory.push({ type: "output", text: "Hop 1: 192.168.1.1 [OK]" });
+          newHistory.push({
+            type: "output",
+            text: "Hop 2: UP-SERVER-R03 [OK]",
+          });
+          newHistory.push({
+            type: "output",
+            text: "Hop 3: Delhi_Sector_01_Gateway",
+          });
+          newHistory.push({
+            type: "output",
+            text: "Status: [ SECURE CONNECTION ESTABLISHED ]",
+          });
+        } else if (lowerCmd === "sudo su") {
+          newHistory.push({
+            type: "output",
+            text: "CRITICAL ERR: ACCESS DENIED. Unauthorized attempt logged and reported to sysadmin.",
+          });
         } else {
-          newHistory.push({ type: 'output', text: `bash: ${rawCmd}: command not found` });
+          newHistory.push({
+            type: "output",
+            text: `bash: ${rawCmd}: command not found`,
+          });
         }
       }
 
       setTerminalHistory(newHistory);
-      setTerminalInput('');
+      setTerminalInput("");
     }
   };
 
   return (
-    <div 
+    <div
       className="bg-slate-950 min-h-screen text-[#22c55e] font-mono overflow-hidden selection:bg-[#22c55e] selection:text-black"
-      style={{ filter: `hue-rotate(${themeHue}deg)`, transition: 'filter 0.5s ease-in-out' }}
+      style={{
+        filter: isBlindingLightMode
+          ? "invert(1) hue-rotate(180deg)"
+          : `hue-rotate(${themeHue}deg)`,
+        transition: "filter 0.5s ease-in-out",
+      }}
     >
       {loading ? (
         <ChronosSplash onComplete={() => setLoading(false)} />
@@ -833,44 +1018,59 @@ const handleCompile = () => {
                       >
                         [ Breach_Protocol ]
                       </div>
-                      <div 
-                  onClick={() => { setActiveMenu(null); handleMountGitHub(); }}
-                  className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors font-bold border-t border-dashed border-[#22c55e]/30 mt-1 pt-2"
-                >
-                  &gt; Mount_GitHub_Drive
-                </div>
+                      <div
+                        onClick={() => {
+                          setActiveMenu(null);
+                          handleMountGitHub();
+                        }}
+                        className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors font-bold border-t border-dashed border-[#22c55e]/30 mt-1 pt-2"
+                      >
+                        &gt; Mount_GitHub_Drive
+                      </div>
                     </div>
                   )}
                 </div>
 
-          {/* File Menu */}
-          <div className="relative hidden sm:block">
-            <span 
-              onClick={() => setActiveMenu(activeMenu === 'file' ? null : 'file')}
-              className={`cursor-pointer transition-colors ${activeMenu === 'file' ? 'text-[#22c55e]' : 'text-slate-500 hover:text-[#22c55e]'}`}
-            >
-              File
-            </span>
-            {activeMenu === 'file' && (
-              <div className="absolute top-full left-0 mt-3 w-60 bg-black/95 border border-[#22c55e]/50 shadow-[0_0_15px_rgba(34,197,94,0.2)] py-2 flex flex-col gap-1 z-[9999] backdrop-blur-md text-xs font-mono">
-                <a href="/resume.pdf" download className="block px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors">
-                  &gt; Extract_Dossier
-                </a>
-                <div 
-                  onClick={() => { setActiveMenu(null); handleExportLogs(); }}
-                  className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors"
-                >
-                  &gt; Export_Session_Logs
+                {/* File Menu */}
+                <div className="relative hidden sm:block">
+                  <span
+                    onClick={() =>
+                      setActiveMenu(activeMenu === "file" ? null : "file")
+                    }
+                    className={`cursor-pointer transition-colors ${activeMenu === "file" ? "text-[#22c55e]" : "text-slate-500 hover:text-[#22c55e]"}`}
+                  >
+                    File
+                  </span>
+                  {activeMenu === "file" && (
+                    <div className="absolute top-full left-0 mt-3 w-60 bg-black/95 border border-[#22c55e]/50 shadow-[0_0_15px_rgba(34,197,94,0.2)] py-2 flex flex-col gap-1 z-[9999] backdrop-blur-md text-xs font-mono">
+                      <a
+                        href="/resume.pdf"
+                        download
+                        className="block px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors"
+                      >
+                        &gt; Extract_Dossier
+                      </a>
+                      <div
+                        onClick={() => {
+                          setActiveMenu(null);
+                          handleExportLogs();
+                        }}
+                        className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors"
+                      >
+                        &gt; Export_Session_Logs
+                      </div>
+                      <div
+                        onClick={() => {
+                          setActiveMenu(null);
+                          setIsThemeModalOpen(true);
+                        }}
+                        className="px-4 py-2 text-[#BF40BF] hover:bg-[#22c55e]/20 cursor-pointer transition-colors border-t border-dashed border-[#BF40BF]/30 mt-1 pt-2"
+                      >
+                        &gt; Customize_OS_Theme
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <div 
-                  onClick={() => { setActiveMenu(null); setIsThemeModalOpen(true); }}
-                  className="px-4 py-2 text-[#BF40BF] hover:bg-[#22c55e]/20 cursor-pointer transition-colors border-t border-dashed border-[#BF40BF]/30 mt-1 pt-2"
-                >
-                  &gt; Customize_OS_Theme
-                </div>
-              </div>
-            )}
-          </div>
 
                 {/* System Menu */}
                 <div className="relative hidden sm:block">
@@ -906,15 +1106,23 @@ const handleCompile = () => {
                     </div>
                   )}
                 </div>
-              </div>
 
-              {/* Click-away listener */}
-              {activeMenu && (
-                <div
-                  className="fixed inset-0 z-[80]"
-                  onClick={() => setActiveMenu(null)}
-                ></div>
-              )}
+                {/* THE JOKER TRAP: Fake Light Mode Toggle */}
+                <div className="relative hidden sm:flex items-center ml-2 border-l border-[#22c55e]/30 pl-6">
+                  <div
+                    className="flex items-center gap-2 cursor-pointer group"
+                    onClick={() => setIsJokerTrapActive(true)}
+                  >
+                    {/* The Fake Switch */}
+                    <div className="w-7 h-3.5 border rounded-full relative transition-colors duration-300 bg-slate-800 border-slate-600 group-hover:border-red-500">
+                      <div className="w-2.5 h-2.5 rounded-full absolute top-[1px] shadow-sm transition-all duration-300 bg-slate-400 left-[2px] group-hover:bg-red-500"></div>
+                    </div>
+                    <span className="text-[10px] uppercase tracking-widest transition-colors text-slate-500 group-hover:text-red-400">
+                      Light_Mode
+                    </span>
+                  </div>
+                </div>
+              </div>
 
               {/* CENTER: The Surveillance Camera */}
               <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
@@ -1260,54 +1468,82 @@ const handleCompile = () => {
                 </div>
               </div>
 
-        {/* --- RIGHT SIDE ICONS (New Utilities) --- */}
-        <div className="absolute top-4 right-4 mt-4 flex flex-col space-y-6 w-24 items-center z-40">
-          
-          {/* Mail.conn Desktop Icon */}
-          <div 
-            className="flex flex-col items-center cursor-pointer group w-24"
-            onClick={() => {
-              if (isCommsWindowOpen) {
-                setIsCommsWindowOpen(false);
-                setGuiPingStatus('IDLE'); 
-              } else {
-                setIsCommsWindowOpen(true);
-              }
-            }}
-            >
-            {/* The 3D Icon Wrapper */}
-            <div className="relative w-12 h-12 mb-3">
-              {/* Layer 1 (Back) - Pans Down-Right (Reversed) */}
-              <div className="absolute inset-0 rounded border border-[#22c55e]/20 bg-transparent flex items-center justify-center text-[#22c55e]/20 transition-all duration-500 ease-out group-hover:translate-x-2 group-hover:translate-y-2 group-hover:scale-105 z-0">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                </svg>
+              {/* --- RIGHT SIDE ICONS (New Utilities) --- */}
+              <div className="absolute top-4 right-4 mt-4 flex flex-col space-y-6 w-24 items-center z-40">
+                {/* Mail.conn Desktop Icon */}
+                <div
+                  className="flex flex-col items-center cursor-pointer group w-24"
+                  onClick={() => {
+                    if (isCommsWindowOpen) {
+                      setIsCommsWindowOpen(false);
+                      setGuiPingStatus("IDLE");
+                    } else {
+                      setIsCommsWindowOpen(true);
+                    }
+                  }}
+                >
+                  {/* The 3D Icon Wrapper */}
+                  <div className="relative w-12 h-12 mb-3">
+                    {/* Layer 1 (Back) - Pans Down-Right (Reversed) */}
+                    <div className="absolute inset-0 rounded border border-[#22c55e]/20 bg-transparent flex items-center justify-center text-[#22c55e]/20 transition-all duration-500 ease-out group-hover:translate-x-2 group-hover:translate-y-2 group-hover:scale-105 z-0">
+                      <svg
+                        className="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                        ></path>
+                      </svg>
+                    </div>
+
+                    {/* Layer 2 (Middle) - Pans Slightly Down-Right (Reversed) */}
+                    <div className="absolute inset-0 rounded border border-[#22c55e]/40 bg-transparent flex items-center justify-center text-[#22c55e]/40 transition-all duration-500 ease-out group-hover:translate-x-1 group-hover:translate-y-1 group-hover:scale-110 z-10">
+                      <svg
+                        className="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                        ></path>
+                      </svg>
+                    </div>
+
+                    {/* Layer 3 (Front) - Pans Up-Left, Glows, and SWEEPS (Reversed) */}
+                    <div className="absolute inset-0 rounded border border-[#22c55e]/80 bg-[#050505] flex items-center justify-center text-[#22c55e] transition-all duration-500 ease-out group-hover:-translate-x-1.5 group-hover:-translate-y-1.5 group-hover:scale-[1.15] group-hover:border-[#22c55e] group-hover:shadow-[0_0_20px_rgba(34,197,94,0.4)] group-active:scale-95 z-20 overflow-hidden">
+                      <svg
+                        className="w-6 h-6 group-hover:text-white transition-colors duration-500 relative z-30"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                        ></path>
+                      </svg>
+                      {/* The Neon Light Sweep */}
+                      <div className="absolute top-0 -left-[150%] w-full h-full bg-gradient-to-r from-transparent via-[#22c55e]/60 to-transparent skew-x-[-45deg] transition-all duration-700 ease-in-out group-hover:left-[150%] z-20"></div>
+                    </div>
+                  </div>
+
+                  {/* The Label */}
+                  <span className="text-xs bg-black/80 px-2 py-0.5 rounded border border-transparent group-hover:border-[#22c55e]/50 text-[#22c55e]/70 group-hover:text-white group-hover:drop-shadow-[0_0_8px_rgba(34,197,94,0.8)] text-center transition-all duration-500 tracking-wider group-hover:-translate-y-1">
+                    Mail.conn
+                  </span>
+                </div>
               </div>
-
-              {/* Layer 2 (Middle) - Pans Slightly Down-Right (Reversed) */}
-              <div className="absolute inset-0 rounded border border-[#22c55e]/40 bg-transparent flex items-center justify-center text-[#22c55e]/40 transition-all duration-500 ease-out group-hover:translate-x-1 group-hover:translate-y-1 group-hover:scale-110 z-10">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                </svg>
-              </div>
-
-              {/* Layer 3 (Front) - Pans Up-Left, Glows, and SWEEPS (Reversed) */}
-              <div className="absolute inset-0 rounded border border-[#22c55e]/80 bg-[#050505] flex items-center justify-center text-[#22c55e] transition-all duration-500 ease-out group-hover:-translate-x-1.5 group-hover:-translate-y-1.5 group-hover:scale-[1.15] group-hover:border-[#22c55e] group-hover:shadow-[0_0_20px_rgba(34,197,94,0.4)] group-active:scale-95 z-20 overflow-hidden">
-                <svg className="w-6 h-6 group-hover:text-white transition-colors duration-500 relative z-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                </svg>
-                {/* The Neon Light Sweep */}
-                <div className="absolute top-0 -left-[150%] w-full h-full bg-gradient-to-r from-transparent via-[#22c55e]/60 to-transparent skew-x-[-45deg] transition-all duration-700 ease-in-out group-hover:left-[150%] z-20"></div>
-              </div>
-            </div>
-
-            {/* The Label */}
-            <span className="text-xs bg-black/80 px-2 py-0.5 rounded border border-transparent group-hover:border-[#22c55e]/50 text-[#22c55e]/70 group-hover:text-white group-hover:drop-shadow-[0_0_8px_rgba(34,197,94,0.8)] text-center transition-all duration-500 tracking-wider group-hover:-translate-y-1">
-              Mail.conn
-            </span>
-          </div>
-
-        </div>
 
               {/* IDENTITY PROFILE WINDOW (Upgraded with Drag Physics) */}
               {isIdentityWindowOpen && (
@@ -1773,14 +2009,14 @@ const handleCompile = () => {
                       </div>
                     ) : (
                       <div className="flex-1 min-h-0 overflow-hidden bg-black/90 border border-[#22c55e] shadow-[0_0_60px_rgba(34,197,94,0.3)] p-2 animate-[fadeIn_0.3s_ease-out] flex items-center justify-center">
-                {/* Pure Image Renderer - Flexbox Lock Applied */}
-                <img
-                  src={activeCert.path}
-                  alt={activeCert.name}
-                  className="w-full h-full max-w-full max-h-full object-contain opacity-90 hover:opacity-100 transition-opacity"
-                  style={{ filter: `hue-rotate(-${themeHue}deg)` }} 
-                />
-              </div>
+                        {/* Pure Image Renderer - Flexbox Lock Applied */}
+                        <img
+                          src={activeCert.path}
+                          alt={activeCert.name}
+                          className="w-full h-full max-w-full max-h-full object-contain opacity-90 hover:opacity-100 transition-opacity"
+                          style={{ filter: `hue-rotate(-${themeHue}deg)` }}
+                        />
+                      </div>
                     )}
                   </div>
                 </div>
@@ -2088,10 +2324,14 @@ const handleCompile = () => {
 
                   <div className="flex items-center gap-2 text-[#22c55e] shrink-0 h-5">
                     <span className="text-white mr-2">
-    {terminalMode === 'NORMAL' ? 'root@vadanta:~$' : 
-     terminalMode === 'PING_EMAIL' ? 'Email:' : 'Message:'}
-  </span>
+                      {terminalMode === "NORMAL"
+                        ? "root@vadanta:~$"
+                        : terminalMode === "PING_EMAIL"
+                          ? "Email:"
+                          : "Message:"}
+                    </span>
                     <input
+                      ref={terminalInputRef}
                       type="text"
                       value={terminalInput}
                       onChange={(e) => setTerminalInput(e.target.value)}
@@ -2193,6 +2433,111 @@ const handleCompile = () => {
         </div>
       )}
 
+      {/* ========================================== */}
+      {/* THE CINEMATIC JOKER TRAP */}
+      {/* ========================================== */}
+      {isJokerTrapActive && (
+        <div className="fixed inset-0 z-[999999] flex flex-col items-center justify-center overflow-hidden animate-[steppedBlackout_2.5s_steps(6,end)_forwards]">
+          {/* Injecting the Creepy Joker Font */}
+          <link
+            href="https://fonts.googleapis.com/css2?family=Creepster&display=swap"
+            rel="stylesheet"
+          />
+
+          {/* The Prompt - Delays for 2.5 seconds while screen fades to black */}
+          <div className="relative z-10 flex flex-col items-center text-center opacity-0 animate-[revealJoker_2s_ease-in-out_2.5s_forwards]">
+            <h1
+              className="text-6xl sm:text-8xl text-red-600 tracking-widest drop-shadow-[0_0_15px_rgba(220,38,38,0.8)]"
+              style={{ fontFamily: "'Creepster', cursive" }}
+            >
+              ARE YOU SERIOUS?
+            </h1>
+
+            <p className="mt-6 text-red-500/70 font-mono tracking-[0.3em] text-sm px-4 py-1">
+              [ FATAL: LIGHT_MODE_REQUESTED ]
+            </p>
+
+            <div className="mt-16 flex flex-col sm:flex-row gap-6 w-full max-w-lg px-8 font-mono">
+              {/* Option 1: The Dev (Safe Exit) */}
+              <button
+                onClick={() => setIsJokerTrapActive(false)}
+                className="flex-1 bg-black text-[#22c55e] border border-[#22c55e] py-4 text-xs font-bold tracking-widest hover:bg-[#22c55e] hover:text-black transition-all uppercase shadow-[0_0_15px_rgba(34,197,94,0.2)] hover:shadow-[0_0_30px_rgba(34,197,94,0.6)] cursor-pointer"
+              >
+                I'm a Dev <br />
+                <span className="text-[9px] opacity-70">(Keep it Dark)</span>
+              </button>
+
+              {/* Option 2: The Troll Dodge Button (Compositor-Lock Fix) */}
+              <div className="flex-1 relative h-16 sm:h-auto z-20">
+                {/* The Moving Wrapper */}
+                <div
+                  className="absolute w-full h-full"
+                  onMouseEnter={(e) => {
+                    const btn = e.currentTarget;
+                    const maxX = window.innerWidth - 200;
+                    const maxY = window.innerHeight - 100;
+                    const x = Math.random() * maxX;
+                    const y = Math.random() * maxY;
+
+                    // Forces the button to break out of the parent's animation layer!
+                    btn.style.position = "fixed";
+                    btn.style.left = `${x}px`;
+                    btn.style.top = `${y}px`;
+                    btn.style.width = "200px";
+                    btn.style.height = "64px";
+                  }}
+                >
+                  {/* THE UPGRADED SENSOR: -inset-24 makes a massive invisible shield */}
+                  <div className="absolute -inset-24 z-10 cursor-none"></div>
+
+                  {/* The Actual Button */}
+                  <button
+                    onClick={() => {
+                      setIsJokerTrapActive(false);
+                      setIsTerminalFocused(true);
+
+                      setTimeout(() => terminalInputRef.current?.focus(), 100);
+
+                      // Raw JSX Terminal Injection!
+                      setTerminalHistory((prev) => [
+                        ...prev,
+                        {
+                          type: "output",
+                          text: (
+                            <span className="text-red-500 font-bold tracking-widest uppercase shadow-[0_0_10px_rgba(239,68,68,0.3)]">
+                              Woahh managed?? to click it! still nooo light
+                              theme for you! My Site My Rules! hahahah
+                            </span>
+                          ),
+                        },
+                      ]);
+                    }}
+                    className="relative z-20 w-full h-full bg-black text-slate-300 border border-slate-500 py-4 text-xs font-bold tracking-widest hover:text-red-500 hover:border-red-500 uppercase cursor-pointer shadow-[0_0_15px_rgba(0,0,0,0.8)]"
+                  >
+                    I'm Non-Tech <br />
+                    <span className="text-[9px] opacity-70">
+                      (Force Light Mode)
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Cinematic CSS Keyframes */}
+          <style>{`
+            @keyframes steppedBlackout {
+              0% { background-color: rgba(0,0,0,0); backdrop-filter: blur(0px); }
+              100% { background-color: rgba(0,0,0,1); backdrop-filter: blur(12px); }
+            }
+            @keyframes revealJoker {
+              0% { opacity: 0; }
+              100% { opacity: 1; }
+            }
+          `}</style>
+        </div>
+      )}
+
       {/* ========================================= */}
       {/* --- GLOBAL VISUAL OVERLAYS & MODALS --- */}
       {/* ========================================= */}
@@ -2236,31 +2581,28 @@ const handleCompile = () => {
       {/* CORE IDENTITY DOSSIER MODAL */}
       {isCoreIdentityOpen && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-[fadeIn_0.3s_ease-out]">
-          
-          <div 
-          className="animate-cinematic relative w-full max-w-xl rounded-3xl bg-gradient-to-br from-white/10 via-white/5 to-transparent border border-white/20 shadow-[0_0_50px_rgba(255,255,255,0.1)] p-8 overflow-hidden backdrop-blur-xl group hover:shadow-[0_0_80px_rgba(34,197,94,0.3)] transition-shadow duration-700"
-        >
-          {/* Ambient Background Glows */}
-          <div className="absolute -top-20 -right-20 w-64 h-64 bg-purple-500/30 rounded-full blur-3xl group-hover:bg-green-500/20 transition-colors duration-700"></div>
+          <div className="animate-cinematic relative w-full max-w-xl rounded-3xl bg-gradient-to-br from-white/10 via-white/5 to-transparent border border-white/20 shadow-[0_0_50px_rgba(255,255,255,0.1)] p-8 overflow-hidden backdrop-blur-xl group hover:shadow-[0_0_80px_rgba(34,197,94,0.3)] transition-shadow duration-700">
+            {/* Ambient Background Glows */}
+            <div className="absolute -top-20 -right-20 w-64 h-64 bg-purple-500/30 rounded-full blur-3xl group-hover:bg-green-500/20 transition-colors duration-700"></div>
             <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-blue-500/30 rounded-full blur-3xl group-hover:bg-[#22c55e]/30 transition-colors duration-700"></div>
 
             <div className="relative z-10 flex flex-col items-center text-center">
-              
               {/* Floating Avatar Ring with Real Profile Photo */}
-                    <div className="w-32 h-32 rounded-full p-1 bg-gradient-to-tr from-blue-500 via-purple-500 to-[#22c55e] animate-[spin_6s_linear_infinite] mb-6 shadow-2xl relative">
-                      <div className="w-full h-full bg-[#050505] rounded-full overflow-hidden flex items-center justify-center animate-[spin_6s_linear_infinite_reverse]">
-                        <img 
-                          src="/profile.png" 
-                          alt="Vadanta Kumar Chauhaan" 
-                          className="w-full h-full object-cover rounded-full"
-                          style={{ filter: `hue-rotate(-${themeHue}deg)` }} 
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = "https://ui-avatars.com/api/?name=Vadanta+Chauhaan&background=0D8ABC&color=fff";
-                          }}
-                        />
-                      </div>
-                    </div>
+              <div className="w-32 h-32 rounded-full p-1 bg-gradient-to-tr from-blue-500 via-purple-500 to-[#22c55e] animate-[spin_6s_linear_infinite] mb-6 shadow-2xl relative">
+                <div className="w-full h-full bg-[#050505] rounded-full overflow-hidden flex items-center justify-center animate-[spin_6s_linear_infinite_reverse]">
+                  <img
+                    src="/profile.png"
+                    alt="Vadanta Kumar Chauhaan"
+                    className="w-full h-full object-cover rounded-full"
+                    style={{ filter: `hue-rotate(-${themeHue}deg)` }}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src =
+                        "https://ui-avatars.com/api/?name=Vadanta+Chauhaan&background=0D8ABC&color=fff";
+                    }}
+                  />
+                </div>
+              </div>
 
               {/* Name & Title */}
               <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-gray-300 mb-2 tracking-wide">
@@ -2273,32 +2615,46 @@ const handleCompile = () => {
               {/* Stats Grid */}
               <div className="w-full grid grid-cols-3 gap-4 mb-8">
                 <div className="flex flex-col p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:-translate-y-1 transition-all">
-                  <span className="text-white/50 text-[9px] uppercase tracking-widest mb-1">Focus</span>
-                  <span className="text-white font-semibold text-sm">Frontend & AI</span>
+                  <span className="text-white/50 text-[9px] uppercase tracking-widest mb-1">
+                    Focus
+                  </span>
+                  <span className="text-white font-semibold text-sm">
+                    Frontend & AI
+                  </span>
                 </div>
                 <div className="flex flex-col p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:-translate-y-1 transition-all">
-                  <span className="text-white/50 text-[9px] uppercase tracking-widest mb-1">Current Op</span>
-                  <span className="text-white font-semibold text-sm">SIH 2026</span>
+                  <span className="text-white/50 text-[9px] uppercase tracking-widest mb-1">
+                    Current Op
+                  </span>
+                  <span className="text-white font-semibold text-sm">
+                    SIH 2026
+                  </span>
                 </div>
                 <div className="flex flex-col p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:-translate-y-1 transition-all">
-                  <span className="text-white/50 text-[9px] uppercase tracking-widest mb-1">Next Target</span>
-                  <span className="text-white font-semibold text-sm">GSoC 2027</span>
+                  <span className="text-white/50 text-[9px] uppercase tracking-widest mb-1">
+                    Next Target
+                  </span>
+                  <span className="text-white font-semibold text-sm">
+                    GSoC 2027
+                  </span>
                 </div>
               </div>
 
               {/* Bio */}
               <p className="text-white/70 text-sm leading-relaxed max-w-md mx-auto mb-8 font-light">
-                I don't just write code; I engineer digital experiences. Blending high-performance web architecture with immersive user interfaces. If it exists in the DOM, I can make it extraordinary.
+                I don't just write code; I engineer digital experiences.
+                Blending high-performance web architecture with immersive user
+                interfaces. If it exists in the DOM, I can make it
+                extraordinary.
               </p>
 
               {/* Action Button */}
-              <button 
+              <button
                 onClick={() => setIsCoreIdentityOpen(false)}
                 className="px-10 py-3 rounded-full bg-gradient-to-r from-[#22c55e] to-emerald-400 text-black font-extrabold tracking-widest hover:scale-105 hover:shadow-[0_0_30px_rgba(34,197,94,0.5)] transition-all active:scale-95"
               >
                 DISMISS
               </button>
-
             </div>
           </div>
         </div>
@@ -2308,8 +2664,12 @@ const handleCompile = () => {
       {isTracing && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-red-900/20 backdrop-blur-sm pointer-events-none transition-all duration-500">
           <div className="animate-cinematic w-[500px] bg-black border-2 border-red-500 shadow-[0_0_50px_rgba(239,68,68,0.4)] p-6 font-mono pointer-events-auto">
-            <div className="text-red-500 font-bold mb-4 animate-pulse">SYSTEM WARNING // UNAUTHORIZED TRACE</div>
-            <pre className="text-red-400 whitespace-pre-wrap text-sm leading-relaxed">{traceText}</pre>
+            <div className="text-red-500 font-bold mb-4 animate-pulse">
+              SYSTEM WARNING // UNAUTHORIZED TRACE
+            </div>
+            <pre className="text-red-400 whitespace-pre-wrap text-sm leading-relaxed">
+              {traceText}
+            </pre>
           </div>
         </div>
       )}
@@ -2324,7 +2684,7 @@ const handleCompile = () => {
               style={{
                 left: `${leftPos}%`,
                 animationDelay: `${i * 0.25}s`,
-                animationDuration: `${2.5 + (i % 2) * 0.5}s`
+                animationDuration: `${2.5 + (i % 2) * 0.5}s`,
               }}
             >
               😂
@@ -2337,23 +2697,29 @@ const handleCompile = () => {
       {isThemeModalOpen && (
         <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-[fadeIn_0.2s_ease-out]">
           <div className="w-full max-w-sm bg-[#050505] border-2 border-[#22c55e] shadow-[0_0_30px_rgba(34,197,94,0.15)] relative p-6 font-mono text-[#22c55e]">
-            
             {/* Header */}
             <div className="flex justify-between items-center mb-6 border-b border-[#22c55e]/30 pb-2">
-              <span className="font-bold tracking-widest text-sm text-white">APPEARANCE_CONFIG</span>
-              <button onClick={() => setIsThemeModalOpen(false)} className="hover:text-red-500 font-bold text-xs transition-colors cursor-pointer">
+              <span className="font-bold tracking-widest text-sm text-white">
+                APPEARANCE_CONFIG
+              </span>
+              <button
+                onClick={() => setIsThemeModalOpen(false)}
+                className="hover:text-red-500 font-bold text-xs transition-colors cursor-pointer"
+              >
                 [CLOSE]
               </button>
             </div>
 
             {/* Live Slider */}
             <div className="mb-6 relative z-10">
-              <label className="text-xs mb-3 block text-white/70 tracking-widest uppercase">Global Phosphor Shift</label>
-              <input 
-                type="range" 
-                min="0" 
-                max="360" 
-                value={themeHue} 
+              <label className="text-xs mb-3 block text-white/70 tracking-widest uppercase">
+                Global Phosphor Shift
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="360"
+                value={themeHue}
                 onChange={(e) => setThemeHue(e.target.value)}
                 className="w-full h-2 bg-[#22c55e]/50 rounded-lg appearance-none cursor-pointer outline-none hover:bg-[#22c55e] transition-all relative z-20"
               />
@@ -2366,23 +2732,36 @@ const handleCompile = () => {
 
             {/* Presets */}
             <div className="space-y-3 relative z-10">
-              <div className="text-[10px] text-white/50 tracking-widest uppercase mb-2">Presets</div>
+              <div className="text-[10px] text-white/50 tracking-widest uppercase mb-2">
+                Presets
+              </div>
               <div className="grid grid-cols-2 gap-3 text-xs">
-                <button onClick={() => setThemeHue(0)} className="p-2 border border-[#22c55e]/50 hover:bg-[#22c55e]/20 transition-all cursor-pointer">
+                <button
+                  onClick={() => setThemeHue(0)}
+                  className="p-2 border border-[#22c55e]/50 hover:bg-[#22c55e]/20 transition-all cursor-pointer"
+                >
                   Cyber Green
                 </button>
-                <button onClick={() => setThemeHue(185)} className="p-2 border border-[#22c55e]/50 hover:bg-[#22c55e]/20 transition-all cursor-pointer">
+                <button
+                  onClick={() => setThemeHue(185)}
+                  className="p-2 border border-[#22c55e]/50 hover:bg-[#22c55e]/20 transition-all cursor-pointer"
+                >
                   Neon Cyan
                 </button>
-                <button onClick={() => setThemeHue(280)} className="p-2 border border-[#22c55e]/50 hover:bg-[#22c55e]/20 transition-all cursor-pointer">
+                <button
+                  onClick={() => setThemeHue(280)}
+                  className="p-2 border border-[#22c55e]/50 hover:bg-[#22c55e]/20 transition-all cursor-pointer"
+                >
                   Synthwave
                 </button>
-                <button onClick={() => setThemeHue(320)} className="p-2 border border-[#22c55e]/50 hover:bg-[#22c55e]/20 transition-all cursor-pointer">
+                <button
+                  onClick={() => setThemeHue(320)}
+                  className="p-2 border border-[#22c55e]/50 hover:bg-[#22c55e]/20 transition-all cursor-pointer"
+                >
                   Retro Amber
                 </button>
               </div>
             </div>
-
           </div>
         </div>
       )}
@@ -2391,7 +2770,6 @@ const handleCompile = () => {
       {isGitHubMounted && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-[fadeIn_0.3s_ease-out]">
           <div className="relative w-full max-w-lg bg-gradient-to-br from-[#050505] to-[#0a0a0a] border-2 border-blue-500/40 shadow-[0_0_50px_rgba(59,130,246,0.2)] p-1 overflow-hidden">
-            
             {/* Animated scanning line */}
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-500/10 to-transparent w-full h-full animate-[scan_3s_linear_infinite] pointer-events-none"></div>
 
@@ -2400,9 +2778,17 @@ const handleCompile = () => {
               <div className="flex justify-between items-center mb-6 border-b border-blue-500/30 pb-3">
                 <div className="flex items-center gap-3">
                   <span className="animate-spin text-lg">⚙</span>
-                  <span className="font-bold tracking-widest text-white text-sm">EXTERNAL_DRIVE // GITHUB_API</span>
+                  <span className="font-bold tracking-widest text-white text-sm">
+                    EXTERNAL_DRIVE // GITHUB_API
+                  </span>
                 </div>
-                <button onClick={() => { setIsGitHubMounted(false); setGithubData(null); }} className="hover:text-red-500 font-bold text-xs tracking-wider transition-colors cursor-pointer">
+                <button
+                  onClick={() => {
+                    setIsGitHubMounted(false);
+                    setGithubData(null);
+                  }}
+                  className="hover:text-red-500 font-bold text-xs tracking-wider transition-colors cursor-pointer"
+                >
                   [UNMOUNT]
                 </button>
               </div>
@@ -2411,30 +2797,43 @@ const handleCompile = () => {
               {!githubData ? (
                 <div className="py-12 flex flex-col items-center justify-center space-y-4">
                   <div className="w-12 h-12 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
-                  <div className="text-xs tracking-widest animate-pulse">&gt; {mountText}</div>
+                  <div className="text-xs tracking-widest animate-pulse">
+                    &gt; {mountText}
+                  </div>
                 </div>
               ) : (
                 <div className="animate-[cinematicUnfold_0.5s_forwards]">
-                  
                   {/* Profile Layout */}
                   <div className="flex gap-6 mb-6">
                     <div className="w-24 h-24 border border-blue-500/50 p-1 flex-shrink-0 relative group">
                       <div className="absolute inset-0 bg-blue-500/20 animate-pulse pointer-events-none"></div>
-                      <img src={githubData.avatar_url} alt="GitHub Avatar" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" />
+                      <img
+                        src={githubData.avatar_url}
+                        alt="GitHub Avatar"
+                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                      />
                     </div>
-                    
+
                     <div className="flex-1 text-sm">
-                      <div className="text-white font-bold text-xl mb-1 tracking-wider">{githubData.name || githubData.login}</div>
-                      <div className="text-blue-500/80 mb-3 text-xs tracking-widest">@{githubData.login}</div>
-                      
+                      <div className="text-white font-bold text-xl mb-1 tracking-wider">
+                        {githubData.name || githubData.login}
+                      </div>
+                      <div className="text-blue-500/80 mb-3 text-xs tracking-widest">
+                        @{githubData.login}
+                      </div>
+
                       <div className="grid grid-cols-2 gap-4 text-xs">
                         <div className="bg-blue-900/20 border border-blue-500/20 p-2 rounded">
                           <div className="text-white/40 mb-1">REPOSITORIES</div>
-                          <div className="text-lg text-white font-bold">{githubData.public_repos}</div>
+                          <div className="text-lg text-white font-bold">
+                            {githubData.public_repos}
+                          </div>
                         </div>
                         <div className="bg-blue-900/20 border border-blue-500/20 p-2 rounded">
                           <div className="text-white/40 mb-1">FOLLOWERS</div>
-                          <div className="text-lg text-white font-bold">{githubData.followers}</div>
+                          <div className="text-lg text-white font-bold">
+                            {githubData.followers}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -2442,14 +2841,19 @@ const handleCompile = () => {
 
                   {/* Bio Block */}
                   <div className="mb-6 bg-blue-900/10 border border-blue-500/20 p-3 rounded text-xs">
-                    <span className="text-white/40 tracking-widest uppercase mb-1 block text-[9px]">Dossier / Bio</span>
-                    <span className="text-blue-300/80 leading-relaxed">{githubData.bio || "System engineer actively deploying code."}</span>
+                    <span className="text-white/40 tracking-widest uppercase mb-1 block text-[9px]">
+                      Dossier / Bio
+                    </span>
+                    <span className="text-blue-300/80 leading-relaxed">
+                      {githubData.bio ||
+                        "System engineer actively deploying code."}
+                    </span>
                   </div>
 
                   {/* Action Link */}
-                  <a 
-                    href={githubData.html_url} 
-                    target="_blank" 
+                  <a
+                    href={githubData.html_url}
+                    target="_blank"
                     rel="noreferrer"
                     className="block w-full text-center py-3 border border-blue-500/50 hover:bg-blue-500/20 transition-all duration-300 text-xs tracking-widest text-white hover:shadow-[0_0_20px_rgba(59,130,246,0.4)] cursor-pointer"
                   >
@@ -2467,7 +2871,9 @@ const handleCompile = () => {
         <Rnd
           size={{ width: commsConfig.width, height: commsConfig.height }}
           position={{ x: commsConfig.x, y: commsConfig.y }}
-          onDragStop={(e, d) => setCommsConfig((prev) => ({ ...prev, x: d.x, y: d.y }))}
+          onDragStop={(e, d) =>
+            setCommsConfig((prev) => ({ ...prev, x: d.x, y: d.y }))
+          }
           onResizeStop={(e, direction, ref, delta, position) => {
             setCommsConfig({
               width: parseInt(ref.style.width, 10),
@@ -2483,18 +2889,17 @@ const handleCompile = () => {
           className="z-[999] absolute"
         >
           <div className="w-full h-full bg-[#050505]/95 border border-[#22c55e]/50 shadow-[0_0_30px_rgba(34,197,94,0.15)] flex flex-col font-mono backdrop-blur-md overflow-hidden">
-            
             {/* Window Header (The Drag Handle) */}
             <div className="comms-drag-handle h-8 bg-[#22c55e]/10 border-b border-[#22c55e]/30 flex items-center justify-between px-3 cursor-move hover:bg-[#22c55e]/20 transition-colors shrink-0">
               <span className="font-bold text-xs tracking-widest text-[#22c55e]">
                 Mail.conn // SECURE_UPLINK
               </span>
-              <button 
-                onClick={(e) => { 
-                  e.stopPropagation(); 
-                  setIsCommsWindowOpen(false); 
-                  setGuiPingStatus('IDLE'); 
-                }} 
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsCommsWindowOpen(false);
+                  setGuiPingStatus("IDLE");
+                }}
                 className="text-[#22c55e] hover:text-[#ff3333] hover:bg-[#ff3333]/10 px-2 py-0.5 rounded transition-all duration-200 text-xs font-bold cursor-pointer"
               >
                 [X]
@@ -2503,13 +2908,17 @@ const handleCompile = () => {
 
             {/* Window Body - Flex layout for stretching */}
             <div className="flex-1 p-5 text-[#22c55e] flex flex-col overflow-y-auto custom-scrollbar">
-              {guiPingStatus === 'SUCCESS' ? (
+              {guiPingStatus === "SUCCESS" ? (
                 <div className="flex-1 flex flex-col items-center justify-center space-y-4">
                   <div className="text-4xl animate-pulse">✓</div>
-                  <div className="font-bold tracking-widest text-white text-center">TRANSMISSION SUCCESSFUL</div>
-                  <div className="text-xs text-[#22c55e]/70 text-center px-4">Payload securely routed to vadanta592007@hotmail.com</div>
-                  <button 
-                    onClick={() => setGuiPingStatus('IDLE')}
+                  <div className="font-bold tracking-widest text-white text-center">
+                    TRANSMISSION SUCCESSFUL
+                  </div>
+                  <div className="text-xs text-[#22c55e]/70 text-center px-4">
+                    Payload securely routed to vadanta592007@hotmail.com
+                  </div>
+                  <button
+                    onClick={() => setGuiPingStatus("IDLE")}
                     className="mt-4 border border-[#22c55e] px-4 py-2 hover:bg-[#22c55e] hover:text-black transition-colors text-xs font-bold shrink-0"
                   >
                     INITIALIZE_NEW_PING
@@ -2517,80 +2926,100 @@ const handleCompile = () => {
                 </div>
               ) : (
                 <div className="flex flex-col h-full space-y-4">
-                  
                   {/* Email Input */}
                   <div className="shrink-0">
-                    <label className="block text-[10px] uppercase tracking-widest mb-1 text-white/70">Return Address (Email)</label>
-                    <input 
+                    <label className="block text-[10px] uppercase tracking-widest mb-1 text-white/70">
+                      Return Address (Email)
+                    </label>
+                    <input
                       type="email"
                       value={guiPingData.email}
                       onChange={(e) => {
-                        setGuiPingData({ ...guiPingData, email: e.target.value });
+                        setGuiPingData({
+                          ...guiPingData,
+                          email: e.target.value,
+                        });
                         // Clear any error state when typing resumes
-                        if(guiPingStatus === 'INVALID_EMAIL' || guiPingStatus === 'API_ERROR') setGuiPingStatus('IDLE');
+                        if (
+                          guiPingStatus === "INVALID_EMAIL" ||
+                          guiPingStatus === "API_ERROR"
+                        )
+                          setGuiPingStatus("IDLE");
                       }}
                       className="w-full bg-[#0a0a0a] border border-[#22c55e]/50 text-white p-2 outline-none focus:border-[#22c55e] transition-colors text-sm"
                       placeholder="recruiter@company.com"
                     />
                   </div>
-                  
+
                   {/* Message Input */}
                   <div className="flex-1 flex flex-col min-h-[100px]">
-                    <label className="block text-[10px] uppercase tracking-widest mb-1 text-white/70">Encrypted Payload (Message)</label>
-                    <textarea 
+                    <label className="block text-[10px] uppercase tracking-widest mb-1 text-white/70">
+                      Encrypted Payload (Message)
+                    </label>
+                    <textarea
                       value={guiPingData.message}
-                      onChange={(e) => setGuiPingData({ ...guiPingData, message: e.target.value })}
+                      onChange={(e) =>
+                        setGuiPingData({
+                          ...guiPingData,
+                          message: e.target.value,
+                        })
+                      }
                       className="w-full flex-1 bg-[#0a0a0a] border border-[#22c55e]/50 text-white p-2 outline-none focus:border-[#22c55e] transition-colors text-sm resize-none custom-scrollbar"
                       placeholder="Enter transmission data here..."
                     />
                   </div>
 
                   {/* DYNAMIC ERROR MESSAGES */}
-                  {guiPingStatus === 'INVALID_EMAIL' && (
+                  {guiPingStatus === "INVALID_EMAIL" && (
                     <div className="shrink-0 text-red-500 text-xs font-bold tracking-widest bg-red-500/10 p-2 border border-red-500/30 text-center">
                       ERR: INVALID EMAIL FORMAT
                     </div>
                   )}
-                  {guiPingStatus === 'API_ERROR' && (
+                  {guiPingStatus === "API_ERROR" && (
                     <div className="shrink-0 text-red-500 text-xs font-bold tracking-widest bg-red-500/10 p-2 border border-red-500/30 text-center">
                       ERR: TRANSMISSION FAILED (Check API Keys/Rate Limit)
                     </div>
                   )}
 
                   {/* Submit Button */}
-                  <button 
+                  <button
                     onClick={() => {
-                      const cleanEmail = guiPingData.email.trim(); 
+                      const cleanEmail = guiPingData.email.trim();
                       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                      
+
                       if (!emailRegex.test(cleanEmail)) {
-                        setGuiPingStatus('INVALID_EMAIL');
+                        setGuiPingStatus("INVALID_EMAIL");
                         return;
                       }
-                      
-                      setGuiPingStatus('SENDING');
-                      
+
+                      setGuiPingStatus("SENDING");
+
                       // Using your exact working keys from the terminal parser!
-                      emailjs.send(
-                        'service_7259ksh', 
-                        'template_6c5menn',
-                        { 
-                          from_email: cleanEmail, 
-                          message: guiPingData.message 
-                        }, 
-                        'yWVDlVd10PKZ4Q9l6'
-                      ).then(() => {
-                        setGuiPingStatus('SUCCESS');
-                        setGuiPingData({ email: '', message: '' });
-                      }).catch((err) => {
-                        console.error('Comms Error:', err);
-                        setGuiPingStatus('API_ERROR');
-                      });
+                      emailjs
+                        .send(
+                          "service_7259ksh",
+                          "template_6c5menn",
+                          {
+                            from_email: cleanEmail,
+                            message: guiPingData.message,
+                          },
+                          "yWVDlVd10PKZ4Q9l6",
+                        )
+                        .then(() => {
+                          setGuiPingStatus("SUCCESS");
+                          setGuiPingData({ email: "", message: "" });
+                        })
+                        .catch((err) => {
+                          console.error("Comms Error:", err);
+                          setGuiPingStatus("API_ERROR");
+                        });
                     }}
-                    disabled={guiPingStatus === 'SENDING'}
+                    disabled={guiPingStatus === "SENDING"}
                     className="shrink-0 w-full bg-[#22c55e]/20 border border-[#22c55e] hover:bg-[#22c55e] hover:text-black transition-colors py-2 font-bold tracking-widest text-sm"
                   >
-                    {guiPingStatus === 'SENDING' ? 'ENCRYPTING & ROUTING...' : 'EXECUTE_TRANSMISSION'}
+                    {guiPingStatus === "SENDING"
+                      ? "ENCRYPTING & ROUTING..."
+                      : "EXECUTE_TRANSMISSION"}
                   </button>
                 </div>
               )}
@@ -2598,7 +3027,6 @@ const handleCompile = () => {
           </div>
         </Rnd>
       )}
-
     </div>
   );
 }
