@@ -6,6 +6,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { atomDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { useState, useEffect, useRef } from "react";
 import emailjs from "@emailjs/browser";
+import JourneyLog from './components/JourneyLog'; 
 
 const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 
@@ -196,6 +197,15 @@ const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 \\end{document}`;
 
 function App() {
+  // --- JOURNEY LOG STATES ---
+  const [isJourneyWindowOpen, setIsJourneyWindowOpen] = useState(false);
+  const [journeyConfig, setJourneyConfig] = useState({
+    x: window.innerWidth > 768 ? 100 : 10,
+    y: window.innerHeight > 768 ? 80 : 20,
+    width: 800,
+    height: 550
+  });
+
   // --- OS THEME CONFIGURATOR ---
   const [isJokerTrapActive, setIsJokerTrapActive] = useState(false);
   const [isBlindingLightMode, setIsBlindingLightMode] = useState(false); // The Flashbang
@@ -1543,7 +1553,46 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
                     Mail.conn
                   </span>
                 </div>
+
+            {/* Desktop Icon: Journey.log */}
+            <div 
+              className="flex flex-col items-center cursor-pointer group w-24 mb-4"
+              onClick={() => setIsJourneyWindowOpen(true)} // <-- THIS IS THE TRIGGER
+            >
+              {/* The 3D Icon Wrapper */}
+              <div className="relative w-12 h-12 mb-3">
+                
+                {/* Layer 1 (Back) Pans Down-Right (Reversed) */}
+                <div className="absolute inset-0 rounded border border-[#22c55e]/20 bg-transparent flex items-center justify-center text-[#22c55e]/20 transition-all duration-500 ease-out group-hover:translate-x-2 group-hover:translate-y-2 group-hover:scale-105 z-0">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                  </svg>
+                </div>
+
+                {/* Layer 2 (Middle) Pans Slightly Down-Right (Reversed) */}
+                <div className="absolute inset-0 rounded border border-[#22c55e]/40 bg-transparent flex items-center justify-center text-[#22c55e]/40 transition-all duration-500 ease-out group-hover:translate-x-1 group-hover:translate-y-1 group-hover:scale-110 z-10">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                  </svg>
+                </div>
+
+                {/* Layer 3 (Front) Pans Up-Left, Glows, and SWEEPS (Reversed) */}
+                <div className="absolute inset-0 rounded border border-[#22c55e]/80 bg-[#050505] flex items-center justify-center text-[#22c55e] transition-all duration-500 ease-out group-hover:-translate-x-1.5 group-hover:-translate-y-1.5 group-hover:scale-[1.15] group-hover:border-[#22c55e] group-hover:shadow-[0_0_20px_rgba(34,197,94,0.4)] group-active:scale-95 z-20 overflow-hidden">
+                  <svg className="w-6 h-6 group-hover:text-white transition-colors duration-500 relative z-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                  </svg>
+                  {/* The Neon Light Sweep */}
+                  <div className="absolute top-0 -left-[150%] w-full h-full bg-gradient-to-r from-transparent via-[#22c55e]/60 to-transparent skew-x-[-45deg] transition-all duration-700 ease-in-out group-hover:left-[150%] z-20"></div>
+                </div>
+
               </div>
+              
+              {/* The Label */}
+              <span className="text-xs bg-black/80 px-2 py-0.5 rounded border border-transparent group-hover:border-[#22c55e]/50 text-[#22c55e]/70 group-hover:text-white group-hover:drop-shadow-[0_0_8px_rgba(34,197,94,0.8)] text-center transition-all duration-500 tracking-wider group-hover:-translate-y-1">
+                Journey.log
+              </span>
+            </div>
+            </div>
 
               {/* IDENTITY PROFILE WINDOW (Upgraded with Drag Physics) */}
               {isIdentityWindowOpen && (
@@ -2431,6 +2480,14 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
                 }
               `}</style>
         </div>
+      )}
+
+      {/* JOURNEY.LOG WINDOW */}
+      {isJourneyWindowOpen && (
+        <JourneyLog 
+          onClose={() => setIsJourneyWindowOpen(false)} 
+          themeHue={themeHue} 
+        />
       )}
 
       {/* ========================================== */}
