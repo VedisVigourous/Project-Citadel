@@ -7,6 +7,7 @@ import { atomDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { useState, useEffect, useRef } from "react";
 import emailjs from "@emailjs/browser";
 import JourneyLog from './components/JourneyLog'; 
+import MatrixRain from './components/MatrixRain'; 
 
 const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 
@@ -219,6 +220,8 @@ function App() {
   const [terminalMode, setTerminalMode] = useState("NORMAL"); // 'NORMAL', 'PING_EMAIL', 'PING_MSG'
   const [pingData, setPingData] = useState({ email: "", message: "" });
   const [isRacerActive, setIsRacerActive] = useState(false);
+  const [matrixActive, setMatrixActive] = useState(false);
+  const [matrixTerminating, setMatrixTerminating] = useState(false);
 
   // --- OS THEME CONFIGURATOR ---
   const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
@@ -802,20 +805,21 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
           newHistory.push({
             type: "output",
             text: `AVAILABLE COMMANDS:
-  • help           - Displays this system manual
-  • clear / cls    - Clears the terminal screen
-  • ls             - Lists available system files
-  • whoami         - Outputs current user identity
-  • date           - Displays system date and time
-  • open projects  - Mounts the PROJECTS.dir executable
-  • mount github   - Initializes GitHub API uplink
-  • ping           - Opens a direct comms link to my inbox
-  • cat workspace  - Outputs current development pipeline
-  • theme <deg>    - Shifts global UI hue (e.g., 'theme 180')
-  • traceroute     - Pings server node location
-  • sudo su        - Attempts root escalation
-  
-  * Do you like surprises? Try typing: racer`,
+          • help            - Displays this system manual
+          • clear / cls     - Clears the terminal screen
+          • ls              - Lists available system files
+          • whoami          - Outputs current user identity
+          • date            - Displays system date and time
+          • open projects   - Mounts the PROJECTS.dir executable
+          • mount github    - Initializes GitHub API uplink
+          • ping            - Opens a direct comms link to my inbox
+          • cat workspace   - Outputs current development pipeline
+          • theme <deg>     - Shifts global UI hue (e.g., 'theme 180')
+          • traceroute      - Pings server node location
+          • sudo su         - Attempts root escalation
+
+          * Do you like surprises? Try typing: racer
+          * [CLASSIFIED]: The system is dreaming. It's time to try -> 'wake up'.`,
           });
         } else if (lowerCmd === "ls") {
           newHistory.push({
@@ -908,6 +912,36 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
             type: "output",
             text: "CRITICAL ERR: ACCESS DENIED. Unauthorized attempt logged and reported to sysadmin.",
           });
+        } else if (lowerCmd === "sudo su") {
+          newHistory.push({
+            type: "output",
+            text: "CRITICAL ERR: ACCESS DENIED. Unauthorized attempt logged and reported to sysadmin.",
+          });
+        } else if (lowerCmd === "ssh zion" || lowerCmd === "wake up") {
+          setMatrixActive(true);
+          setMatrixTerminating(false); // Reset on fresh boot
+          newHistory.push({
+            type: "output",
+            text: "MATRIX PROTOCOL INITIATED. SYSTEM OVERRIDE...",
+          });
+          
+          // Phase 1: Stop spawning new rain after 6 seconds
+          setTimeout(() => {
+            setMatrixTerminating(true);
+          }, 6000);
+
+          // Phase 2: Fully unmount after 9 seconds (giving the last drops 3s to fall off)
+          setTimeout(() => {
+            setMatrixActive(false);
+            setMatrixTerminating(false);
+            setTerminalHistory((prev) => [
+              ...prev,
+              {
+                type: "output",
+                text: "[SYSTEM] MATRIX PROTOCOL TERMINATED. NORMAL UI RESTORED.",
+              },
+            ]);
+          }, 9000);
         } else {
           newHistory.push({
             type: "output",
@@ -2403,6 +2437,10 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
             {/* GLOBAL SCANLINE OVERLAY */}
             <div className="pointer-events-none fixed inset-0 z-50 h-full w-full bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%] opacity-20"></div>
           </div>
+
+        {/* THE SECRET MATRIX PROTOCOL */}
+        {matrixActive && <MatrixRain terminating={matrixTerminating} />}
+
         </div>
       )}
 
