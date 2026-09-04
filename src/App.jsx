@@ -8,6 +8,7 @@ import { useState, useEffect, useRef } from "react";
 import emailjs from "@emailjs/browser";
 import JourneyLog from './components/JourneyLog'; 
 import MatrixRain from './components/MatrixRain'; 
+import CustomCursor from "./components/CustomCursor";
 
 const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 
@@ -965,6 +966,7 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
         transition: "filter 0.5s ease-in-out",
       }}
     >
+      <CustomCursor />
       {loading ? (
         <ChronosSplash onComplete={() => setLoading(false)} />
       ) : (

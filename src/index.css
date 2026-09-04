@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+* {
+  cursor: none !important;
+}
+
 /* Glitch Animation Keyframes - Dialed way down */
 @keyframes tech-glitch {
   0% { transform: translate(0) }
