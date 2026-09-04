@@ -10,6 +10,7 @@ import JourneyLog from "./components/JourneyLog";
 import MatrixRain from "./components/MatrixRain";
 import CustomCursor from "./components/CustomCursor";
 import AsciiRacer from "./components/AsciiRacer";
+import Hologram from "./components/Hologram";
 
 const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 
@@ -200,6 +201,8 @@ const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 \\end{document}`;
 
 function App() {
+  const [isHologramActive, setIsHologramActive] = useState(false);
+
   // --- JOURNEY LOG STATES ---
   const [isJourneyWindowOpen, setIsJourneyWindowOpen] = useState(false);
   const [journeyConfig, setJourneyConfig] = useState({
@@ -425,6 +428,14 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
     y: 120,
     width: 500,
     height: 450,
+  });
+
+  const [isCampusWindowOpen, setIsCampusWindowOpen] = useState(false);
+  const [campusConfig, setCampusConfig] = useState({
+    x: 220,
+    y: 100,
+    width: 650,
+    height: 400,
   });
 
   // --- GITHUB LIVE COMMIT STREAM ---
@@ -1659,6 +1670,48 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
                     Journey.log
                   </span>
                 </div>
+
+                {/* Desktop Icon: CAMPUS_MAP.exe */}
+                <div
+                  className="flex flex-col items-center cursor-pointer group w-24 mb-4"
+                  onClick={() => setIsCampusWindowOpen((prev) => !prev)}
+                >
+                  <div className="relative w-12 h-12 mb-3">
+                    <div className="absolute inset-0 rounded border border-[#22c55e]/20 bg-transparent flex items-center justify-center text-[#22c55e]/20 transition-all duration-500 ease-out group-hover:translate-x-2 group-hover:translate-y-2 group-hover:scale-105 z-0">
+                      <svg
+                        className="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                        ></path>
+                      </svg>
+                    </div>
+                    <div className="absolute inset-0 rounded border border-[#22c55e]/80 bg-[#050505] flex items-center justify-center text-[#22c55e] transition-all duration-500 ease-out group-hover:-translate-x-1.5 group-hover:-translate-y-1.5 group-hover:scale-[1.15] group-hover:border-[#22c55e] group-hover:shadow-[0_0_20px_rgba(34,197,94,0.4)] group-active:scale-95 z-20 overflow-hidden">
+                      <svg
+                        className="w-6 h-6 group-hover:text-white transition-colors duration-500 relative z-30"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                        ></path>
+                      </svg>
+                    </div>
+                  </div>
+                  <span className="text-xs bg-black/80 px-2 py-0.5 rounded border border-transparent group-hover:border-[#22c55e]/50 text-[#22c55e]/70 group-hover:text-white group-hover:drop-shadow-[0_0_8px_rgba(34,197,94,0.8)] text-center transition-all duration-500 tracking-wider group-hover:-translate-y-1">
+                    CAMPUS.exe
+                  </span>
+                </div>
               </div>
 
               {/* IDENTITY PROFILE WINDOW (Upgraded with Drag Physics) */}
@@ -2308,15 +2361,15 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
               </div>
 
               {/* 2. MAIN TERMINAL BAR */}
-        <div
-          className={`absolute bottom-0 w-full font-mono text-xs transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden pointer-events-auto flex flex-col justify-end ${
-            isRacerActive
-              ? "h-[100vh] max-h-[100vh] bg-[#050505] z-[9999]"
-              : isTerminalFocused
-              ? "h-[50vh] max-h-[50vh] bg-[#050505]/95 backdrop-blur-md border-t border-[#22c55e]/30 shadow-[0_-10px_30px_rgba(34,197,94,0.15)] z-[80]"
-              : "h-[44px] max-h-[44px] bg-[#050505]/60 backdrop-blur-sm border-t border-[#22c55e]/20 shadow-none z-[80]"
-          }`}
-        >
+              <div
+                className={`absolute bottom-0 w-full font-mono text-xs transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden pointer-events-auto flex flex-col justify-end ${
+                  isRacerActive
+                    ? "h-[100vh] max-h-[100vh] bg-[#050505] z-[9999]"
+                    : isTerminalFocused
+                      ? "h-[50vh] max-h-[50vh] bg-[#050505]/95 backdrop-blur-md border-t border-[#22c55e]/30 shadow-[0_-10px_30px_rgba(34,197,94,0.15)] z-[80]"
+                      : "h-[44px] max-h-[44px] bg-[#050505]/60 backdrop-blur-sm border-t border-[#22c55e]/20 shadow-none z-[80]"
+                }`}
+              >
                 {/* Idle Clue & Toggle Arrow Container */}
                 <div className="absolute right-4 bottom-0 h-[44px] flex items-center gap-4 z-[75]">
                   <div
@@ -2415,72 +2468,77 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
                   }`}
                 >
                   {isRacerActive ? (
-            <AsciiRacer
-              onExit={() => {
-                setIsRacerActive(false);
-                setTerminalHistory((prev) => [
-                  ...prev,
-                  {
-                    type: "output",
-                    text: "[SYSTEM] HIGHWAY RACER TERMINATED. SYSTEM NORMALIZED.",
-                  },
-                ]);
-                setTimeout(() => terminalInputRef.current?.focus(), 100);
-              }}
-            />
-          ) : (
-            <>
-              <div
-                ref={terminalScrollRef}
-                className={`overflow-y-auto flex flex-col pr-2 transition-all duration-500 ease-in-out ${
-                  isTerminalFocused
-                    ? "opacity-100 max-h-[40vh] mb-3"
-                    : "opacity-0 max-h-0 mb-0"
-                }`}
-              >
-                {terminalHistory.map((line, index) => (
-                  <div
-                    key={index}
-                    className="border-b border-[#22c55e]/15 pb-2 mb-2 last:border-0 last:pb-0 last:mb-0 flex flex-col gap-1"
-                  >
-                    {line.type === "input" ? (
-                      <div className="text-[#22c55e] font-bold">{line.text}</div>
-                    ) : (
-                      <div className="text-gray-300 pl-2 leading-relaxed whitespace-pre-wrap drop-shadow-sm">
-                        {line.text}
+                    <AsciiRacer
+                      onExit={() => {
+                        setIsRacerActive(false);
+                        setTerminalHistory((prev) => [
+                          ...prev,
+                          {
+                            type: "output",
+                            text: "[SYSTEM] HIGHWAY RACER TERMINATED. SYSTEM NORMALIZED.",
+                          },
+                        ]);
+                        setTimeout(
+                          () => terminalInputRef.current?.focus(),
+                          100,
+                        );
+                      }}
+                    />
+                  ) : (
+                    <>
+                      <div
+                        ref={terminalScrollRef}
+                        className={`overflow-y-auto flex flex-col pr-2 transition-all duration-500 ease-in-out ${
+                          isTerminalFocused
+                            ? "opacity-100 max-h-[40vh] mb-3"
+                            : "opacity-0 max-h-0 mb-0"
+                        }`}
+                      >
+                        {terminalHistory.map((line, index) => (
+                          <div
+                            key={index}
+                            className="border-b border-[#22c55e]/15 pb-2 mb-2 last:border-0 last:pb-0 last:mb-0 flex flex-col gap-1"
+                          >
+                            {line.type === "input" ? (
+                              <div className="text-[#22c55e] font-bold">
+                                {line.text}
+                              </div>
+                            ) : (
+                              <div className="text-gray-300 pl-2 leading-relaxed whitespace-pre-wrap drop-shadow-sm">
+                                {line.text}
+                              </div>
+                            )}
+                          </div>
+                        ))}
                       </div>
-                    )}
-                  </div>
-                ))}
-              </div>
 
-              <div className="flex items-center gap-2 text-[#22c55e] shrink-0 h-5">
-                <span className="text-white mr-2">
-                  {terminalMode === "NORMAL"
-                    ? "root@vadanta:~$"
-                    : terminalMode === "PING_EMAIL"
-                    ? "Email:"
-                    : "Message:"}
-                </span>
-                <input
-                  ref={terminalInputRef}
-                  type="text"
-                  value={terminalInput}
-                  onChange={(e) => setTerminalInput(e.target.value)}
-                  onKeyDown={handleTerminalSubmit}
-                  onFocus={() => setIsTerminalFocused(true)}
-                  onBlur={() => setIsTerminalFocused(false)}
-                  className="bg-transparent border-none outline-none flex-1 text-[#22c55e] placeholder-[#22c55e]/40 focus:ring-0"
-                  placeholder={
-                    isTerminalFocused
-                      ? "type a command..."
-                      : "click to initialize terminal..."
-                  }
-                  spellCheck="false"
-                />
-              </div>
-            </>
-          )}
+                      <div className="flex items-center gap-2 text-[#22c55e] shrink-0 h-5">
+                        <span className="text-white mr-2">
+                          {terminalMode === "NORMAL"
+                            ? "root@vadanta:~$"
+                            : terminalMode === "PING_EMAIL"
+                              ? "Email:"
+                              : "Message:"}
+                        </span>
+                        <input
+                          ref={terminalInputRef}
+                          type="text"
+                          value={terminalInput}
+                          onChange={(e) => setTerminalInput(e.target.value)}
+                          onKeyDown={handleTerminalSubmit}
+                          onFocus={() => setIsTerminalFocused(true)}
+                          onBlur={() => setIsTerminalFocused(false)}
+                          className="bg-transparent border-none outline-none flex-1 text-[#22c55e] placeholder-[#22c55e]/40 focus:ring-0"
+                          placeholder={
+                            isTerminalFocused
+                              ? "type a command..."
+                              : "click to initialize terminal..."
+                          }
+                          spellCheck="false"
+                        />
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -2492,6 +2550,11 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
           {/* THE SECRET MATRIX PROTOCOL */}
           {matrixActive && <MatrixRain terminating={matrixTerminating} />}
         </div>
+      )}
+
+      {/* EASTER EGG: ABES HOLOGRAM */}
+      {isHologramActive && (
+        <Hologram onClose={() => setIsHologramActive(false)} />
       )}
 
       {/* HACKER WARNING MODAL (Confirmation Dialog) */}
@@ -3168,6 +3231,111 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
                   </button>
                 </div>
               )}
+            </div>
+          </div>
+        </Rnd>
+      )}
+
+      {/* CAMPUS.exe TACTICAL WINDOW */}
+      {isCampusWindowOpen && (
+        <Rnd
+          size={{ width: campusConfig.width, height: campusConfig.height }}
+          position={{ x: campusConfig.x, y: campusConfig.y }}
+          onDragStop={(e, d) =>
+            setCampusConfig((prev) => ({ ...prev, x: d.x, y: d.y }))
+          }
+          onResizeStop={(e, direction, ref, delta, position) => {
+            setCampusConfig({
+              width: parseInt(ref.style.width, 10),
+              height: parseInt(ref.style.height, 10),
+              x: position.x,
+              y: position.y,
+            });
+          }}
+          minWidth={550}
+          minHeight={350}
+          bounds="parent"
+          dragHandleClassName="campus-drag-handle"
+          className="z-[70]"
+        >
+          <div className="w-full h-full bg-[#050505]/95 border border-[#22c55e]/50 rounded shadow-[0_0_30px_rgba(34,197,94,0.15)] flex flex-col overflow-hidden backdrop-blur-md">
+            {/* Title Bar */}
+            <div className="campus-drag-handle w-full h-8 bg-[#22c55e]/10 border-b border-[#22c55e]/30 flex items-center justify-between px-3 cursor-move">
+              <span className="text-[#22c55e] font-bold text-xs tracking-widest">
+                /sys/users/vadanta/CAMPUS_MAP.exe
+              </span>
+              <button
+                onClick={() => setIsCampusWindowOpen(false)}
+                className="text-[#22c55e] hover:text-[#ff3333] hover:bg-[#ff3333]/10 px-2 py-0.5 rounded transition-all duration-200 text-xs font-bold"
+              >
+                [X]
+              </button>
+            </div>
+
+            {/* Split Content Area */}
+            <div className="flex-1 flex p-4 gap-6 overflow-hidden">
+              {/* Left: The Holographic Photo */}
+              <div className="w-1/2 h-full relative border border-[#22c55e]/30 p-1 bg-black overflow-hidden group">
+                {/* CSS Filters force the photo into a green terminal aesthetic */}
+                <img 
+                  src="/college_image.jpg"
+                  alt="ABES Campus"
+                  className="w-full h-full object-cover opacity-80 mix-blend-screen transition-transform duration-700 group-hover:scale-110"
+                  style={{
+                    filter:
+                      "grayscale(100%) contrast(1.5) sepia(100%) hue-rotate(70deg) saturate(400%) brightness(0.8)",
+                  }}
+                />
+                {/* Tactical Overlays */}
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(34,197,94,0.1)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none"></div>
+                <div className="absolute top-2 left-2 text-[#22c55e] text-[9px] font-bold tracking-widest bg-black/60 px-1 border border-[#22c55e]/40 animate-pulse">
+                  REC // LIVE_FEED
+                </div>
+                <div className="absolute inset-0 border border-[#22c55e]/20 group-hover:border-[#22c55e] transition-colors pointer-events-none"></div>
+              </div>
+
+              {/* Right: The Dialogue & Details */}
+              <div className="w-1/2 h-full flex flex-col justify-between font-mono text-[#22c55e]">
+                <div>
+                  <div className="text-xl font-bold tracking-widest mb-1 shadow-black drop-shadow-md">
+                    ABES ENGINEERING COLLEGE
+                  </div>
+                  <div className="text-[10px] tracking-widest uppercase opacity-70 mb-4 border-b border-[#22c55e]/20 pb-2">
+                    Location: Techzone 4 // Status: Active
+                  </div>
+
+                  <div className="space-y-3 text-xs leading-relaxed opacity-90 pr-2 overflow-y-auto custom-scrollbar max-h-[160px]">
+                    <p>
+                      <span className="font-bold opacity-50">&gt; MAJOR:</span>{" "}
+                      B.Tech Computer Science & Engineering
+                    </p>
+                    <p>
+                      <span className="font-bold opacity-50">
+                        &gt; METRICS:
+                      </span>{" "}
+                      9.13 CGPA (First Year Performance)
+                    </p>
+                    <p>
+                      <span className="font-bold opacity-50">
+                        &gt; CURRENT_FOCUS:
+                      </span>{" "}
+                      Heavy immersion in Data Structures & Algorithms and
+                      advanced Object-Oriented Programming.
+                    </p>
+                    <p>
+                      <span className="font-bold opacity-50">
+                        &gt; OPEN_SOURCE_TARGETS:
+                      </span>{" "}
+                      Preparing core architecture for upcoming GSoC and GSSoC
+                      contributions.
+                    </p>
+                  </div>
+                </div>
+
+                <button className="w-full mt-4 bg-[#22c55e]/10 border border-[#22c55e]/50 py-2 text-xs font-bold tracking-widest hover:bg-[#22c55e] hover:text-black transition-colors">
+                  [ VIEW_FULL_TRANSCRIPT ]
+                </button>
+              </div>
             </div>
           </div>
         </Rnd>
