@@ -6,9 +6,10 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { atomDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { useState, useEffect, useRef } from "react";
 import emailjs from "@emailjs/browser";
-import JourneyLog from './components/JourneyLog'; 
-import MatrixRain from './components/MatrixRain'; 
+import JourneyLog from "./components/JourneyLog";
+import MatrixRain from "./components/MatrixRain";
 import CustomCursor from "./components/CustomCursor";
+import AsciiRacer from "./components/AsciiRacer";
 
 const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 
@@ -205,7 +206,7 @@ function App() {
     x: window.innerWidth > 768 ? 100 : 10,
     y: window.innerHeight > 768 ? 80 : 20,
     width: 800,
-    height: 550
+    height: 550,
   });
 
   // --- OS THEME CONFIGURATOR ---
@@ -925,7 +926,7 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
             type: "output",
             text: "MATRIX PROTOCOL INITIATED. SYSTEM OVERRIDE...",
           });
-          
+
           // Phase 1: Stop spawning new rain after 6 seconds
           setTimeout(() => {
             setMatrixTerminating(true);
@@ -1019,14 +1020,16 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#050505_100%)] pointer-events-none z-[3]"></div>
 
           {/* --- LAYER 3.5: CHAOTIC FULL-WIDTH AUDIO VISUALIZER (z-[4]) --- */}
-          <div className="absolute bottom-[40px] left-0 w-full flex items-end justify-center gap-[4px] px-4 h-20 z-[4] pointer-events-none opacity-40 overflow-hidden">
-            {[...Array(190)].map((_, i) => (
-              <div
-                key={i}
-                className={`visualizer-bar bar-${(i % 8) + 1} shrink-0`}
-              ></div>
-            ))}
-          </div>
+      {!isRacerActive && (
+        <div className="absolute bottom-[40px] left-0 w-full flex items-end justify-center gap-[4px] px-4 h-20 z-[4] pointer-events-none opacity-40 overflow-hidden">
+          {[...Array(190)].map((_, i) => (
+            <div
+              key={i}
+              className={`visualizer-bar bar-${(i % 8) + 1} shrink-0`}
+            ></div>
+          ))}
+        </div>
+      )}
 
           {/* --- LAYER 4: MAIN OS CONTENT (z-[10]) --- */}
           <div className="relative z-[10] w-full h-full flex flex-col">
@@ -1590,45 +1593,73 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
                   </span>
                 </div>
 
-            {/* Desktop Icon: Journey.log */}
-            <div 
-              className="flex flex-col items-center cursor-pointer group w-24 mb-4"
-              onClick={() => setIsJourneyWindowOpen(true)} // <-- THIS IS THE TRIGGER
-            >
-              {/* The 3D Icon Wrapper */}
-              <div className="relative w-12 h-12 mb-3">
-                
-                {/* Layer 1 (Back) Pans Down-Right (Reversed) */}
-                <div className="absolute inset-0 rounded border border-[#22c55e]/20 bg-transparent flex items-center justify-center text-[#22c55e]/20 transition-all duration-500 ease-out group-hover:translate-x-2 group-hover:translate-y-2 group-hover:scale-105 z-0">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                  </svg>
-                </div>
+                {/* Desktop Icon: Journey.log */}
+                <div
+                  className="flex flex-col items-center cursor-pointer group w-24 mb-4"
+                  onClick={() => setIsJourneyWindowOpen(true)} // <-- THIS IS THE TRIGGER
+                >
+                  {/* The 3D Icon Wrapper */}
+                  <div className="relative w-12 h-12 mb-3">
+                    {/* Layer 1 (Back) Pans Down-Right (Reversed) */}
+                    <div className="absolute inset-0 rounded border border-[#22c55e]/20 bg-transparent flex items-center justify-center text-[#22c55e]/20 transition-all duration-500 ease-out group-hover:translate-x-2 group-hover:translate-y-2 group-hover:scale-105 z-0">
+                      <svg
+                        className="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M13 10V3L4 14h7v7l9-11h-7z"
+                        ></path>
+                      </svg>
+                    </div>
 
-                {/* Layer 2 (Middle) Pans Slightly Down-Right (Reversed) */}
-                <div className="absolute inset-0 rounded border border-[#22c55e]/40 bg-transparent flex items-center justify-center text-[#22c55e]/40 transition-all duration-500 ease-out group-hover:translate-x-1 group-hover:translate-y-1 group-hover:scale-110 z-10">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                  </svg>
-                </div>
+                    {/* Layer 2 (Middle) Pans Slightly Down-Right (Reversed) */}
+                    <div className="absolute inset-0 rounded border border-[#22c55e]/40 bg-transparent flex items-center justify-center text-[#22c55e]/40 transition-all duration-500 ease-out group-hover:translate-x-1 group-hover:translate-y-1 group-hover:scale-110 z-10">
+                      <svg
+                        className="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M13 10V3L4 14h7v7l9-11h-7z"
+                        ></path>
+                      </svg>
+                    </div>
 
-                {/* Layer 3 (Front) Pans Up-Left, Glows, and SWEEPS (Reversed) */}
-                <div className="absolute inset-0 rounded border border-[#22c55e]/80 bg-[#050505] flex items-center justify-center text-[#22c55e] transition-all duration-500 ease-out group-hover:-translate-x-1.5 group-hover:-translate-y-1.5 group-hover:scale-[1.15] group-hover:border-[#22c55e] group-hover:shadow-[0_0_20px_rgba(34,197,94,0.4)] group-active:scale-95 z-20 overflow-hidden">
-                  <svg className="w-6 h-6 group-hover:text-white transition-colors duration-500 relative z-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                  </svg>
-                  {/* The Neon Light Sweep */}
-                  <div className="absolute top-0 -left-[150%] w-full h-full bg-gradient-to-r from-transparent via-[#22c55e]/60 to-transparent skew-x-[-45deg] transition-all duration-700 ease-in-out group-hover:left-[150%] z-20"></div>
-                </div>
+                    {/* Layer 3 (Front) Pans Up-Left, Glows, and SWEEPS (Reversed) */}
+                    <div className="absolute inset-0 rounded border border-[#22c55e]/80 bg-[#050505] flex items-center justify-center text-[#22c55e] transition-all duration-500 ease-out group-hover:-translate-x-1.5 group-hover:-translate-y-1.5 group-hover:scale-[1.15] group-hover:border-[#22c55e] group-hover:shadow-[0_0_20px_rgba(34,197,94,0.4)] group-active:scale-95 z-20 overflow-hidden">
+                      <svg
+                        className="w-6 h-6 group-hover:text-white transition-colors duration-500 relative z-30"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M13 10V3L4 14h7v7l9-11h-7z"
+                        ></path>
+                      </svg>
+                      {/* The Neon Light Sweep */}
+                      <div className="absolute top-0 -left-[150%] w-full h-full bg-gradient-to-r from-transparent via-[#22c55e]/60 to-transparent skew-x-[-45deg] transition-all duration-700 ease-in-out group-hover:left-[150%] z-20"></div>
+                    </div>
+                  </div>
 
+                  {/* The Label */}
+                  <span className="text-xs bg-black/80 px-2 py-0.5 rounded border border-transparent group-hover:border-[#22c55e]/50 text-[#22c55e]/70 group-hover:text-white group-hover:drop-shadow-[0_0_8px_rgba(34,197,94,0.8)] text-center transition-all duration-500 tracking-wider group-hover:-translate-y-1">
+                    Journey.log
+                  </span>
+                </div>
               </div>
-              
-              {/* The Label */}
-              <span className="text-xs bg-black/80 px-2 py-0.5 rounded border border-transparent group-hover:border-[#22c55e]/50 text-[#22c55e]/70 group-hover:text-white group-hover:drop-shadow-[0_0_8px_rgba(34,197,94,0.8)] text-center transition-all duration-500 tracking-wider group-hover:-translate-y-1">
-                Journey.log
-              </span>
-            </div>
-            </div>
 
               {/* IDENTITY PROFILE WINDOW (Upgraded with Drag Physics) */}
               {isIdentityWindowOpen && (
@@ -2277,13 +2308,15 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
               </div>
 
               {/* 2. MAIN TERMINAL BAR */}
-              <div
-                className={`relative w-full font-mono text-xs transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden pointer-events-auto flex flex-col justify-end ${
-                  isTerminalFocused
-                    ? "max-h-[50vh] bg-[#050505]/95 backdrop-blur-md border-t border-[#22c55e]/30 shadow-[0_-10px_30px_rgba(34,197,94,0.15)]"
-                    : "max-h-[44px] bg-[#050505]/60 backdrop-blur-sm border-t border-[#22c55e]/20 shadow-none"
-                }`}
-              >
+        <div
+          className={`absolute bottom-0 w-full font-mono text-xs transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden pointer-events-auto flex flex-col justify-end ${
+            isRacerActive
+              ? "h-[100vh] max-h-[100vh] bg-[#050505] z-[9999]"
+              : isTerminalFocused
+              ? "h-[50vh] max-h-[50vh] bg-[#050505]/95 backdrop-blur-md border-t border-[#22c55e]/30 shadow-[0_-10px_30px_rgba(34,197,94,0.15)] z-[80]"
+              : "h-[44px] max-h-[44px] bg-[#050505]/60 backdrop-blur-sm border-t border-[#22c55e]/20 shadow-none z-[80]"
+          }`}
+        >
                 {/* Idle Clue & Toggle Arrow Container */}
                 <div className="absolute right-4 bottom-0 h-[44px] flex items-center gap-4 z-[75]">
                   <div
@@ -2328,7 +2361,7 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
                 {/* INTEGRATED GITHUB HUD (Visible ONLY when CLI is focused) */}
                 <div
                   className={`absolute right-0 top-0 bottom-0 w-[340px] border-l border-[#22c55e]/20 bg-gradient-to-r from-transparent to-[#050505]/80 p-5 flex flex-col justify-end transition-all duration-700 delay-100 ${
-                    isTerminalFocused
+                    isTerminalFocused && !isRacerActive
                       ? "opacity-100 translate-x-0"
                       : "opacity-0 translate-x-12 pointer-events-none"
                   }`}
@@ -2378,60 +2411,76 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
                 {/* 3. TERMINAL CHAT AREA */}
                 <div
                   className={`w-full h-full px-4 py-3 flex flex-col justify-end transition-all duration-700 ${
-                    isTerminalFocused ? "pr-[360px]" : "pr-4"
+                    isTerminalFocused && !isRacerActive ? "pr-[360px]" : "pr-4"
                   }`}
                 >
+                  {isRacerActive ? (
+            <AsciiRacer
+              onExit={() => {
+                setIsRacerActive(false);
+                setTerminalHistory((prev) => [
+                  ...prev,
+                  {
+                    type: "output",
+                    text: "[SYSTEM] HIGHWAY RACER TERMINATED. SYSTEM NORMALIZED.",
+                  },
+                ]);
+                setTimeout(() => terminalInputRef.current?.focus(), 100);
+              }}
+            />
+          ) : (
+            <>
+              <div
+                ref={terminalScrollRef}
+                className={`overflow-y-auto flex flex-col pr-2 transition-all duration-500 ease-in-out ${
+                  isTerminalFocused
+                    ? "opacity-100 max-h-[40vh] mb-3"
+                    : "opacity-0 max-h-0 mb-0"
+                }`}
+              >
+                {terminalHistory.map((line, index) => (
                   <div
-                    ref={terminalScrollRef}
-                    className={`overflow-y-auto flex flex-col pr-2 transition-all duration-500 ease-in-out ${
-                      isTerminalFocused
-                        ? "opacity-100 max-h-[40vh] mb-3"
-                        : "opacity-0 max-h-0 mb-0"
-                    }`}
+                    key={index}
+                    className="border-b border-[#22c55e]/15 pb-2 mb-2 last:border-0 last:pb-0 last:mb-0 flex flex-col gap-1"
                   >
-                    {terminalHistory.map((line, index) => (
-                      <div
-                        key={index}
-                        className="border-b border-[#22c55e]/15 pb-2 mb-2 last:border-0 last:pb-0 last:mb-0 flex flex-col gap-1"
-                      >
-                        {line.type === "input" ? (
-                          <div className="text-[#22c55e] font-bold">
-                            {line.text}
-                          </div>
-                        ) : (
-                          <div className="text-gray-300 pl-2 leading-relaxed whitespace-pre-wrap drop-shadow-sm">
-                            {line.text}
-                          </div>
-                        )}
+                    {line.type === "input" ? (
+                      <div className="text-[#22c55e] font-bold">{line.text}</div>
+                    ) : (
+                      <div className="text-gray-300 pl-2 leading-relaxed whitespace-pre-wrap drop-shadow-sm">
+                        {line.text}
                       </div>
-                    ))}
+                    )}
                   </div>
+                ))}
+              </div>
 
-                  <div className="flex items-center gap-2 text-[#22c55e] shrink-0 h-5">
-                    <span className="text-white mr-2">
-                      {terminalMode === "NORMAL"
-                        ? "root@vadanta:~$"
-                        : terminalMode === "PING_EMAIL"
-                          ? "Email:"
-                          : "Message:"}
-                    </span>
-                    <input
-                      ref={terminalInputRef}
-                      type="text"
-                      value={terminalInput}
-                      onChange={(e) => setTerminalInput(e.target.value)}
-                      onKeyDown={handleTerminalSubmit}
-                      onFocus={() => setIsTerminalFocused(true)}
-                      onBlur={() => setIsTerminalFocused(false)}
-                      className="bg-transparent border-none outline-none flex-1 text-[#22c55e] placeholder-[#22c55e]/40 focus:ring-0"
-                      placeholder={
-                        isTerminalFocused
-                          ? "type a command..."
-                          : "click to initialize terminal..."
-                      }
-                      spellCheck="false"
-                    />
-                  </div>
+              <div className="flex items-center gap-2 text-[#22c55e] shrink-0 h-5">
+                <span className="text-white mr-2">
+                  {terminalMode === "NORMAL"
+                    ? "root@vadanta:~$"
+                    : terminalMode === "PING_EMAIL"
+                    ? "Email:"
+                    : "Message:"}
+                </span>
+                <input
+                  ref={terminalInputRef}
+                  type="text"
+                  value={terminalInput}
+                  onChange={(e) => setTerminalInput(e.target.value)}
+                  onKeyDown={handleTerminalSubmit}
+                  onFocus={() => setIsTerminalFocused(true)}
+                  onBlur={() => setIsTerminalFocused(false)}
+                  className="bg-transparent border-none outline-none flex-1 text-[#22c55e] placeholder-[#22c55e]/40 focus:ring-0"
+                  placeholder={
+                    isTerminalFocused
+                      ? "type a command..."
+                      : "click to initialize terminal..."
+                  }
+                  spellCheck="false"
+                />
+              </div>
+            </>
+          )}
                 </div>
               </div>
             </div>
@@ -2440,9 +2489,8 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
             <div className="pointer-events-none fixed inset-0 z-50 h-full w-full bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%] opacity-20"></div>
           </div>
 
-        {/* THE SECRET MATRIX PROTOCOL */}
-        {matrixActive && <MatrixRain terminating={matrixTerminating} />}
-
+          {/* THE SECRET MATRIX PROTOCOL */}
+          {matrixActive && <MatrixRain terminating={matrixTerminating} />}
         </div>
       )}
 
@@ -2524,9 +2572,9 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
 
       {/* JOURNEY.LOG WINDOW */}
       {isJourneyWindowOpen && (
-        <JourneyLog 
-          onClose={() => setIsJourneyWindowOpen(false)} 
-          themeHue={themeHue} 
+        <JourneyLog
+          onClose={() => setIsJourneyWindowOpen(false)}
+          themeHue={themeHue}
         />
       )}
 
