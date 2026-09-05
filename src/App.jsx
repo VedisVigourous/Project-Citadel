@@ -1031,16 +1031,16 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#050505_100%)] pointer-events-none z-[3]"></div>
 
           {/* --- LAYER 3.5: CHAOTIC FULL-WIDTH AUDIO VISUALIZER (z-[4]) --- */}
-      {!isRacerActive && (
-        <div className="absolute bottom-[40px] left-0 w-full flex items-end justify-center gap-[4px] px-4 h-20 z-[4] pointer-events-none opacity-40 overflow-hidden">
-          {[...Array(190)].map((_, i) => (
-            <div
-              key={i}
-              className={`visualizer-bar bar-${(i % 8) + 1} shrink-0`}
-            ></div>
-          ))}
-        </div>
-      )}
+          {!isRacerActive && (
+            <div className="absolute bottom-[40px] left-0 w-full flex items-end justify-center gap-[4px] px-4 h-20 z-[4] pointer-events-none opacity-40 overflow-hidden">
+              {[...Array(190)].map((_, i) => (
+                <div
+                  key={i}
+                  className={`visualizer-bar bar-${(i % 8) + 1} shrink-0`}
+                ></div>
+              ))}
+            </div>
+          )}
 
           {/* --- LAYER 4: MAIN OS CONTENT (z-[10]) --- */}
           <div className="relative z-[10] w-full h-full flex flex-col">
@@ -1672,42 +1672,71 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
                 </div>
 
                 {/* Desktop Icon: Education.exe */}
-<div
-  className="flex flex-col items-center cursor-pointer group w-24 mb-4"
-  onClick={() => setIsCampusWindowOpen((prev) => !prev)}
->
-  {/* The 3D Icon Wrapper */}
-  <div className="relative w-12 h-12 mb-3">
-    
-    {/* Layer 1 (Back) Pans Down-Right (Reversed) */}
-    <div className="absolute inset-0 rounded border border-[#22c55e]/20 bg-transparent flex items-center justify-center text-[#22c55e]/20 transition-all duration-500 ease-out group-hover:translate-x-2 group-hover:translate-y-2 group-hover:scale-105 z-0">
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
-      </svg>
-    </div>
+                <div
+                  className="flex flex-col items-center cursor-pointer group w-24 mb-4"
+                  onClick={() => setIsCampusWindowOpen((prev) => !prev)}
+                >
+                  {/* The 3D Icon Wrapper */}
+                  <div className="relative w-12 h-12 mb-3">
+                    {/* Layer 1 (Back) Pans Down-Right (Reversed) */}
+                    <div className="absolute inset-0 rounded border border-[#22c55e]/20 bg-transparent flex items-center justify-center text-[#22c55e]/20 transition-all duration-500 ease-out group-hover:translate-x-2 group-hover:translate-y-2 group-hover:scale-105 z-0">
+                      <svg
+                        className="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                        ></path>
+                      </svg>
+                    </div>
 
-    {/* Layer 2 (Middle) Pans Slightly Down-Right (Reversed) */}
-    <div className="absolute inset-0 rounded border border-[#22c55e]/40 bg-transparent flex items-center justify-center text-[#22c55e]/40 transition-all duration-500 ease-out group-hover:translate-x-1 group-hover:translate-y-1 group-hover:scale-110 z-10">
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
-      </svg>
-    </div>
+                    {/* Layer 2 (Middle) Pans Slightly Down-Right (Reversed) */}
+                    <div className="absolute inset-0 rounded border border-[#22c55e]/40 bg-transparent flex items-center justify-center text-[#22c55e]/40 transition-all duration-500 ease-out group-hover:translate-x-1 group-hover:translate-y-1 group-hover:scale-110 z-10">
+                      <svg
+                        className="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                        ></path>
+                      </svg>
+                    </div>
 
-    {/* Layer 3 (Front) Pans Up-Left, Glows, and SWEEPS (Reversed) */}
-    <div className="absolute inset-0 rounded border border-[#22c55e]/80 bg-[#050505] flex items-center justify-center text-[#22c55e] transition-all duration-500 ease-out group-hover:-translate-x-1.5 group-hover:-translate-y-1.5 group-hover:scale-[1.15] group-hover:border-[#22c55e] group-hover:shadow-[0_0_20px_rgba(34,197,94,0.4)] group-active:scale-95 z-20 overflow-hidden">
-      <svg className="w-6 h-6 group-hover:text-white transition-colors duration-500 relative z-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
-      </svg>
-      {/* The Missing Neon Light Sweep */}
-      <div className="absolute top-0 -left-[150%] w-full h-full bg-gradient-to-r from-transparent via-[#22c55e]/60 to-transparent skew-x-[-45deg] transition-all duration-700 ease-in-out group-hover:left-[150%] z-20"></div>
-    </div>
-  </div>
+                    {/* Layer 3 (Front) Pans Up-Left, Glows, and SWEEPS (Reversed) */}
+                    <div className="absolute inset-0 rounded border border-[#22c55e]/80 bg-[#050505] flex items-center justify-center text-[#22c55e] transition-all duration-500 ease-out group-hover:-translate-x-1.5 group-hover:-translate-y-1.5 group-hover:scale-[1.15] group-hover:border-[#22c55e] group-hover:shadow-[0_0_20px_rgba(34,197,94,0.4)] group-active:scale-95 z-20 overflow-hidden">
+                      <svg
+                        className="w-6 h-6 group-hover:text-white transition-colors duration-500 relative z-30"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                        ></path>
+                      </svg>
+                      {/* The Missing Neon Light Sweep */}
+                      <div className="absolute top-0 -left-[150%] w-full h-full bg-gradient-to-r from-transparent via-[#22c55e]/60 to-transparent skew-x-[-45deg] transition-all duration-700 ease-in-out group-hover:left-[150%] z-20"></div>
+                    </div>
+                  </div>
 
-  {/* The Label */}
-  <span className="text-xs bg-black/80 px-2 py-0.5 rounded border border-transparent group-hover:border-[#22c55e]/50 text-[#22c55e]/70 group-hover:text-white group-hover:drop-shadow-[0_0_8px_rgba(34,197,94,0.8)] text-center transition-all duration-500 tracking-wider group-hover:-translate-y-1">
-    Education.exe
-  </span>
-</div>
+                  {/* The Label */}
+                  <span className="text-xs bg-black/80 px-2 py-0.5 rounded border border-transparent group-hover:border-[#22c55e]/50 text-[#22c55e]/70 group-hover:text-white group-hover:drop-shadow-[0_0_8px_rgba(34,197,94,0.8)] text-center transition-all duration-500 tracking-wider group-hover:-translate-y-1">
+                    Education.exe
+                  </span>
+                </div>
               </div>
 
               {/* IDENTITY PROFILE WINDOW (Upgraded with Drag Physics) */}
@@ -3233,112 +3262,137 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
       )}
 
       {/* EDUCATION.exe TACTICAL WINDOW */}
-{isCampusWindowOpen && (
-  <Rnd
-    size={{ width: campusConfig.width, height: campusConfig.height }}
-    position={{ x: campusConfig.x, y: campusConfig.y }}
-    onDragStop={(e, d) =>
-      setCampusConfig((prev) => ({ ...prev, x: d.x, y: d.y }))
-    }
-    onResizeStop={(e, direction, ref, delta, position) => {
-      setCampusConfig({
-        width: parseInt(ref.style.width, 10),
-        height: parseInt(ref.style.height, 10),
-        x: position.x,
-        y: position.y,
-      });
-    }}
-    minWidth={750}
-    minHeight={450}
-    bounds="parent"
-    dragHandleClassName="campus-drag-handle"
-    className="z-[70]"
-  >
-    <div className="w-full h-full bg-[#050505]/95 border border-[#22c55e]/50 rounded shadow-[0_0_40px_rgba(34,197,94,0.15)] flex flex-col overflow-hidden backdrop-blur-md">
-      {/* Title Bar */}
-      <div className="campus-drag-handle w-full h-8 bg-[#22c55e]/10 border-b border-[#22c55e]/30 flex items-center justify-between px-3 cursor-move">
-        <span className="text-[#22c55e] font-bold text-xs tracking-widest">
-          /sys/users/vadanta/EDUCATION.exe
-        </span>
-        <button
-          onClick={() => setIsCampusWindowOpen(false)}
-          className="text-[#22c55e] hover:text-red-500 hover:bg-red-500/10 px-2 py-0.5 rounded transition-all duration-200 text-xs font-bold"
+      {isCampusWindowOpen && (
+        <Rnd
+          size={{ width: campusConfig.width, height: campusConfig.height }}
+          position={{ x: campusConfig.x, y: campusConfig.y }}
+          onDragStop={(e, d) =>
+            setCampusConfig((prev) => ({ ...prev, x: d.x, y: d.y }))
+          }
+          onResizeStop={(e, direction, ref, delta, position) => {
+            setCampusConfig({
+              width: parseInt(ref.style.width, 10),
+              height: parseInt(ref.style.height, 10),
+              x: position.x,
+              y: position.y,
+            });
+          }}
+          minWidth={750}
+          minHeight={450}
+          bounds="parent"
+          dragHandleClassName="campus-drag-handle"
+          className="z-[70]"
         >
-          [X]
-        </button>
-      </div>
-
-      {/* Main Blueprint Content Area */}
-      <div className="flex-1 flex p-6 gap-6 overflow-hidden bg-[radial-gradient(ellipse_at_center,rgba(34,197,94,0.03)_0%,transparent_70%)] relative">
-        
-        {/* Left: 3D Hologram Projection Engine */}
-        <div className="w-[55%] h-full relative z-20">
-          <Hologram />
-        </div>
-
-        {/* Right: Hacker Bulletin Board */}
-        <div className="w-[45%] h-full relative z-10 flex flex-col justify-center gap-8 pl-4">
-          
-          {/* Tactical Red String Connecting the Pins */}
-          <svg className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-visible">
-            <path 
-              d="M 320 60 Q 150 150 310 240" 
-              fill="none" 
-              stroke="#ef4444" 
-              strokeWidth="1.5" 
-              strokeDasharray="4 4" 
-              className="drop-shadow-[0_0_5px_rgba(239,68,68,0.5)] opacity-60 animate-pulse" 
-            />
-          </svg>
-
-          {/* Bulletin Note 1: College Details */}
-          <div className="relative bg-[#0a0a0a] border border-[#22c55e]/30 p-5 shadow-[4px_6px_15px_rgba(0,0,0,0.8)] rotate-[-2deg] hover:rotate-0 transition-transform duration-300">
-            {/* Duct Tape */}
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-5 bg-white/10 rotate-3 backdrop-blur-sm shadow-sm border border-white/5"></div>
-            {/* Red Push Pin */}
-            <div className="absolute top-3 right-3 w-3 h-3 rounded-full bg-red-600 shadow-[2px_2px_4px_rgba(0,0,0,0.8),inset_-1px_-1px_2px_rgba(0,0,0,0.5),0_0_10px_rgba(239,68,68,0.8)] border border-red-400 z-20"></div>
-
-            <div className="border-b border-[#22c55e]/20 pb-2 mb-3">
-              <h3 className="text-[#22c55e] font-bold text-sm tracking-widest uppercase">Academic_Record</h3>
+          <div className="w-full h-full bg-[#050505]/95 border border-[#22c55e]/50 rounded shadow-[0_0_40px_rgba(34,197,94,0.15)] flex flex-col overflow-hidden backdrop-blur-md">
+            {/* Title Bar */}
+            <div className="campus-drag-handle w-full h-8 bg-[#22c55e]/10 border-b border-[#22c55e]/30 flex items-center justify-between px-3 cursor-move">
+              <span className="text-[#22c55e] font-bold text-xs tracking-widest">
+                /sys/users/vadanta/EDUCATION.exe
+              </span>
+              <button
+                onClick={() => setIsCampusWindowOpen(false)}
+                className="text-[#22c55e] hover:text-red-500 hover:bg-red-500/10 px-2 py-0.5 rounded transition-all duration-200 text-xs font-bold"
+              >
+                [X]
+              </button>
             </div>
-            <div className="space-y-2 text-xs text-[#22c55e]/70 font-mono">
-              <p><span className="text-white">NODE:</span> <span className="text-red-400 font-bold">ABES Engineering College</span></p>
-              <p><span className="text-white">PROGRAM:</span> B.Tech CSE</p>
-              <p><span className="text-white">CORE:</span> DSA (<span className="text-red-400 font-bold">JAVA</span>) & Web Architecture</p>
+
+            {/* Main Blueprint Content Area */}
+            <div className="flex-1 flex p-6 gap-6 overflow-hidden bg-[radial-gradient(ellipse_at_center,rgba(34,197,94,0.03)_0%,transparent_70%)] relative">
+              {/* Left: 3D Hologram Projection Engine */}
+              <div className="w-[55%] h-full relative z-20">
+                <Hologram />
+              </div>
+
+              {/* Right: Hacker Bulletin Board */}
+              <div className="w-[45%] h-full relative z-10 flex flex-col justify-center gap-8 pl-4">
+                {/* Tactical Red String Connecting the Pins */}
+                <svg className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-visible">
+                  <path
+                    d="M 320 60 Q 150 150 310 240"
+                    fill="none"
+                    stroke="#ef4444"
+                    strokeWidth="1.5"
+                    strokeDasharray="4 4"
+                    className="drop-shadow-[0_0_5px_rgba(239,68,68,0.5)] opacity-60 animate-pulse"
+                  />
+                </svg>
+
+                {/* Bulletin Note 1: College Details */}
+                <div className="relative bg-[#0a0a0a] border border-[#22c55e]/30 p-5 shadow-[4px_6px_15px_rgba(0,0,0,0.8)] rotate-[-2deg] hover:rotate-0 transition-transform duration-300">
+                  {/* Duct Tape */}
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-5 bg-white/10 rotate-3 backdrop-blur-sm shadow-sm border border-white/5"></div>
+                  {/* Red Push Pin */}
+                  <div className="absolute top-3 right-3 w-3 h-3 rounded-full bg-red-600 shadow-[2px_2px_4px_rgba(0,0,0,0.8),inset_-1px_-1px_2px_rgba(0,0,0,0.5),0_0_10px_rgba(239,68,68,0.8)] border border-red-400 z-20"></div>
+
+                  <div className="border-b border-[#22c55e]/20 pb-2 mb-3">
+                    <h3 className="text-[#22c55e] font-bold text-sm tracking-widest uppercase">
+                      Academic_Record
+                    </h3>
+                  </div>
+                  <div className="space-y-2 text-xs text-[#22c55e]/70 font-mono">
+                    <p>
+                      <span className="text-white">NODE:</span>{" "}
+                      <span className="text-red-400 font-bold">
+                        ABES Engineering College
+                      </span>
+                    </p>
+                    <p>
+                      <span className="text-white">PROGRAM:</span> B.Tech CSE
+                    </p>
+                    <p>
+                      <span className="text-white">CORE:</span> DSA (
+                      <span className="text-red-400 font-bold">JAVA</span>) &
+                      Web Architecture
+                    </p>
+                  </div>
+                </div>
+
+                {/* Bulletin Note 2: Milestones */}
+                <div className="relative bg-[#0a0a0a] border border-[#22c55e]/30 p-5 shadow-[4px_6px_15px_rgba(0,0,0,0.8)] rotate-[1deg] hover:rotate-0 transition-transform duration-300 ml-4">
+                  {/* Duct Tape */}
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-5 bg-white/10 -rotate-2 backdrop-blur-sm shadow-sm border border-white/5"></div>
+                  {/* Red Push Pin */}
+                  <div className="absolute top-3 right-3 w-3 h-3 rounded-full bg-red-600 shadow-[2px_2px_4px_rgba(0,0,0,0.8),inset_-1px_-1px_2px_rgba(0,0,0,0.5),0_0_10px_rgba(239,68,68,0.8)] border border-red-400 z-20"></div>
+
+                  <div className="border-b border-[#22c55e]/20 pb-2 mb-3">
+                    <h3 className="text-[#22c55e] font-bold text-sm tracking-widest uppercase">
+                      Key_Milestones
+                    </h3>
+                  </div>
+                  <ul className="space-y-3 text-xs text-[#22c55e]/70 list-none font-mono">
+                    <li>
+                      <span className="text-white font-bold opacity-50 mr-2">
+                        &gt;
+                      </span>
+                      First-Year Performance:{" "}
+                      <span className="text-red-400 font-bold">9.13 SGPA</span>
+                    </li>
+                    <li>
+                      <span className="text-white font-bold opacity-50 mr-2">
+                        &gt;
+                      </span>
+                      <span className="text-red-400 border-b border-red-400/50 border-dashed pb-0.5">
+                        Technovation Club
+                      </span>{" "}
+                      (Technical Member)
+                    </li>
+                    <li>
+                      <span className="text-white font-bold opacity-50 mr-2">
+                        &gt;
+                      </span>
+                      Targets Locked:{" "}
+                      <span className="text-red-400 animate-pulse">
+                        GSoC / GSSoC
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
-
-          {/* Bulletin Note 2: Milestones */}
-          <div className="relative bg-[#0a0a0a] border border-[#22c55e]/30 p-5 shadow-[4px_6px_15px_rgba(0,0,0,0.8)] rotate-[1deg] hover:rotate-0 transition-transform duration-300 ml-4">
-            {/* Duct Tape */}
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-5 bg-white/10 -rotate-2 backdrop-blur-sm shadow-sm border border-white/5"></div>
-            {/* Red Push Pin */}
-            <div className="absolute top-3 right-3 w-3 h-3 rounded-full bg-red-600 shadow-[2px_2px_4px_rgba(0,0,0,0.8),inset_-1px_-1px_2px_rgba(0,0,0,0.5),0_0_10px_rgba(239,68,68,0.8)] border border-red-400 z-20"></div>
-
-            <div className="border-b border-[#22c55e]/20 pb-2 mb-3">
-              <h3 className="text-[#22c55e] font-bold text-sm tracking-widest uppercase">Key_Milestones</h3>
-            </div>
-            <ul className="space-y-3 text-xs text-[#22c55e]/70 list-none font-mono">
-              <li>
-                <span className="text-white font-bold opacity-50 mr-2">&gt;</span> 
-                First-Year Performance: <span className="text-red-400 font-bold">9.13 SGPA</span>
-              </li>
-              <li>
-                <span className="text-white font-bold opacity-50 mr-2">&gt;</span> 
-                <span className="text-red-400 border-b border-red-400/50 border-dashed pb-0.5">Technovation Club</span> (Technical Member)
-              </li>
-              <li>
-                <span className="text-white font-bold opacity-50 mr-2">&gt;</span> 
-                Targets Locked: <span className="text-red-400 animate-pulse">GSoC / GSSoC</span>
-              </li>
-            </ul>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </Rnd>
-)}
+        </Rnd>
+      )}
     </div>
   );
 }
