@@ -11,6 +11,7 @@ import MatrixRain from "./components/MatrixRain";
 import CustomCursor from "./components/CustomCursor";
 import AsciiRacer from "./components/AsciiRacer";
 import Hologram from "./components/Hologram";
+import Engage2P from "./components/Engage2p";
 
 const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 
@@ -467,6 +468,16 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
     y: 100,
     width: 650,
     height: 400,
+  });
+
+  // --- ENGAGE.2P States ----
+  const [isEngageWindowOpen, setIsEngageWindowOpen] = useState(false);
+  const [isEngageMaximized, setIsEngageMaximized] = useState(false);
+  const [engageConfig, setEngageConfig] = useState({
+    x: window.innerWidth > 900 ? window.innerWidth / 2 - 450 : 20,
+    y: 50,
+    width: 900,
+    height: 650,
   });
 
   // --- GITHUB LIVE COMMIT STREAM ---
@@ -1848,6 +1859,31 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
                     Education.exe
                   </span>
                 </div>
+
+                {/* Desktop Icon: engage.2p (Arcade Fuchsia) */}
+          <div
+            className="flex flex-col items-center cursor-pointer group w-24 mb-4"
+            onClick={() => setIsEngageWindowOpen(true)}
+          >
+            <div className="relative w-12 h-12 mb-3">
+              {/* Layer 1 (Back) */}
+              <div className="absolute inset-0 rounded border border-[#d946ef]/20 bg-transparent flex items-center justify-center text-[#d946ef]/20 transition-all duration-500 ease-out group-hover:translate-x-2 group-hover:translate-y-2 group-hover:scale-105 z-0">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              </div>
+              {/* Layer 2 (Middle) */}
+              <div className="absolute inset-0 rounded border border-[#d946ef]/40 bg-transparent flex items-center justify-center text-[#d946ef]/40 transition-all duration-500 ease-out group-hover:translate-x-1 group-hover:translate-y-1 group-hover:scale-110 z-10">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              </div>
+              {/* Layer 3 (Front & Sweep) */}
+              <div className="absolute inset-0 rounded border border-[#d946ef]/80 bg-[#050505] flex items-center justify-center text-[#d946ef] transition-all duration-500 ease-out group-hover:-translate-x-1.5 group-hover:-translate-y-1.5 group-hover:scale-[1.15] group-hover:border-[#d946ef] group-hover:shadow-[0_0_20px_rgba(217,70,239,0.4)] group-active:scale-95 z-20 overflow-hidden">
+                <svg className="w-6 h-6 group-hover:text-white transition-colors duration-500 relative z-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <div className="absolute top-0 -left-[150%] w-full h-full bg-gradient-to-r from-transparent via-[#d946ef]/60 to-transparent skew-x-[-45deg] transition-all duration-700 ease-in-out group-hover:left-[150%] z-20"></div>
+              </div>
+            </div>
+            <span className="text-xs bg-black/80 px-2 py-0.5 rounded border border-transparent group-hover:border-[#d946ef]/50 text-[#d946ef]/70 group-hover:text-white group-hover:drop-shadow-[0_0_8px_rgba(217,70,239,0.8)] text-center transition-all duration-500 tracking-wider group-hover:-translate-y-1">
+              Engage.2p
+            </span>
+          </div>
               </div>
 
               {/* IDENTITY PROFILE WINDOW (Upgraded with Drag Physics) */}
@@ -3514,6 +3550,66 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
           </div>
         </Rnd>
       )}
+
+      {/* ENGAGE.2P ARCADE WINDOW */}
+        {isEngageWindowOpen && (
+          <Rnd
+            size={isEngageMaximized ? { width: "100%", height: "100%" } : { width: engageConfig.width, height: engageConfig.height }}
+            position={isEngageMaximized ? { x: 0, y: 0 } : { x: engageConfig.x, y: engageConfig.y }}
+            disableDragging={isEngageMaximized}
+            enableResizing={!isEngageMaximized}
+            onDragStop={(e, d) => setEngageConfig((prev) => ({ ...prev, x: d.x, y: d.y }))}
+            onResizeStop={(e, direction, ref, delta, position) => {
+              setEngageConfig({
+                width: parseInt(ref.style.width, 10),
+                height: parseInt(ref.style.height, 10),
+                x: position.x,
+                y: position.y,
+              });
+            }}
+            minWidth={700}
+            minHeight={500}
+            bounds="parent"
+            dragHandleClassName="engage-drag-handle"
+            className={`z-[80] ${isEngageMaximized ? "!transition-all !duration-300" : ""}`}
+          >
+            <div className="w-full h-full bg-[#050505]/95 border border-[#d946ef]/50 rounded shadow-[0_0_40px_rgba(217,70,239,0.15)] flex flex-col overflow-hidden backdrop-blur-md">
+              {/* Title Bar */}
+              <div 
+                className="engage-drag-handle w-full h-8 bg-[#d946ef]/10 border-b border-[#d946ef]/30 flex items-center justify-between px-3 cursor-move"
+                onDoubleClick={() => setIsEngageMaximized(!isEngageMaximized)}
+              >
+                <span className="text-[#d946ef] font-bold text-xs tracking-widest">
+                  /sys/users/vadanta/ENGAGE.2p
+                </span>
+                <div className="flex gap-2">
+                  {/* Fullscreen Toggle */}
+                  <button
+                    onClick={() => setIsEngageMaximized(!isEngageMaximized)}
+                    className="text-[#d946ef] hover:text-white hover:bg-[#d946ef]/40 px-2 py-0.5 rounded transition-all duration-200 text-xs font-bold"
+                  >
+                    {isEngageMaximized ? "[_]" : "[□]"}
+                  </button>
+                  {/* Close Button */}
+                  <button
+                    onClick={() => {
+                      setIsEngageWindowOpen(false);
+                      setIsEngageMaximized(false);
+                    }}
+                    className="text-[#d946ef] hover:text-[#ff3333] hover:bg-[#ff3333]/10 px-2 py-0.5 rounded transition-all duration-200 text-xs font-bold"
+                  >
+                    [X]
+                  </button>
+                </div>
+              </div>
+
+              {/* Game Hub Component */}
+              <div className="flex-1 overflow-hidden">
+                <Engage2P />
+              </div>
+            </div>
+          </Rnd>
+        )}
     </div>
   );
 }
