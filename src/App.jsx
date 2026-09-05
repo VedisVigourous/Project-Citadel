@@ -1253,7 +1253,7 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
           <div
             className="absolute inset-0 flex flex-col items-center justify-center pb-24 pointer-events-none z-0"
             style={{
-              transform: `translate(${bgOffset.x * 1.5}px, ${bgOffset.y * 1.5}px)`,
+              transform: `translate(${bgOffset.x * 2.5}px, ${bgOffset.y * 2.5}px)`,
               transition: "transform 0.1s ease-out",
             }}
           >
