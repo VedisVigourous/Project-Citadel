@@ -682,8 +682,27 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
   };
 
   const handleClearCache = () => {
+    // Close System Menus
+    setActiveMenu(null);
     setIsSystemMenuOpen(false);
+
+    // Terminate Left-Lane Windows
     setIsIdentityWindowOpen(false);
+    setIsProjectsWindowOpen(false);
+    setIsCertsWindowOpen(false);
+    setIsResumeWindowOpen(false);
+
+    // Terminate Right-Lane Windows
+    setIsCommsWindowOpen(false);
+    setIsJourneyWindowOpen(false);
+    setIsCampusWindowOpen(false);
+
+    // Terminate Overlays & Drives
+    setIsThemeModalOpen(false);
+    if (isGitHubMounted) {
+      setIsGitHubMounted(false);
+      setGithubData(null);
+    }
   };
 
   const handleShutdown = () => {
@@ -830,6 +849,7 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
           • theme <deg>     - Shifts global UI hue (e.g., 'theme 180')
           • traceroute      - Pings server node location
           • sudo su         - Attempts root escalation
+          • exit            - Exits the CLI Interface
 
           * Do you like surprises? Try typing: racer
           * [CLASSIFIED]: The system is dreaming. It's time to try -> 'wake up'.`,
@@ -925,17 +945,19 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
             type: "output",
             text: "CRITICAL ERR: ACCESS DENIED. Unauthorized attempt logged and reported to sysadmin.",
           });
-        } else if (lowerCmd === "sudo su") {
-          newHistory.push({
-            type: "output",
-            text: "CRITICAL ERR: ACCESS DENIED. Unauthorized attempt logged and reported to sysadmin.",
-          });
         } else if (lowerCmd === "ssh zion" || lowerCmd === "wake up") {
           setMatrixActive(true);
           setMatrixTerminating(false); // Reset on fresh boot
           newHistory.push({
             type: "output",
             text: "MATRIX PROTOCOL INITIATED. SYSTEM OVERRIDE...",
+          });
+        } else if (lowerCmd === "exit") {
+          setIsTerminalFocused(false);
+          terminalInputRef.current?.blur();
+          newHistory.push({
+            type: "output",
+            text: "[SYSTEM] CLI session suspended. Returning to background mode.",
           });
 
           // Phase 1: Stop spawning new rain after 6 seconds
@@ -2389,10 +2411,10 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
               <div
                 className={`absolute bottom-0 w-full font-mono text-xs transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden pointer-events-auto flex flex-col justify-end ${
                   isRacerActive
-                    ? "h-[100vh] max-h-[100vh] bg-[#050505] z-[9999]"
+                    ? "h-[100vh] bg-[#050505] z-[9999]"
                     : isTerminalFocused
-                      ? "h-[50vh] max-h-[50vh] bg-[#050505]/95 backdrop-blur-md border-t border-[#22c55e]/30 shadow-[0_-10px_30px_rgba(34,197,94,0.15)] z-[80]"
-                      : "h-[44px] max-h-[44px] bg-[#050505]/60 backdrop-blur-sm border-t border-[#22c55e]/20 shadow-none z-[80]"
+                      ? "bg-[#050505]/95 backdrop-blur-md border-t border-[#22c55e]/30 shadow-[0_-10px_30px_rgba(34,197,94,0.15)] z-[80]"
+                      : "bg-[#050505]/60 backdrop-blur-sm border-t border-[#22c55e]/10 shadow-none z-[80]"
                 }`}
               >
                 {/* Idle Clue & Toggle Arrow Container */}
