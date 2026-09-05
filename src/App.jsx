@@ -201,12 +201,35 @@ const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 \\end{document}`;
 
 function App() {
-  // --- VISITOR TRACKING ---
+  // --- VISITOR TRACKING SYSTEM ---
   const [visitorCount, setVisitorCount] = useState(0);
+  const [visitorLogs, setVisitorLogs] = useState([]);
+  const hasCounted = useRef(false);
+
   useEffect(() => {
-    const localVisits = parseInt(localStorage.getItem('vadanta_os_visits') || '0') + 1;
-    localStorage.setItem('vadanta_os_visits', localVisits.toString());
-    setVisitorCount(8492 + localVisits); // Baseline global traffic + local visits
+    // React StrictMode shield: prevents double-counting on dev reloads
+    if (hasCounted.current) return;
+    hasCounted.current = true;
+
+    // 1. Fetch previous count, add 1 for this exact load
+    const currentVisits = parseInt(localStorage.getItem('vadanta_os_visits') || '0') + 1;
+    
+    // 2. Save the new count back to memory
+    localStorage.setItem('vadanta_os_visits', currentVisits.toString());
+    
+    // 3. Set the UI state
+    setVisitorCount(currentVisits);
+
+    // 4. Generate the terminal logs
+    const generateIP = () => `${Math.floor(Math.random() * 200) + 10}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 100)}.XXX`;
+
+    setVisitorLogs([
+      { id: currentVisits, ip: "NODE_LOCAL", msg: `Hey 👋🏻 visitor #${currentVisits}`, isCurrent: true },
+      { id: Math.max(0, currentVisits - 1), ip: generateIP(), msg: "Session terminated. Connection closed.", isCurrent: false },
+      { id: Math.max(0, currentVisits - 2), ip: generateIP(), msg: "Payload downloaded: RESUME.tex", isCurrent: false },
+      { id: Math.max(0, currentVisits - 3), ip: generateIP(), msg: "Ping successful. Data routed.", isCurrent: false },
+      { id: Math.max(0, currentVisits - 4), ip: generateIP(), msg: "Unauthorized access attempt blocked.", isCurrent: false },
+    ]);
   }, []);
 
   const [isHologramActive, setIsHologramActive] = useState(false);
@@ -1317,13 +1340,10 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
                 </span>
               </button>
 
-              {/* Live Visitor Metrics */}
-              <div className="flex items-center gap-3 bg-[#050505]/60 border border-[#22c55e]/30 px-5 py-2.5 rounded backdrop-blur-md shadow-[0_0_15px_rgba(0,0,0,0.5)]">
-                <span className="text-[#22c55e]/50 text-[10px] font-bold tracking-widest uppercase">
-                  Global_Traffic //
-                </span>
-                <span className="text-[#22c55e]/80 text-xs font-bold tracking-widest animate-pulse">
-                  VISITOR #{visitorCount}
+              {/* Live Visitor Metrics (Updated Greeting) */}
+              <div className="flex items-center justify-center bg-[#050505]/60 border border-[#22c55e]/30 px-5 py-2.5 rounded backdrop-blur-md shadow-[0_0_15px_rgba(0,0,0,0.5)]">
+                <span className="text-[#22c55e] text-xs font-bold tracking-widest animate-pulse">
+                  Hey👋🏻! Visitor #{visitorCount}
                 </span>
               </div>
             </div>
