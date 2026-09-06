@@ -62,12 +62,12 @@ export default function ChronosSplash({ onComplete }) {
     setRainColumns(columns);
 
     // BACKGROUND ANIMATIONS
-    gsap.to(".bg-matrix", {
-      x: "-20%",
-      duration: 20,
-      repeat: -1,
-      ease: "none"
-    });
+    // gsap.to(".bg-matrix", {
+    //   x: "-20%",
+    //   duration: 20,
+    //   repeat: -1,
+    //   ease: "none"
+    // });
 
     gsap.to(".stencil-layer", {
       "--mask-size": "35%",
@@ -151,7 +151,7 @@ export default function ChronosSplash({ onComplete }) {
   }, [onComplete]);
 
   return (
-    <div ref={containerRef} className="fixed inset-0 z-50 overflow-hidden bg-black flex items-center justify-center">
+    <div ref={containerRef} className="fixed inset-0 z-50 overflow-hidden bg-black flex items-center justify-center z-[99999999] cursor-none">
       
       {/* LAYER 1: Diagonal Matrix */}
       <div className="bg-matrix-container absolute inset-0 whitespace-nowrap opacity-20 text-neutral-900 font-mono text-2xl font-black flex flex-col justify-center gap-4 rotate-[-12deg] scale-150">
