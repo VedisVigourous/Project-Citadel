@@ -9,7 +9,7 @@ import emailjs from "@emailjs/browser";
 import JourneyLog from "./components/JourneyLog";
 import MatrixRain from "./components/MatrixRain";
 import CustomCursor from "./components/CustomCursor";
-import AsciiRacer from "./components/AsciiRacer";
+import TerminalArcade from "./components/TerminalArcade";
 import Hologram from "./components/Hologram";
 import Engage2P from "./components/Engage2p";
 
@@ -213,23 +213,50 @@ function App() {
     hasCounted.current = true;
 
     // 1. Fetch previous count, add 1 for this exact load
-    const currentVisits = parseInt(localStorage.getItem('vadanta_os_visits') || '0') + 1;
-    
+    const currentVisits =
+      parseInt(localStorage.getItem("vadanta_os_visits") || "0") + 1;
+
     // 2. Save the new count back to memory
-    localStorage.setItem('vadanta_os_visits', currentVisits.toString());
-    
+    localStorage.setItem("vadanta_os_visits", currentVisits.toString());
+
     // 3. Set the UI state
     setVisitorCount(currentVisits);
 
     // 4. Generate the terminal logs
-    const generateIP = () => `${Math.floor(Math.random() * 200) + 10}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 100)}.XXX`;
+    const generateIP = () =>
+      `${Math.floor(Math.random() * 200) + 10}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 100)}.XXX`;
 
     setVisitorLogs([
-      { id: currentVisits, ip: "NODE_LOCAL", msg: `Hey 👋🏻 visitor #${currentVisits}`, isCurrent: true },
-      { id: Math.max(0, currentVisits - 1), ip: generateIP(), msg: "Session terminated. Connection closed.", isCurrent: false },
-      { id: Math.max(0, currentVisits - 2), ip: generateIP(), msg: "Payload downloaded: RESUME.tex", isCurrent: false },
-      { id: Math.max(0, currentVisits - 3), ip: generateIP(), msg: "Ping successful. Data routed.", isCurrent: false },
-      { id: Math.max(0, currentVisits - 4), ip: generateIP(), msg: "Unauthorized access attempt blocked.", isCurrent: false },
+      {
+        id: currentVisits,
+        ip: "NODE_LOCAL",
+        msg: `Hey 👋🏻 visitor #${currentVisits}`,
+        isCurrent: true,
+      },
+      {
+        id: Math.max(0, currentVisits - 1),
+        ip: generateIP(),
+        msg: "Session terminated. Connection closed.",
+        isCurrent: false,
+      },
+      {
+        id: Math.max(0, currentVisits - 2),
+        ip: generateIP(),
+        msg: "Payload downloaded: RESUME.tex",
+        isCurrent: false,
+      },
+      {
+        id: Math.max(0, currentVisits - 3),
+        ip: generateIP(),
+        msg: "Ping successful. Data routed.",
+        isCurrent: false,
+      },
+      {
+        id: Math.max(0, currentVisits - 4),
+        ip: generateIP(),
+        msg: "Unauthorized access attempt blocked.",
+        isCurrent: false,
+      },
     ]);
   }, []);
 
@@ -256,7 +283,8 @@ function App() {
   // --- TERMINAL CONTACT & SECRETS STATES ---
   const [terminalMode, setTerminalMode] = useState("NORMAL"); // 'NORMAL', 'PING_EMAIL', 'PING_MSG'
   const [pingData, setPingData] = useState({ email: "", message: "" });
-  const [isRacerActive, setIsRacerActive] = useState(false);
+  const [isArcadeActive, setIsArcadeActive] = useState(false);
+  const [isArcadeMounting, setIsArcadeMounting] = useState(false);
   const [matrixActive, setMatrixActive] = useState(false);
   const [matrixTerminating, setMatrixTerminating] = useState(false);
 
@@ -893,7 +921,7 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
           • sudo su         - Attempts root escalation
           • exit            - Exits the CLI Interface
 
-          * Do you like surprises? Try typing: racer
+          * Do you like surprises? Try typing: arcade
           * [CLASSIFIED]: The system is dreaming. It's time to try -> 'wake up'.`,
           });
         } else if (lowerCmd === "ls") {
@@ -948,12 +976,15 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
  > Exploring Cloud-native deployments & API integrations
  > Open-Source Targets: GSoC / GSSoC`,
           });
-        } else if (lowerCmd === "racer") {
+        } else if (lowerCmd === "games" || lowerCmd === "arcade") {
           newHistory.push({
             type: "output",
-            text: "INITIATING ASCII HIGHWAY PROTOCOL...",
+            text: "INITIATING SYS_ARCADE PROTOCOL... EXPANDING TERMINAL_VIEW",
           });
-          setIsRacerActive(true);
+          setIsArcadeMounting(true); // Triggers the physical slide-up
+          setTimeout(() => {
+            setIsArcadeActive(true); // Mounts the glowing menu after the slide completes
+          }, 700);
         } else if (baseCmd === "theme") {
           const hue = parseInt(cmdParts[1]);
           if (!isNaN(hue)) {
@@ -1064,7 +1095,7 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#050505_100%)] pointer-events-none z-[3]"></div>
 
           {/* --- LAYER 3.5: CHAOTIC FULL-WIDTH AUDIO VISUALIZER (z-[4]) --- */}
-          {!isRacerActive && (
+          {!isArcadeActive && (
             <div className="absolute bottom-[40px] left-0 w-full flex items-end justify-center gap-[4px] px-4 h-20 z-[4] pointer-events-none opacity-40 overflow-hidden">
               {[...Array(190)].map((_, i) => (
                 <div
@@ -1285,95 +1316,110 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
             </div>
 
             {/* DESKTOP WORKSPACE */}
-        <div className="flex-grow p-4 relative overflow-hidden">
-          
-          {/* --- CENTRAL CHART & MODULES --- */}
-          <div
-            className="absolute inset-0 flex flex-col items-center justify-center pb-24 pointer-events-none z-0"
-            style={{
-              transform: `translate(${bgOffset.x * 2.5}px, ${bgOffset.y * 2.5}px)`,
-              transition: "transform 0.1s ease-out",
-            }}
-          >
-            {/* TOP ROW: GitHub & Socials */}
-            <div className="flex items-center gap-4 mb-6 relative z-50">
-              {/* GitHub Node */}
-              <a
-                href="https://github.com/VedisVigourous"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 bg-[#050505]/60 border border-[#22c55e]/30 px-5 py-2 rounded-full backdrop-blur-md shadow-[0_0_15px_rgba(34,197,94,0.1)] pointer-events-auto cursor-pointer hover:scale-105 hover:bg-[#22c55e]/20 hover:border-[#22c55e]/70 group transition-all duration-300"
+            <div className="flex-grow p-4 relative overflow-hidden">
+              {/* --- CENTRAL CHART & MODULES --- */}
+              <div
+                className="absolute inset-0 flex flex-col items-center justify-center pb-24 pointer-events-none z-0"
+                style={{
+                  transform: `translate(${bgOffset.x * 2.5}px, ${bgOffset.y * 2.5}px)`,
+                  transition: "transform 0.1s ease-out",
+                }}
               >
-                <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-[#22c55e]/70 group-hover:text-[#22c55e] transition-colors">
-                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-                </svg>
-                <span className="text-[#22c55e]/70 group-hover:text-[#22c55e] text-sm font-bold tracking-widest uppercase transition-colors">
-                  vedisvigourous
-                </span>
-              </a>
+                {/* TOP ROW: GitHub & Socials */}
+                <div className="flex items-center gap-4 mb-6 relative z-50">
+                  {/* GitHub Node */}
+                  <a
+                    href="https://github.com/VedisVigourous"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 bg-[#050505]/60 border border-[#22c55e]/30 px-5 py-2 rounded-full backdrop-blur-md shadow-[0_0_15px_rgba(34,197,94,0.1)] pointer-events-auto cursor-pointer hover:scale-105 hover:bg-[#22c55e]/20 hover:border-[#22c55e]/70 group transition-all duration-300"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className="w-5 h-5 text-[#22c55e]/70 group-hover:text-[#22c55e] transition-colors"
+                    >
+                      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                    </svg>
+                    <span className="text-[#22c55e]/70 group-hover:text-[#22c55e] text-sm font-bold tracking-widest uppercase transition-colors">
+                      vedisvigourous
+                    </span>
+                  </a>
 
-              {/* LinkedIn Node */}
-              <a 
-                href="https://linkedin.com/in/vadanta" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="flex items-center gap-2 bg-[#050505]/60 border border-[#22c55e]/30 px-5 py-2 rounded-full backdrop-blur-md shadow-[0_0_15px_rgba(34,197,94,0.1)] pointer-events-auto cursor-pointer hover:scale-105 hover:bg-[#22c55e]/20 hover:border-[#22c55e]/70 group transition-all duration-300 ml-2"
-              >
-                <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-[#22c55e]/70 group-hover:text-[#22c55e] transition-colors">
-                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-                </svg>
-                <span className="text-[#22c55e]/70 group-hover:text-[#22c55e] text-xs font-bold tracking-widest uppercase transition-colors">
-                  LinkedIn
-                </span>
-              </a>
+                  {/* LinkedIn Node */}
+                  <a
+                    href="https://linkedin.com/in/vadanta"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 bg-[#050505]/60 border border-[#22c55e]/30 px-5 py-2 rounded-full backdrop-blur-md shadow-[0_0_15px_rgba(34,197,94,0.1)] pointer-events-auto cursor-pointer hover:scale-105 hover:bg-[#22c55e]/20 hover:border-[#22c55e]/70 group transition-all duration-300 ml-2"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className="w-4 h-4 text-[#22c55e]/70 group-hover:text-[#22c55e] transition-colors"
+                    >
+                      <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                    </svg>
+                    <span className="text-[#22c55e]/70 group-hover:text-[#22c55e] text-xs font-bold tracking-widest uppercase transition-colors">
+                      LinkedIn
+                    </span>
+                  </a>
 
-              {/* Instagram Node */}
-              <a 
-                href="https://instagram.com/vedant_chauhaan" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="flex items-center gap-2 bg-[#050505]/60 border border-[#22c55e]/30 px-5 py-2 rounded-full backdrop-blur-md shadow-[0_0_15px_rgba(34,197,94,0.1)] pointer-events-auto cursor-pointer hover:scale-105 hover:bg-[#22c55e]/20 hover:border-[#22c55e]/70 group transition-all duration-300"
-              >
-                <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-[#22c55e]/70 group-hover:text-[#22c55e] transition-colors">
-                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                </svg>
-                <span className="text-[#22c55e]/70 group-hover:text-[#22c55e] text-xs font-bold tracking-widest uppercase transition-colors">
-                  Instagram
-                </span>
-              </a>
-            </div>
+                  {/* Instagram Node */}
+                  <a
+                    href="https://instagram.com/vedant_chauhaan"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 bg-[#050505]/60 border border-[#22c55e]/30 px-5 py-2 rounded-full backdrop-blur-md shadow-[0_0_15px_rgba(34,197,94,0.1)] pointer-events-auto cursor-pointer hover:scale-105 hover:bg-[#22c55e]/20 hover:border-[#22c55e]/70 group transition-all duration-300"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className="w-4 h-4 text-[#22c55e]/70 group-hover:text-[#22c55e] transition-colors"
+                    >
+                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                    </svg>
+                    <span className="text-[#22c55e]/70 group-hover:text-[#22c55e] text-xs font-bold tracking-widest uppercase transition-colors">
+                      Instagram
+                    </span>
+                  </a>
+                </div>
 
-            {/* CENTER: The Chart */}
-            <div className="relative p-4 rounded-xl border border-[#22c55e]/20 bg-[#050505]/40 backdrop-blur-sm shadow-[0_0_20px_rgba(0,0,0,0.5)]">
-              <img
-                src="https://ghchart.rshah.org/22c55e/vedisvigourous"
-                alt="VedisVigourous Live Commits"
-                className="w-[75vw] max-w-5xl opacity-70"
-                style={{ filter: "invert(0.85) hue-rotate(180deg) contrast(1.8)" }}
-              />
-            </div>
+                {/* CENTER: The Chart */}
+                <div className="relative p-4 rounded-xl border border-[#22c55e]/20 bg-[#050505]/40 backdrop-blur-sm shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+                  <img
+                    src="https://ghchart.rshah.org/22c55e/vedisvigourous"
+                    alt="VedisVigourous Live Commits"
+                    className="w-[75vw] max-w-5xl opacity-70"
+                    style={{
+                      filter: "invert(0.85) hue-rotate(180deg) contrast(1.8)",
+                    }}
+                  />
+                </div>
 
-            {/* BOTTOM ROW: AI Agent & Traffic Tracker */}
-            <div className="flex items-center justify-between w-[75vw] max-w-5xl mt-6">
-              {/* AI Chatbot Trigger */}
-              <button 
-                className="flex items-center gap-2 bg-[#050505]/60 border border-[#22c55e]/30 px-5 py-2.5 rounded backdrop-blur-md shadow-[0_0_15px_rgba(34,197,94,0.1)] pointer-events-auto cursor-pointer hover:bg-[#22c55e]/20 hover:border-[#22c55e]/70 group transition-all duration-300"
-                onClick={() => {/* Trigger AI Modal Logic Here */}}
-              >
-                <div className="w-2 h-2 rounded-full bg-[#22c55e]/70 group-hover:bg-[#22c55e] animate-pulse"></div>
-                <span className="text-xs font-bold tracking-widest uppercase text-[#22c55e]/70 group-hover:text-[#22c55e] transition-colors">
-                  Initialize_AI_Proxy
-                </span>
-              </button>
+                {/* BOTTOM ROW: AI Agent & Traffic Tracker */}
+                <div className="flex items-center justify-between w-[75vw] max-w-5xl mt-6">
+                  {/* AI Chatbot Trigger */}
+                  <button
+                    className="flex items-center gap-2 bg-[#050505]/60 border border-[#22c55e]/30 px-5 py-2.5 rounded backdrop-blur-md shadow-[0_0_15px_rgba(34,197,94,0.1)] pointer-events-auto cursor-pointer hover:bg-[#22c55e]/20 hover:border-[#22c55e]/70 group transition-all duration-300"
+                    onClick={() => {
+                      /* Trigger AI Modal Logic Here */
+                    }}
+                  >
+                    <div className="w-2 h-2 rounded-full bg-[#22c55e]/70 group-hover:bg-[#22c55e] animate-pulse"></div>
+                    <span className="text-xs font-bold tracking-widest uppercase text-[#22c55e]/70 group-hover:text-[#22c55e] transition-colors">
+                      Initialize_AI_Proxy
+                    </span>
+                  </button>
 
-              {/* Live Visitor Metrics (Updated Greeting) */}
-              <div className="flex items-center justify-center bg-[#050505]/60 border border-[#22c55e]/30 px-5 py-2.5 rounded backdrop-blur-md shadow-[0_0_15px_rgba(0,0,0,0.5)]">
-                <span className="text-[#22c55e] text-xs font-bold tracking-widest animate-pulse">
-                  Hey👋🏻! Visitor #{visitorCount}
-                </span>
+                  {/* Live Visitor Metrics (Updated Greeting) */}
+                  <div className="flex items-center justify-center bg-[#050505]/60 border border-[#22c55e]/30 px-5 py-2.5 rounded backdrop-blur-md shadow-[0_0_15px_rgba(0,0,0,0.5)]">
+                    <span className="text-[#22c55e] text-xs font-bold tracking-widest animate-pulse">
+                      Hey👋🏻! Visitor #{visitorCount}
+                    </span>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
 
               {/* Desktop Icons */}
               <div className="flex flex-col space-y-6 w-24 mt-4">
@@ -1861,29 +1907,83 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
                 </div>
 
                 {/* Desktop Icon: engage.2p (Arcade Fuchsia) */}
-          <div
-            className="flex flex-col items-center cursor-pointer group w-24 mb-4"
-            onClick={() => setIsEngageWindowOpen(true)}
-          >
-            <div className="relative w-12 h-12 mb-3">
-              {/* Layer 1 (Back) */}
-              <div className="absolute inset-0 rounded border border-[#d946ef]/20 bg-transparent flex items-center justify-center text-[#d946ef]/20 transition-all duration-500 ease-out group-hover:translate-x-2 group-hover:translate-y-2 group-hover:scale-105 z-0">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-              </div>
-              {/* Layer 2 (Middle) */}
-              <div className="absolute inset-0 rounded border border-[#d946ef]/40 bg-transparent flex items-center justify-center text-[#d946ef]/40 transition-all duration-500 ease-out group-hover:translate-x-1 group-hover:translate-y-1 group-hover:scale-110 z-10">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-              </div>
-              {/* Layer 3 (Front & Sweep) */}
-              <div className="absolute inset-0 rounded border border-[#d946ef]/80 bg-[#050505] flex items-center justify-center text-[#d946ef] transition-all duration-500 ease-out group-hover:-translate-x-1.5 group-hover:-translate-y-1.5 group-hover:scale-[1.15] group-hover:border-[#d946ef] group-hover:shadow-[0_0_20px_rgba(217,70,239,0.4)] group-active:scale-95 z-20 overflow-hidden">
-                <svg className="w-6 h-6 group-hover:text-white transition-colors duration-500 relative z-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                <div className="absolute top-0 -left-[150%] w-full h-full bg-gradient-to-r from-transparent via-[#d946ef]/60 to-transparent skew-x-[-45deg] transition-all duration-700 ease-in-out group-hover:left-[150%] z-20"></div>
-              </div>
-            </div>
-            <span className="text-xs bg-black/80 px-2 py-0.5 rounded border border-transparent group-hover:border-[#d946ef]/50 text-[#d946ef]/70 group-hover:text-white group-hover:drop-shadow-[0_0_8px_rgba(217,70,239,0.8)] text-center transition-all duration-500 tracking-wider group-hover:-translate-y-1">
-              Engage.2p
-            </span>
-          </div>
+                <div
+                  className="flex flex-col items-center cursor-pointer group w-24 mb-4"
+                  onClick={() => setIsEngageWindowOpen(true)}
+                >
+                  <div className="relative w-12 h-12 mb-3">
+                    {/* Layer 1 (Back) */}
+                    <div className="absolute inset-0 rounded border border-[#d946ef]/20 bg-transparent flex items-center justify-center text-[#d946ef]/20 transition-all duration-500 ease-out group-hover:translate-x-2 group-hover:translate-y-2 group-hover:scale-105 z-0">
+                      <svg
+                        className="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                        ></path>
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        ></path>
+                      </svg>
+                    </div>
+                    {/* Layer 2 (Middle) */}
+                    <div className="absolute inset-0 rounded border border-[#d946ef]/40 bg-transparent flex items-center justify-center text-[#d946ef]/40 transition-all duration-500 ease-out group-hover:translate-x-1 group-hover:translate-y-1 group-hover:scale-110 z-10">
+                      <svg
+                        className="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                        ></path>
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        ></path>
+                      </svg>
+                    </div>
+                    {/* Layer 3 (Front & Sweep) */}
+                    <div className="absolute inset-0 rounded border border-[#d946ef]/80 bg-[#050505] flex items-center justify-center text-[#d946ef] transition-all duration-500 ease-out group-hover:-translate-x-1.5 group-hover:-translate-y-1.5 group-hover:scale-[1.15] group-hover:border-[#d946ef] group-hover:shadow-[0_0_20px_rgba(217,70,239,0.4)] group-active:scale-95 z-20 overflow-hidden">
+                      <svg
+                        className="w-6 h-6 group-hover:text-white transition-colors duration-500 relative z-30"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                        ></path>
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        ></path>
+                      </svg>
+                      <div className="absolute top-0 -left-[150%] w-full h-full bg-gradient-to-r from-transparent via-[#d946ef]/60 to-transparent skew-x-[-45deg] transition-all duration-700 ease-in-out group-hover:left-[150%] z-20"></div>
+                    </div>
+                  </div>
+                  <span className="text-xs bg-black/80 px-2 py-0.5 rounded border border-transparent group-hover:border-[#d946ef]/50 text-[#d946ef]/70 group-hover:text-white group-hover:drop-shadow-[0_0_8px_rgba(217,70,239,0.8)] text-center transition-all duration-500 tracking-wider group-hover:-translate-y-1">
+                    Engage.2p
+                  </span>
+                </div>
               </div>
 
               {/* IDENTITY PROFILE WINDOW (Upgraded with Drag Physics) */}
@@ -2535,7 +2635,7 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
               {/* 2. MAIN TERMINAL BAR */}
               <div
                 className={`absolute bottom-0 w-full font-mono text-xs transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden pointer-events-auto flex flex-col justify-end ${
-                  isRacerActive
+                  isArcadeActive || isArcadeMounting
                     ? "h-[100vh] bg-[#050505] z-[9999]"
                     : isTerminalFocused
                       ? "bg-[#050505]/95 backdrop-blur-md border-t border-[#22c55e]/30 shadow-[0_-10px_30px_rgba(34,197,94,0.15)] z-[80]"
@@ -2586,7 +2686,7 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
                 {/* INTEGRATED GITHUB HUD (Visible ONLY when CLI is focused) */}
                 <div
                   className={`absolute right-0 top-0 bottom-0 w-[340px] border-l border-[#22c55e]/20 bg-gradient-to-r from-transparent to-[#050505]/80 p-5 flex flex-col justify-end transition-all duration-700 delay-100 ${
-                    isTerminalFocused && !isRacerActive
+                    isTerminalFocused && !isArcadeActive
                       ? "opacity-100 translate-x-0"
                       : "opacity-0 translate-x-12 pointer-events-none"
                   }`}
@@ -2636,23 +2736,24 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
                 {/* 3. TERMINAL CHAT AREA */}
                 <div
                   className={`w-full h-full px-4 py-3 flex flex-col justify-end transition-all duration-700 ${
-                    isTerminalFocused && !isRacerActive ? "pr-[360px]" : "pr-4"
+                    isTerminalFocused && !isArcadeActive ? "pr-[360px]" : "pr-4"
                   }`}
                 >
-                  {isRacerActive ? (
-                    <AsciiRacer
+                  {isArcadeActive ? (
+                    <TerminalArcade
                       onExit={() => {
-                        setIsRacerActive(false);
+                        setIsArcadeActive(false);
+                        setIsArcadeMounting(false);
                         setTerminalHistory((prev) => [
                           ...prev,
                           {
                             type: "output",
-                            text: "[SYSTEM] HIGHWAY RACER TERMINATED. SYSTEM NORMALIZED.",
+                            text: "[SYSTEM] SYS_ARCADE TERMINATED. SYSTEM NORMALIZED.",
                           },
                         ]);
                         setTimeout(
                           () => terminalInputRef.current?.focus(),
-                          100,
+                          800,
                         );
                       }}
                     />
@@ -3305,17 +3406,16 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
                   </button>
                 </div>
               ) : (
-              <div className="flex flex-col h-full space-y-4">
-                
-                {/* Manual Fallback Email */}
-                <div className="shrink-0 text-center mb-2 pb-3 border-b border-[#22c55e]/20">
-                  <span className="text-[#22c55e]/60 text-[9px] tracking-widest uppercase block mb-1.5">
-                    Or Route Manually To:
-                  </span>
-                  <span className="text-white text-xs font-mono tracking-widest select-all cursor-pointer bg-[#22c55e]/10 px-3 py-1.5 rounded border border-[#22c55e]/30 shadow-inner">
-                    vadanta592007@hotmail.com
-                  </span>
-                </div>
+                <div className="flex flex-col h-full space-y-4">
+                  {/* Manual Fallback Email */}
+                  <div className="shrink-0 text-center mb-2 pb-3 border-b border-[#22c55e]/20">
+                    <span className="text-[#22c55e]/60 text-[9px] tracking-widest uppercase block mb-1.5">
+                      Or Route Manually To:
+                    </span>
+                    <span className="text-white text-xs font-mono tracking-widest select-all cursor-pointer bg-[#22c55e]/10 px-3 py-1.5 rounded border border-[#22c55e]/30 shadow-inner">
+                      vadanta592007@hotmail.com
+                    </span>
+                  </div>
                   {/* Email Input */}
                   <div className="shrink-0">
                     <label className="block text-[10px] uppercase tracking-widest mb-1 text-white/70">
@@ -3552,64 +3652,74 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
       )}
 
       {/* ENGAGE.2P ARCADE WINDOW */}
-        {isEngageWindowOpen && (
-          <Rnd
-            size={isEngageMaximized ? { width: "100%", height: "100%" } : { width: engageConfig.width, height: engageConfig.height }}
-            position={isEngageMaximized ? { x: 0, y: 0 } : { x: engageConfig.x, y: engageConfig.y }}
-            disableDragging={isEngageMaximized}
-            enableResizing={!isEngageMaximized}
-            onDragStop={(e, d) => setEngageConfig((prev) => ({ ...prev, x: d.x, y: d.y }))}
-            onResizeStop={(e, direction, ref, delta, position) => {
-              setEngageConfig({
-                width: parseInt(ref.style.width, 10),
-                height: parseInt(ref.style.height, 10),
-                x: position.x,
-                y: position.y,
-              });
-            }}
-            minWidth={700}
-            minHeight={500}
-            bounds="parent"
-            dragHandleClassName="engage-drag-handle"
-            className={`z-[80] ${isEngageMaximized ? "!transition-all !duration-300" : ""}`}
-          >
-            <div className="w-full h-full bg-[#050505]/95 border border-[#d946ef]/50 rounded shadow-[0_0_40px_rgba(217,70,239,0.15)] flex flex-col overflow-hidden backdrop-blur-md">
-              {/* Title Bar */}
-              <div 
-                className="engage-drag-handle w-full h-8 bg-[#d946ef]/10 border-b border-[#d946ef]/30 flex items-center justify-between px-3 cursor-move"
-                onDoubleClick={() => setIsEngageMaximized(!isEngageMaximized)}
-              >
-                <span className="text-[#d946ef] font-bold text-xs tracking-widest">
-                  /sys/users/vadanta/ENGAGE.2p
-                </span>
-                <div className="flex gap-2">
-                  {/* Fullscreen Toggle */}
-                  <button
-                    onClick={() => setIsEngageMaximized(!isEngageMaximized)}
-                    className="text-[#d946ef] hover:text-white hover:bg-[#d946ef]/40 px-2 py-0.5 rounded transition-all duration-200 text-xs font-bold"
-                  >
-                    {isEngageMaximized ? "[_]" : "[□]"}
-                  </button>
-                  {/* Close Button */}
-                  <button
-                    onClick={() => {
-                      setIsEngageWindowOpen(false);
-                      setIsEngageMaximized(false);
-                    }}
-                    className="text-[#d946ef] hover:text-[#ff3333] hover:bg-[#ff3333]/10 px-2 py-0.5 rounded transition-all duration-200 text-xs font-bold"
-                  >
-                    [X]
-                  </button>
-                </div>
-              </div>
-
-              {/* Game Hub Component */}
-              <div className="flex-1 overflow-hidden">
-                <Engage2P />
+      {isEngageWindowOpen && (
+        <Rnd
+          size={
+            isEngageMaximized
+              ? { width: "100%", height: "100%" }
+              : { width: engageConfig.width, height: engageConfig.height }
+          }
+          position={
+            isEngageMaximized
+              ? { x: 0, y: 0 }
+              : { x: engageConfig.x, y: engageConfig.y }
+          }
+          disableDragging={isEngageMaximized}
+          enableResizing={!isEngageMaximized}
+          onDragStop={(e, d) =>
+            setEngageConfig((prev) => ({ ...prev, x: d.x, y: d.y }))
+          }
+          onResizeStop={(e, direction, ref, delta, position) => {
+            setEngageConfig({
+              width: parseInt(ref.style.width, 10),
+              height: parseInt(ref.style.height, 10),
+              x: position.x,
+              y: position.y,
+            });
+          }}
+          minWidth={700}
+          minHeight={500}
+          bounds="parent"
+          dragHandleClassName="engage-drag-handle"
+          className={`z-[80] ${isEngageMaximized ? "!transition-all !duration-300" : ""}`}
+        >
+          <div className="w-full h-full bg-[#050505]/95 border border-[#d946ef]/50 rounded shadow-[0_0_40px_rgba(217,70,239,0.15)] flex flex-col overflow-hidden backdrop-blur-md">
+            {/* Title Bar */}
+            <div
+              className="engage-drag-handle w-full h-8 bg-[#d946ef]/10 border-b border-[#d946ef]/30 flex items-center justify-between px-3 cursor-move"
+              onDoubleClick={() => setIsEngageMaximized(!isEngageMaximized)}
+            >
+              <span className="text-[#d946ef] font-bold text-xs tracking-widest">
+                /sys/users/vadanta/ENGAGE.2p
+              </span>
+              <div className="flex gap-2">
+                {/* Fullscreen Toggle */}
+                <button
+                  onClick={() => setIsEngageMaximized(!isEngageMaximized)}
+                  className="text-[#d946ef] hover:text-white hover:bg-[#d946ef]/40 px-2 py-0.5 rounded transition-all duration-200 text-xs font-bold"
+                >
+                  {isEngageMaximized ? "[_]" : "[□]"}
+                </button>
+                {/* Close Button */}
+                <button
+                  onClick={() => {
+                    setIsEngageWindowOpen(false);
+                    setIsEngageMaximized(false);
+                  }}
+                  className="text-[#d946ef] hover:text-[#ff3333] hover:bg-[#ff3333]/10 px-2 py-0.5 rounded transition-all duration-200 text-xs font-bold"
+                >
+                  [X]
+                </button>
               </div>
             </div>
-          </Rnd>
-        )}
+
+            {/* Game Hub Component */}
+            <div className="flex-1 overflow-hidden">
+              <Engage2P />
+            </div>
+          </div>
+        </Rnd>
+      )}
     </div>
   );
 }
