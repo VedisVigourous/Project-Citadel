@@ -752,22 +752,46 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
   };
 
   const handleClearCache = () => {
-    // Close System Menus
+    // 1. Close System Menus
     setActiveMenu(null);
     setIsSystemMenuOpen(false);
 
-    // Terminate Left-Lane Windows
+    // 2. Terminate All Windows
     setIsIdentityWindowOpen(false);
     setIsProjectsWindowOpen(false);
     setIsCertsWindowOpen(false);
     setIsResumeWindowOpen(false);
-
-    // Terminate Right-Lane Windows
     setIsCommsWindowOpen(false);
     setIsJourneyWindowOpen(false);
     setIsCampusWindowOpen(false);
+    setIsEngageWindowOpen(false);
+    setIsEngageMaximized(false);
 
-    // Terminate Overlays & Drives
+    // 3. HARD RESET all react-rnd configurations to defaults
+    setIdentityConfig({ x: 140, y: 30, width: 325, height: 390 });
+    setProjectsConfig({ x: 150, y: 120, width: 500, height: 450 });
+    setCertsConfig({ x: 200, y: 150, width: 550, height: 450 });
+    setCampusConfig({ x: 220, y: 100, width: 650, height: 400 });
+    setJourneyConfig({
+      x: window.innerWidth > 768 ? 100 : 10,
+      y: window.innerHeight > 768 ? 80 : 20,
+      width: 800,
+      height: 550,
+    });
+    setCommsConfig({
+      x: window.innerWidth > 768 ? window.innerWidth / 2 - 225 : 20,
+      y: window.innerHeight > 768 ? window.innerHeight / 2 - 200 : 40,
+      width: 450,
+      height: 400,
+    });
+    setEngageConfig({
+      x: window.innerWidth > 900 ? window.innerWidth / 2 - 450 : 20,
+      y: 50,
+      width: 900,
+      height: 650,
+    });
+
+    // 4. Terminate Overlays & Drives
     setIsThemeModalOpen(false);
     if (isGitHubMounted) {
       setIsGitHubMounted(false);
@@ -924,6 +948,12 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
           * Do you like surprises? Try typing: arcade
           * [CLASSIFIED]: The system is dreaming. It's time to try -> 'wake up'.`,
           });
+        } else if (lowerCmd === "close") {
+          handleClearCache();
+          newHistory.push({
+            type: "output",
+            text: "[SYSTEM] All active windows closed and positions reset.",
+          });
         } else if (lowerCmd === "ls") {
           newHistory.push({
             type: "output",
@@ -1022,13 +1052,31 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
             type: "output",
             text: "CRITICAL ERR: ACCESS DENIED. Unauthorized attempt logged and reported to sysadmin.",
           });
-        } else if (lowerCmd === "ssh zion" || lowerCmd === "wake up") {
+        } else if (lowerCmd === "ssh zion" || lowerCmd === "wakeup") {
           setMatrixActive(true);
           setMatrixTerminating(false); // Reset on fresh boot
           newHistory.push({
             type: "output",
             text: "MATRIX PROTOCOL INITIATED. SYSTEM OVERRIDE...",
           });
+
+          // Phase 1: Stop spawning new rain after 6 seconds
+          setTimeout(() => {
+            setMatrixTerminating(true);
+          }, 6000);
+
+          // Phase 2: Fully unmount after 9 seconds
+          setTimeout(() => {
+            setMatrixActive(false);
+            setMatrixTerminating(false);
+            setTerminalHistory((prev) => [
+              ...prev,
+              {
+                type: "output",
+                text: "[SYSTEM] MATRIX PROTOCOL TERMINATED. NORMAL UI RESTORED.",
+              },
+            ]);
+          }, 9000);
         } else if (lowerCmd === "exit") {
           setIsTerminalFocused(false);
           terminalInputRef.current?.blur();
@@ -1909,7 +1957,7 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
                 {/* Desktop Icon: engage.2p (Arcade Fuchsia) */}
                 <div
                   className="flex flex-col items-center cursor-pointer group w-24 mb-4"
-                  onClick={() => setIsEngageWindowOpen(true)}
+                  onClick={() => setIsEngageWindowOpen(!isEngageWindowOpen)}
                 >
                   <div className="relative w-12 h-12 mb-3">
                     {/* Layer 1 (Back) */}
@@ -1984,6 +2032,45 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
                     Engage.2p
                   </span>
                 </div>
+              </div>
+
+              {/* --- THE MITOCHONDRIA QUOTE (LOCKED IN BACKGROUND) --- */}
+              <link
+                href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap"
+                rel="stylesheet"
+              />
+              <div
+                className={`absolute bottom-[90px] right-[25%] sm:right-[35%] flex flex-col items-center pointer-events-none transition-opacity duration-700 z-0 ${
+                  !isTerminalFocused && !isArcadeActive
+                    ? "opacity-100 delay-500"
+                    : "opacity-0"
+                }`}
+              >
+                <span
+                  style={{ fontFamily: "'Caveat', cursive" }}
+                  className="text-[#22c55e] text-xl sm:text-2xl rotate-[-8deg] tracking-wide drop-shadow-[0_0_8px_rgba(34,197,94,0.4)]"
+                >
+                  "CLI is the powerhouse of my OS"
+                </span>
+                {/* Static SVG Arrow - Flipped to point Left/Down toward the prompt */}
+                <svg
+                  width="40"
+                  height="50"
+                  viewBox="0 0 50 60"
+                  className="stroke-[#22c55e] fill-none mt-1 mr-12 overflow-visible opacity-80 drop-shadow-[0_0_5px_rgba(34,197,94,0.4)] scale-x-[1]"
+                >
+                  <path
+                    d="M 40 0 Q 35 40 5 55"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M 15 45 L 3 57 L 20 60"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
               </div>
 
               {/* IDENTITY PROFILE WINDOW (Upgraded with Drag Physics) */}
@@ -2134,8 +2221,8 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
                       y: position.y,
                     });
                   }}
-                  minWidth={450}
-                  minHeight={400}
+                  minWidth={750}
+                  minHeight={500}
                   bounds="parent"
                   dragHandleClassName="certs-drag-handle"
                   className="z-[60]"
