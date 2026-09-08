@@ -12,6 +12,7 @@ import CustomCursor from "./components/CustomCursor";
 import TerminalArcade from "./components/TerminalArcade";
 import Hologram from "./components/Hologram";
 import Engage2P from "./components/Engage2p";
+import AiProxy from "./components/AiProxy";
 
 const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 
@@ -202,6 +203,15 @@ const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 \\end{document}`;
 
 function App() {
+  // --- AI Assistant Proxy States ---
+  const [isAiProxyOpen, setIsAiProxyOpen] = useState(false);
+const [aiProxyConfig, setAiProxyConfig] = useState({
+  x: window.innerWidth > 768 ? 300 : 20,
+  y: 100,
+  width: 600,
+  height: 500,
+});
+
   // --- VISITOR TRACKING SYSTEM ---
   const [visitorCount, setVisitorCount] = useState(0);
   const [visitorLogs, setVisitorLogs] = useState([]);
@@ -766,6 +776,7 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
     setIsCampusWindowOpen(false);
     setIsEngageWindowOpen(false);
     setIsEngageMaximized(false);
+    setIsAiProxyOpen(false);
 
     // 3. HARD RESET all react-rnd configurations to defaults
     setIdentityConfig({ x: 140, y: 30, width: 325, height: 390 });
@@ -1450,11 +1461,10 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
                   {/* AI Chatbot Trigger */}
                   <button
                     className="flex items-center gap-2 bg-[#050505]/60 border border-[#22c55e]/30 px-5 py-2.5 rounded backdrop-blur-md shadow-[0_0_15px_rgba(34,197,94,0.1)] pointer-events-auto cursor-pointer hover:bg-[#22c55e]/20 hover:border-[#22c55e]/70 group transition-all duration-300"
-                    onClick={() => {
-                      /* Trigger AI Modal Logic Here */
-                    }}
+                    onClick={() => setIsAiProxyOpen(true)}
                   >
-                    <div className="w-2 h-2 rounded-full bg-[#22c55e]/70 group-hover:bg-[#22c55e] animate-pulse"></div>
+                    <div className="w-2 h-2 rounded-full bg-[#22c55e]/70 group-hover:bg-[#22c55e] animate-pulse
+                    "></div>
                     <span className="text-xs font-bold tracking-widest uppercase text-[#22c55e]/70 group-hover:text-[#22c55e] transition-colors">
                       Initialize_AI_Proxy
                     </span>
@@ -3807,6 +3817,40 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
           </div>
         </Rnd>
       )}
+
+      {isAiProxyOpen && (
+      <Rnd
+        size={{ width: "100%", height: "100%" }}
+        position={{ x: 0, y: 0 }}
+        disableDragging={true}
+        enableResizing={false}
+        className="z-[100] absolute animate-[cinematicUnfold_0.5s_forwards]"
+      >
+        <div className="w-full h-full flex flex-col bg-black overflow-hidden relative z-50">
+          
+          {/* THE MATTE HEADER */}
+          <div className="h-16 bg-black flex items-center justify-between px-6 sm:px-8 border-b border-white/10 relative z-10">
+            <div className="flex items-center gap-4">
+              <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>
+              <span className="text-white text-sm font-bold tracking-[0.2em] uppercase font-sans">
+                vAI
+              </span>
+            </div>
+            
+            <button 
+              onClick={() => setIsAiProxyOpen(false)} 
+              className="text-white/40 hover:text-white px-3 py-2 font-bold text-[10px] tracking-widest transition-all rounded hover:bg-white/10"
+            >
+              [ CLOSE ]
+            </button>
+          </div>
+
+          <div className="flex-1 relative min-h-0 bg-[#000000]">
+            <AiProxy />
+          </div>
+        </div>
+      </Rnd>
+    )}
     </div>
   );
 }
