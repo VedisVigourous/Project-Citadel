@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
+import { SYSTEM_DOSSIER } from '../knowledgeBase';
 
 const SUGGESTIONS = [
   "Summarize Vadanta's Resume",
@@ -86,9 +87,9 @@ export default function AiProxy() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            system_instruction: { parts: [{ text: systemInstruction }] },
-            contents: apiHistory,
-          }),
+  system_instruction: { parts: [{ text: SYSTEM_DOSSIER }] },
+  contents: apiHistory,
+}),
         }
       );
 
