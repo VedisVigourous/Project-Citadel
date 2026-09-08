@@ -1,104 +1,25 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 
 const TerminalProfile = () => {
-  const containerRef = useRef(null);
-  const trailRef = useRef([]); 
-  // FIX: Default mask is a transparent gradient so it starts completely invisible
-  const [maskStyle, setMaskStyle] = useState('linear-gradient(transparent, transparent)');
-  const [isHovered, setIsHovered] = useState(false);
-  const requestRef = useRef(null);
-
-  const updateTrail = () => {
-    trailRef.current = trailRef.current.filter(p => p.age < 40);
-    trailRef.current.forEach(p => { p.age += 1; });
-
-    if (trailRef.current.length > 0) {
-      const gradients = trailRef.current.map(p => {
-        const progress = p.age / 40; 
-        const opacity = Math.max(0, 1 - progress); 
-        const size = 60 + (progress * 40); 
-        
-        return `radial-gradient(circle ${size}px at ${p.x}px ${p.y}px, rgba(0,0,0,${opacity}) 0%, transparent 100%)`;
-      }).join(', ');
-      
-      setMaskStyle(gradients);
-    } else {
-      // FIX: Revert to fully transparent when trail evaporates
-      setMaskStyle('linear-gradient(transparent, transparent)');
-    }
-
-    requestRef.current = requestAnimationFrame(updateTrail);
-  };
-
-  useEffect(() => {
-    requestRef.current = requestAnimationFrame(updateTrail);
-    return () => cancelAnimationFrame(requestRef.current);
-  }, []);
-
-  const handleMouseMove = (e) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    
-    trailRef.current.push({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-      age: 0
-    });
-  };
-
   return (
-    <div 
-      ref={containerRef}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="relative w-72 h-80 border-2 border-[#22c55e] cursor-crosshair overflow-hidden shadow-[0_0_15px_rgba(34,197,94,0.3)] bg-black glitch-hover"
-    >
+    <div className="relative group overflow-hidden border-2 border-[#22c55e] w-72 h-80 cursor-crosshair shadow-[0_0_15px_rgba(34,197,94,0.3)] bg-black flex items-center justify-center">
       
-      {/* BASE LAYER: Your Normal Face (Always visible) */}
-      <img 
-        src="/vadanta-normal.png" 
-        alt="Vadanta Base" 
-        className="absolute inset-0 w-full h-full object-cover"
+      {/* 1. Base Image - Scaled out, pure monochrome default, full color on hover */}
+      <img
+        src="/Zv9IB.jpg" 
+        alt="Vadanta Profile"
+        className="w-full h-full object-contain p-4 filter grayscale contrast-125 brightness-110 transition-all duration-700 ease-in-out group-hover:grayscale-0 group-hover:contrast-100 group-hover:brightness-100 group-hover:scale-105"
       />
 
-      {/* REVEAL LAYER: The Hacker Mask + UI */}
-      <div 
-        className="absolute inset-0 w-full h-full pointer-events-none transition-opacity duration-300"
-        style={{
-          WebkitMaskImage: maskStyle,
-          maskImage: maskStyle,
-          WebkitMaskComposite: 'add',
-          maskComposite: 'add',
-          // FIX: Acts as a fail-safe to ensure it is 100% invisible when not hovered
-          opacity: isHovered || trailRef.current.length > 0 ? 1 : 0 
-        }}
-      >
-        <img 
-          src="/vadanta-hover.png" 
-          alt="Vadanta Tactical" 
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        
-        <div 
-          className="absolute inset-0 pointer-events-none opacity-40 mix-blend-screen"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(34, 197, 94, 0.8) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(34, 197, 94, 0.8) 1px, transparent 1px)
-            `,
-            backgroundSize: '35px 35px' 
-          }}
-        />
+      {/* 2. The Hover Sparkle Sweep (Fixed True Diagonal Path) */}
+      <div className="absolute -top-[100%] -left-[150%] w-1/2 h-[300%] bg-gradient-to-r from-transparent via-white/40 to-transparent rotate-45 transition-all duration-700 ease-in-out group-hover:left-[150%] pointer-events-none blur-[2px]"></div>
 
-        {/* REFINED UI Target Brackets */}
-        {/* Changed from border-2 to border (thinner lines), added opacity-50 */}
-        <div className="absolute top-4 left-4 w-6 h-6 border-t border-l border-[#22c55e] opacity-50" />
-        <div className="absolute top-4 right-4 w-6 h-6 border-t border-r border-[#22c55e] opacity-50" />
-        <div className="absolute bottom-4 left-4 w-6 h-6 border-b border-l border-[#22c55e] opacity-50" />
-        <div className="absolute bottom-4 right-4 w-6 h-6 border-b border-r border-[#22c55e] opacity-50" />
-        
-      </div>
+      {/* 3. UI Target Brackets */}
+      <div className="absolute top-4 left-4 w-6 h-6 border-t border-l border-[#22c55e] opacity-50 pointer-events-none transition-opacity duration-500 group-hover:opacity-100" />
+      <div className="absolute top-4 right-4 w-6 h-6 border-t border-r border-[#22c55e] opacity-50 pointer-events-none transition-opacity duration-500 group-hover:opacity-100" />
+      <div className="absolute bottom-4 left-4 w-6 h-6 border-b border-l border-[#22c55e] opacity-50 pointer-events-none transition-opacity duration-500 group-hover:opacity-100" />
+      <div className="absolute bottom-4 right-4 w-6 h-6 border-b border-r border-[#22c55e] opacity-50 pointer-events-none transition-opacity duration-500 group-hover:opacity-100" />
+      
     </div>
   );
 };

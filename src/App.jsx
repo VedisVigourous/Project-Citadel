@@ -205,12 +205,12 @@ const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 function App() {
   // --- AI Assistant Proxy States ---
   const [isAiProxyOpen, setIsAiProxyOpen] = useState(false);
-const [aiProxyConfig, setAiProxyConfig] = useState({
-  x: window.innerWidth > 768 ? 300 : 20,
-  y: 100,
-  width: 600,
-  height: 500,
-});
+  const [aiProxyConfig, setAiProxyConfig] = useState({
+    x: window.innerWidth > 768 ? 300 : 20,
+    y: 100,
+    width: 600,
+    height: 500,
+  });
 
   // --- VISITOR TRACKING SYSTEM ---
   const [visitorCount, setVisitorCount] = useState(0);
@@ -1458,17 +1458,51 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
 
                 {/* BOTTOM ROW: AI Agent & Traffic Tracker */}
                 <div className="flex items-center justify-between w-[75vw] max-w-5xl mt-6">
-                  {/* AI Chatbot Trigger */}
+                  {/* AI Chatbot Trigger - THE TACTICAL BREACH (Refined Sweep) */}
                   <button
-                    className="flex items-center gap-2 bg-[#050505]/60 border border-[#22c55e]/30 px-5 py-2.5 rounded backdrop-blur-md shadow-[0_0_15px_rgba(34,197,94,0.1)] pointer-events-auto cursor-pointer hover:bg-[#22c55e]/20 hover:border-[#22c55e]/70 group transition-all duration-300"
                     onClick={() => setIsAiProxyOpen(true)}
+                    className="relative overflow-hidden group p-[1.5px] pointer-events-auto hover:-translate-y-1 transition-transform duration-300 drop-shadow-[0_0_15px_rgba(34,197,94,0.2)] hover:drop-shadow-[0_0_30px_rgba(34,197,94,0.6)]"
+                    style={{
+                      clipPath:
+                        "polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px)",
+                    }}
                   >
-                    <div className="w-2 h-2 rounded-full bg-[#22c55e]/70 group-hover:bg-[#22c55e] animate-pulse
-                    "></div>
-                    <span className="text-xs font-bold tracking-widest uppercase text-[#22c55e]/70 group-hover:text-[#22c55e] transition-colors">
-                      Initialize_AI_Proxy
+                    {/* 1. Dual Sharp Lasers (The Border Chase) */}
+                    <span className="absolute -inset-[500%] bg-[conic-gradient(transparent_0_140deg,#22c55e_180deg,transparent_180_320deg,#22c55e_360deg)] animate-[spin_2s_linear_infinite]" />
+
+                    {/* 2. Inner Matte Core */}
+                    <span className="relative flex items-center gap-3 h-full w-full cursor-pointer bg-[#050505] pl-5 pr-8 py-3 group-hover:bg-[#22c55e] transition-colors duration-300 overflow-hidden">
+                      {/* 3. IDLE STATE: The Diagonal Stripe Sweep (Lower opacity, slower animation) */}
+                      <div
+                        className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(34,197,94,0.12)_10px,rgba(34,197,94,0.12)_20px)] group-hover:opacity-0 transition-opacity duration-300 pointer-events-none"
+                        style={{
+                          animation:
+                            "stripeSweep 4.5s ease-in-out infinite alternate",
+                        }}
+                      ></div>
+
+                      {/* 4. HOVER STATE: Solid Black Industrial Stripes */}
+                      <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(0,0,0,0.15)_10px,rgba(0,0,0,0.15)_20px)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+
+                      {/* Radar Ping */}
+                      <div className="relative flex h-2.5 w-2.5 z-10 shrink-0 pointer-events-none">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#22c55e] group-hover:bg-black transition-colors duration-300"></span>
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#22c55e] group-hover:bg-black transition-colors duration-300"></span>
+                      </div>
+
+                      {/* Text */}
+                      <span className="text-[13px] font-black tracking-[0.2em] uppercase text-[#22c55e] group-hover:text-black transition-colors duration-300 relative z-10 pointer-events-none drop-shadow-[0_0_8px_rgba(34,197,94,0.5)] group-hover:drop-shadow-none whitespace-nowrap">
+                        Hey There, vAI!
+                      </span>
                     </span>
                   </button>
+
+                  <style>{`
+  @keyframes stripeSweep {
+    0% { clip-path: inset(0 100% 0 0); }
+    100% { clip-path: inset(0 0 0 0); }
+  }
+`}</style>
 
                   {/* Live Visitor Metrics (Updated Greeting) */}
                   <div className="flex items-center justify-center bg-[#050505]/60 border border-[#22c55e]/30 px-5 py-2.5 rounded backdrop-blur-md shadow-[0_0_15px_rgba(0,0,0,0.5)]">
@@ -2044,13 +2078,49 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
                 </div>
               </div>
 
+              {/* THE AI PROXY QUOTE (LOCKED IN BACKGROUND) */}
+              <div
+                className={`absolute bottom-[180px] left-[20%] sm:left-[27%] flex flex-col items-center pointer-events-none transition-opacity duration-700 z-0 ${
+                  !isTerminalFocused && !isArcadeActive
+                    ? "opacity-100 delay-500"
+                    : "opacity-0"
+                }`}
+              >
+                {/* SVG Arrow Flipped vertically to point Up/Left toward the proxy button */}
+                <svg
+                  width="40"
+                  height="50"
+                  viewBox="0 0 50 60"
+                  className="stroke-[#22c55e] fill-none mb-1 mr-12 overflow-visible opacity-80 drop-shadow-[0_0_5px_rgba(34,197,94,0.4)] scale-y-[-1]"
+                >
+                  <path
+                    d="M 40 0 C 40 35 40 50 5 55"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M 15 45 L 3 57 L 20 60"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+
+                <span
+                  style={{ fontFamily: "'Caveat', cursive" }}
+                  className="text-[#22c55e] text-xl sm:text-2xl rotate-[6deg] tracking-wide drop-shadow-[0_0_8px_rgba(34,197,94,0.4)] whitespace-nowrap"
+                >
+                  doubts?? ask vAI!
+                </span>
+              </div>
+
               {/* --- THE MITOCHONDRIA QUOTE (LOCKED IN BACKGROUND) --- */}
               <link
                 href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap"
                 rel="stylesheet"
               />
               <div
-                className={`absolute bottom-[90px] right-[25%] sm:right-[35%] flex flex-col items-center pointer-events-none transition-opacity duration-700 z-0 ${
+                className={`absolute bottom-[90px] right-[20%] sm:right-[27%] flex flex-col items-center pointer-events-none transition-opacity duration-700 z-0 ${
                   !isTerminalFocused && !isArcadeActive
                     ? "opacity-100 delay-500"
                     : "opacity-0"
@@ -3819,38 +3889,37 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
       )}
 
       {isAiProxyOpen && (
-      <Rnd
-        size={{ width: "100%", height: "100%" }}
-        position={{ x: 0, y: 0 }}
-        disableDragging={true}
-        enableResizing={false}
-        className="z-[100] absolute animate-[cinematicUnfold_0.5s_forwards]"
-      >
-        <div className="w-full h-full flex flex-col bg-black overflow-hidden relative z-50">
-          
-          {/* THE MATTE HEADER */}
-          <div className="h-16 bg-black flex items-center justify-between px-6 sm:px-8 border-b border-white/10 relative z-10">
-            <div className="flex items-center gap-4">
-              <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>
-              <span className="text-white text-sm font-bold tracking-[0.2em] uppercase font-sans">
-                vAI
-              </span>
-            </div>
-            
-            <button 
-              onClick={() => setIsAiProxyOpen(false)} 
-              className="text-white/40 hover:text-white px-3 py-2 font-bold text-[10px] tracking-widest transition-all rounded hover:bg-white/10"
-            >
-              [ CLOSE ]
-            </button>
-          </div>
+        <Rnd
+          size={{ width: "100%", height: "100%" }}
+          position={{ x: 0, y: 0 }}
+          disableDragging={true}
+          enableResizing={false}
+          className="z-[100] absolute animate-[cinematicUnfold_0.5s_forwards]"
+        >
+          <div className="w-full h-full flex flex-col bg-black overflow-hidden relative z-50">
+            {/* THE MATTE HEADER */}
+            <div className="h-16 bg-black flex items-center justify-between px-6 sm:px-8 border-b border-white/10 relative z-10">
+              <div className="flex items-center gap-4">
+                <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>
+                <span className="text-white text-sm font-bold tracking-[0.2em] uppercase font-sans">
+                  vAI
+                </span>
+              </div>
 
-          <div className="flex-1 relative min-h-0 bg-[#000000]">
-            <AiProxy />
+              <button
+                onClick={() => setIsAiProxyOpen(false)}
+                className="text-white/40 hover:text-white px-3 py-2 font-bold text-[10px] tracking-widest transition-all rounded hover:bg-white/10"
+              >
+                [ CLOSE ]
+              </button>
+            </div>
+
+            <div className="flex-1 relative min-h-0 bg-[#000000]">
+              <AiProxy />
+            </div>
           </div>
-        </div>
-      </Rnd>
-    )}
+        </Rnd>
+      )}
     </div>
   );
 }
