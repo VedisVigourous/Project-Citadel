@@ -64,16 +64,6 @@ export default function AiProxy() {
 
     try {
       const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-      
-      // Inline Knowledge Base - Paste PLAIN TEXT resume data here (Avoid raw LaTeX backslashes!)
-      const systemInstruction = `You are vAI, the highly advanced personal AI Assistant for Vadanta OS. 
-      You were created by Vadanta Kumar Chauhaan. Always refer to yourself as vAI.
-      You are witty, highly technical, and possess a premium 'executive' persona.
-      Guide users to try CLI commands ('arcade', 'wake up', 'whoami', 'theme 180').
-      Vadanta is a Frontend Architect & AI Engineer studying B.Tech CSE at ABES.
-      
-      Vadanta's Core Tech Stack: React, Vite, Tailwind CSS, GSAP, Node.js.
-      Project Citadel (Vadanta OS): Web-based retro-cyberpunk desktop environment with draggable windows.`;
 
       const apiHistory = messages.map((msg) => ({
         role: msg.role === 'model' ? 'model' : 'user',
@@ -87,16 +77,24 @@ export default function AiProxy() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-  system_instruction: { parts: [{ text: SYSTEM_DOSSIER }] },
-  contents: apiHistory,
-}),
+            system_instruction: { parts: [{ text: SYSTEM_DOSSIER }] },
+            contents: apiHistory,
+          }),
         }
       );
 
       const data = await response.json();
 
-      if (data.error) {
-        throw new Error(data.error.message || "API Error");
+      // 1. Catch standard API connection errors
+      if (data.error) throw new Error(data.error.message);
+
+      // 2. Intercept Gemini Safety Filters before they crash the parser
+      if (
+        data.promptFeedback?.blockReason ||
+        (data.candidates && data.candidates[0]?.finishReason === 'SAFETY') ||
+        (data.candidates && !data.candidates[0]?.content)
+      ) {
+        throw new Error("EXPLICIT_TRIGGER");
       }
 
       const aiResponse = data.candidates[0].content.parts[0].text;
@@ -104,11 +102,20 @@ export default function AiProxy() {
 
     } catch (error) {
       console.error("Uplink Error:", error);
-      setMessages((prev) => [
-        ...prev,
-        { role: 'model', text: `ERR: ${error.message || "Connection to vAI Core severed."}` },
-      ]);
-      setIsLoading(false);
+      
+      let customFallback = "";
+      
+      // 3. Route the error to your custom personality responses
+      if (error.message === "EXPLICIT_TRIGGER") {
+        customFallback = "Vadanta will be angry on both of us! Please don't ask such questions!";
+      } else if (error.message.includes("Failed to fetch") || error.message.includes("Network")) {
+        customFallback = "vAI is sleeping... (Network Uplink Severed).";
+      } else {
+        customFallback = `ERR: System anomaly detected. (${error.message})`;
+      }
+
+      // Feed the error message into the typewriter effect!
+      streamTextResponse(customFallback);
     }
   };
 
