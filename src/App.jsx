@@ -289,6 +289,8 @@ function App() {
   const [isCommsWindowOpen, setIsCommsWindowOpen] = useState(false);
   const [guiPingData, setGuiPingData] = useState({ email: "", message: "" });
   const [guiPingStatus, setGuiPingStatus] = useState("IDLE");
+  const [commsView, setCommsView] = useState("PING"); 
+  const [feedbackType, setFeedbackType] = useState("BUG");
 
   // --- TERMINAL CONTACT & SECRETS STATES ---
   const [terminalMode, setTerminalMode] = useState("NORMAL"); // 'NORMAL', 'PING_EMAIL', 'PING_MSG'
@@ -779,7 +781,7 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
     setIsAiProxyOpen(false);
 
     // 3. HARD RESET all react-rnd configurations to defaults
-    setIdentityConfig({ x: 140, y: 30, width: 325, height: 390 });
+    setIdentityConfig({ x: 140, y: 30, width: 290, height: 385});
     setProjectsConfig({ x: 150, y: 120, width: 500, height: 450 });
     setCertsConfig({ x: 200, y: 150, width: 550, height: 450 });
     setCampusConfig({ x: 220, y: 100, width: 650, height: 400 });
@@ -2172,8 +2174,8 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
                       y: position.y,
                     });
                   }}
-                  minWidth={300}
-                  minHeight={250}
+                  minWidth={290}
+                  minHeight={385}
                   bounds="parent"
                   dragHandleClassName="drag-handle"
                   className="absolute z-40"
@@ -2193,8 +2195,8 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
                     </div>
 
                     {/* Window Content */}
-                    <div className="p-4 bg-black/90 cursor-default">
-                      <TerminalProfile />
+                    <div className="p-4 bg-black/90 cursor-default flex-1 flex items-center justify-center overflow-hidden">
+                      <TerminalProfile themeHue={themeHue}/>
                     </div>
                   </div>
                 </Rnd>
@@ -3391,19 +3393,19 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
                   Cyber Green
                 </button>
                 <button
-                  onClick={() => setThemeHue(185)}
+                  onClick={() => setThemeHue(55)}
                   className="p-2 border border-[#22c55e]/50 hover:bg-[#22c55e]/20 transition-all cursor-pointer"
                 >
                   Neon Cyan
                 </button>
                 <button
-                  onClick={() => setThemeHue(280)}
+                  onClick={() => setThemeHue(140)}
                   className="p-2 border border-[#22c55e]/50 hover:bg-[#22c55e]/20 transition-all cursor-pointer"
                 >
-                  Synthwave
+                  Synthwave Pink
                 </button>
                 <button
-                  onClick={() => setThemeHue(320)}
+                  onClick={() => setThemeHue(215)}
                   className="p-2 border border-[#22c55e]/50 hover:bg-[#22c55e]/20 transition-all cursor-pointer"
                 >
                   Retro Amber
@@ -3554,134 +3556,109 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
               </button>
             </div>
 
-            {/* Window Body - Flex layout for stretching */}
-            <div className="flex-1 p-5 text-[#22c55e] flex flex-col overflow-y-auto custom-scrollbar">
-              {guiPingStatus === "SUCCESS" ? (
-                <div className="flex-1 flex flex-col items-center justify-center space-y-4">
-                  <div className="text-4xl animate-pulse">✓</div>
-                  <div className="font-bold tracking-widest text-white text-center">
-                    TRANSMISSION SUCCESSFUL
-                  </div>
-                  <div className="text-xs text-[#22c55e]/70 text-center px-4">
-                    Payload securely routed to vadanta592007@hotmail.com
-                  </div>
-                  <button
-                    onClick={() => setGuiPingStatus("IDLE")}
-                    className="mt-4 border border-[#22c55e] px-4 py-2 hover:bg-[#22c55e] hover:text-black transition-colors text-xs font-bold shrink-0"
-                  >
-                    INITIALIZE_NEW_PING
-                  </button>
-                </div>
-              ) : (
-                <div className="flex flex-col h-full space-y-4">
-                  {/* Manual Fallback Email */}
-                  <div className="shrink-0 text-center mb-2 pb-3 border-b border-[#22c55e]/20">
-                    <span className="text-[#22c55e]/60 text-[9px] tracking-widest uppercase block mb-1.5">
-                      Or Route Manually To:
-                    </span>
-                    <span className="text-white text-xs font-mono tracking-widest select-all cursor-pointer bg-[#22c55e]/10 px-3 py-1.5 rounded border border-[#22c55e]/30 shadow-inner">
-                      vadanta592007@hotmail.com
-                    </span>
-                  </div>
-                  {/* Email Input */}
-                  <div className="shrink-0">
-                    <label className="block text-[10px] uppercase tracking-widest mb-1 text-white/70">
-                      Return Address (Email)
-                    </label>
-                    <input
-                      type="email"
-                      value={guiPingData.email}
-                      onChange={(e) => {
-                        setGuiPingData({
-                          ...guiPingData,
-                          email: e.target.value,
-                        });
-                        // Clear any error state when typing resumes
-                        if (
-                          guiPingStatus === "INVALID_EMAIL" ||
-                          guiPingStatus === "API_ERROR"
-                        )
-                          setGuiPingStatus("IDLE");
-                      }}
-                      className="w-full bg-[#0a0a0a] border border-[#22c55e]/50 text-white p-2 outline-none focus:border-[#22c55e] transition-colors text-sm"
-                      placeholder="recruiter@company.com"
-                    />
-                  </div>
+            {/* Window Body - Multi-Template & Dynamic Placeholders */}
+<div className="flex-1 text-[#22c55e] flex flex-col overflow-hidden">
+  
+  {/* The Navigation Tabs */}
+  <div className="flex border-b border-[#22c55e]/20 shrink-0">
+    <button 
+      onClick={() => { setCommsView("PING"); setGuiPingStatus("IDLE"); }}
+      className={`flex-1 py-2 text-[10px] font-bold tracking-widest uppercase transition-colors ${commsView === "PING" ? "bg-[#22c55e]/20 text-white border-b-2 border-[#22c55e]" : "text-[#22c55e]/50 hover:bg-[#22c55e]/10"}`}
+    >
+      Direct Ping
+    </button>
+    <button 
+      onClick={() => { setCommsView("FEEDBACK"); setGuiPingStatus("IDLE"); }}
+      className={`flex-1 py-2 text-[10px] font-bold tracking-widest uppercase transition-colors ${commsView === "FEEDBACK" ? "bg-orange-500/20 text-white border-b-2 border-orange-500" : "text-orange-500/50 hover:bg-orange-500/10"}`}
+    >
+      System Feedback
+    </button>
+  </div>
 
-                  {/* Message Input */}
-                  <div className="flex-1 flex flex-col min-h-[100px]">
-                    <label className="block text-[10px] uppercase tracking-widest mb-1 text-white/70">
-                      Encrypted Payload (Message)
-                    </label>
-                    <textarea
-                      value={guiPingData.message}
-                      onChange={(e) =>
-                        setGuiPingData({
-                          ...guiPingData,
-                          message: e.target.value,
-                        })
-                      }
-                      className="w-full flex-1 bg-[#0a0a0a] border border-[#22c55e]/50 text-white p-2 outline-none focus:border-[#22c55e] transition-colors text-sm resize-none custom-scrollbar"
-                      placeholder="Enter transmission data here..."
-                    />
-                  </div>
-
-                  {/* DYNAMIC ERROR MESSAGES */}
-                  {guiPingStatus === "INVALID_EMAIL" && (
-                    <div className="shrink-0 text-red-500 text-xs font-bold tracking-widest bg-red-500/10 p-2 border border-red-500/30 text-center">
-                      ERR: INVALID EMAIL FORMAT
-                    </div>
-                  )}
-                  {guiPingStatus === "API_ERROR" && (
-                    <div className="shrink-0 text-red-500 text-xs font-bold tracking-widest bg-red-500/10 p-2 border border-red-500/30 text-center">
-                      ERR: TRANSMISSION FAILED (Check API Keys/Rate Limit)
-                    </div>
-                  )}
-
-                  {/* Submit Button */}
-                  <button
-                    onClick={() => {
-                      const cleanEmail = guiPingData.email.trim();
-                      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-                      if (!emailRegex.test(cleanEmail)) {
-                        setGuiPingStatus("INVALID_EMAIL");
-                        return;
-                      }
-
-                      setGuiPingStatus("SENDING");
-
-                      // Using your exact working keys from the terminal parser!
-                      emailjs
-                        .send(
-                          "service_7259ksh",
-                          "template_6c5menn",
-                          {
-                            from_email: cleanEmail,
-                            message: guiPingData.message,
-                          },
-                          "yWVDlVd10PKZ4Q9l6",
-                        )
-                        .then(() => {
-                          setGuiPingStatus("SUCCESS");
-                          setGuiPingData({ email: "", message: "" });
-                        })
-                        .catch((err) => {
-                          console.error("Comms Error:", err);
-                          setGuiPingStatus("API_ERROR");
-                        });
-                    }}
-                    disabled={guiPingStatus === "SENDING"}
-                    className="shrink-0 w-full bg-[#22c55e]/20 border border-[#22c55e] hover:bg-[#22c55e] hover:text-black transition-colors py-2 font-bold tracking-widest text-sm"
-                  >
-                    {guiPingStatus === "SENDING"
-                      ? "ENCRYPTING & ROUTING..."
-                      : "EXECUTE_TRANSMISSION"}
-                  </button>
-                </div>
-              )}
-            </div>
+  <div className="flex-1 p-5 overflow-y-auto custom-scrollbar flex flex-col">
+    {guiPingStatus === "SUCCESS" ? (
+      <div className="flex-1 flex flex-col items-center justify-center space-y-4">
+        <div className="font-bold tracking-widest text-white text-center">TRANSMISSION SUCCESSFUL</div>
+        <div className="text-xs text-[#22c55e]/70 text-center px-4">Payload securely routed.</div>
+        <button onClick={() => setGuiPingStatus("IDLE")} className="mt-4 border border-[#22c55e] px-4 py-2 hover:bg-[#22c55e] hover:text-black transition-colors text-xs font-bold shrink-0">INITIALIZE NEW LINK</button>
+      </div>
+    ) : (
+      <div className="flex flex-col h-full space-y-4">
+        
+        {/* Dynamic Mode Header */}
+        {commsView === "FEEDBACK" ? (
+          <div className="flex gap-2 shrink-0 mb-2">
+            <button onClick={() => setFeedbackType("BUG")} className={`flex-1 py-1.5 text-xs font-bold border transition-colors ${feedbackType === "BUG" ? "bg-red-500/20 border-red-500 text-red-500" : "border-red-500/30 text-red-500/50 hover:border-red-500"}`}>[ REPORT BUG ]</button>
+            <button onClick={() => setFeedbackType("FEATURE")} className={`flex-1 py-1.5 text-xs font-bold border transition-colors ${feedbackType === "FEATURE" ? "bg-blue-500/20 border-blue-500 text-blue-500" : "border-blue-500/30 text-blue-500/50 hover:border-blue-500"}`}>[ SUGGEST FEATURE ]</button>
           </div>
+        ) : (
+          <div className="shrink-0 text-center mb-2 pb-3 border-b border-[#22c55e]/20">
+            <span className="text-[#22c55e]/60 text-[9px] tracking-widest uppercase block mb-1.5">Or Route Manually To:</span>
+            <span className="text-white text-xs font-mono tracking-widest select-all cursor-pointer bg-[#22c55e]/10 px-3 py-1.5 rounded border border-[#22c55e]/30">vadanta592007@hotmail.com</span>
+          </div>
+        )}
+
+        {/* Universal Email Input */}
+        <div className="shrink-0">
+          <label className="block text-[10px] uppercase tracking-widest mb-1 text-white/70">Return Address (Email)</label>
+          <input type="email" value={guiPingData.email} onChange={(e) => { setGuiPingData({ ...guiPingData, email: e.target.value }); setGuiPingStatus("IDLE"); }} className={`w-full bg-[#0a0a0a] border ${commsView === "FEEDBACK" ? "border-orange-500/50 focus:border-orange-500" : "border-[#22c55e]/50 focus:border-[#22c55e]"} text-white p-2 outline-none transition-colors text-sm`} placeholder="user@node.com" />
+        </div>
+
+        {/* Dynamic Textarea Placeholders & Labels */}
+        <div className="flex-1 flex flex-col min-h-[100px]">
+          <label className="block text-[10px] uppercase tracking-widest mb-1 text-white/70">
+            {commsView === "FEEDBACK" ? (feedbackType === "BUG" ? "Bug Diagnostics" : "Feature Architecture") : "Encrypted Payload (Message)"}
+          </label>
+          <textarea 
+            value={guiPingData.message} 
+            onChange={(e) => setGuiPingData({ ...guiPingData, message: e.target.value })} 
+            className={`w-full flex-1 bg-[#0a0a0a] border ${commsView === "FEEDBACK" ? "border-orange-500/50 focus:border-orange-500" : "border-[#22c55e]/50 focus:border-[#22c55e]"} text-white p-2 outline-none transition-colors text-sm resize-none custom-scrollbar`} 
+            placeholder={
+              commsView === "PING" ? "Enter transmission data here..." : 
+              feedbackType === "BUG" ? "Describe the system failure, steps to reproduce, or error codes..." : 
+              "Describe the proposed functionality, its use cases, and potential impact..."
+            } 
+          />
+        </div>
+
+        {/* Dynamic Error & Submit */}
+        {guiPingStatus === "INVALID_EMAIL" && <div className="shrink-0 text-red-500 text-xs font-bold tracking-widest bg-red-500/10 p-2 border border-red-500/30 text-center">ERR: INVALID EMAIL</div>}
+        {guiPingStatus === "API_ERROR" && <div className="shrink-0 text-red-500 text-xs font-bold tracking-widest bg-red-500/10 p-2 border border-red-500/30 text-center">ERR: TRANSMISSION FAILED (Check Console)</div>}
+
+        <button
+          onClick={() => {
+            const cleanEmail = guiPingData.email.trim();
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) return setGuiPingStatus("INVALID_EMAIL");
+            
+            setGuiPingStatus("SENDING");
+            
+            // The payload already injects BUG or FEATURE right into the text!
+            const finalPayload = commsView === "FEEDBACK" 
+              ? `[SYSTEM_FEEDBACK_TYPE: ${feedbackType}]\n\n${guiPingData.message}`
+              : guiPingData.message;
+
+            // Simplified Routing: If it's Feedback (Bug OR Feature), use Template 2. Otherwise, Template 1.
+            const targetTemplate = commsView === "FEEDBACK" 
+              ? "template_l3izrym" 
+              : "template_wvnet4e"; 
+
+            emailjs.send("service_7259ksh", targetTemplate, { from_email: cleanEmail, message: finalPayload }, "yWVDlVd10PKZ4Q9l6")
+              .then(() => { setGuiPingStatus("SUCCESS"); setGuiPingData({ email: "", message: "" }); })
+              .catch((err) => {
+                console.error("EmailJS Error: ", err); 
+                setGuiPingStatus("API_ERROR");
+              });
+          }}
+          disabled={guiPingStatus === "SENDING"}
+          className={`shrink-0 w-full border transition-colors py-2 font-bold tracking-widest text-sm ${commsView === "FEEDBACK" ? "bg-orange-500/20 border-orange-500 hover:bg-orange-500 hover:text-black text-orange-500" : "bg-[#22c55e]/20 border-[#22c55e] hover:bg-[#22c55e] hover:text-black"}`}
+        >
+          {guiPingStatus === "SENDING" ? "ENCRYPTING..." : "EXECUTE_TRANSMISSION"}
+        </button>
+      </div>
+    )}
+  </div>
+</div>
+</div>
         </Rnd>
       )}
 
