@@ -2116,6 +2116,42 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
                 </span>
               </div>
 
+              {/* --- THE MAIL.CONN QUOTE (TOP RIGHT DESKTOP) --- */}
+<div 
+  className={`absolute top-[80px] right-[120px] flex items-center pointer-events-none transition-opacity duration-700 z-0 ${
+    !isTerminalFocused && !isArcadeActive ? "opacity-100 delay-500" : "opacity-0"
+  }`}
+>
+  <span 
+    style={{ fontFamily: "'Caveat', cursive" }} 
+    className="text-[#22c55e] text-xl sm:text-2xl rotate-[-4deg] tracking-wide drop-shadow-[0_0_8px_rgba(34,197,94,0.4)] whitespace-nowrap mr-2"
+  >
+    Found a bug or got ideas? Drop a ping!
+  </span>
+
+  {/* SVG Arrow Pointing Up-Right Toward Mail.conn Icon */}
+  <svg 
+    width="50" 
+    height="40" 
+    viewBox="0 0 50 40" 
+    className="stroke-[#22c55e] fill-none opacity-80 drop-shadow-[0_0_5px_rgba(34,197,94,0.4)] ml-1"
+  >
+    {/* Curve starting higher, directly off the '!' */}
+    <path 
+      d="M 2 12 Q 25 18, 44 6" 
+      strokeWidth="2.5" 
+      strokeLinecap="round" 
+    />
+    {/* Arrowhead snapped to the new end point */}
+    <path 
+      d="M 30 6 L 46 5 L 44 20" 
+      strokeWidth="2.5" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+    />
+  </svg>
+</div>
+
               {/* --- THE MITOCHONDRIA QUOTE (LOCKED IN BACKGROUND) --- */}
               <link
                 href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap"
