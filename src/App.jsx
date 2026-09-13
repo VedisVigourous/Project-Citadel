@@ -2963,21 +2963,21 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
                               : "Message:"}
                         </span>
                         <input
-                          ref={terminalInputRef}
-                          type="text"
-                          value={terminalInput}
-                          onChange={(e) => setTerminalInput(e.target.value)}
-                          onKeyDown={handleTerminalSubmit}
-                          onFocus={() => setIsTerminalFocused(true)}
-                          onBlur={() => setIsTerminalFocused(false)}
-                          className="bg-transparent border-none outline-none flex-1 text-[#22c55e] placeholder-[#22c55e]/40 focus:ring-0"
-                          placeholder={
-                            isTerminalFocused
-                              ? "type a command..."
-                              : "click to initialize terminal..."
-                          }
-                          spellCheck="false"
-                        />
+  ref={terminalInputRef}
+  type="text"
+  value={terminalInput}
+  onChange={(e) => setTerminalInput(e.target.value)}
+  onKeyDown={handleTerminalSubmit}
+  onFocus={() => setIsTerminalFocused(true)}
+  onBlur={() => setIsTerminalFocused(false)}
+  className="bg-transparent border-none outline-none flex-1 text-[#22c55e] focus:text-[#4ade80] placeholder-[#22c55e]/40 focus:ring-0 transition-colors"
+  placeholder={
+    isTerminalFocused
+      ? "type a command..."
+      : "click to initialize terminal..."
+  }
+  spellCheck="false"
+/>
                       </div>
                     </>
                   )}
