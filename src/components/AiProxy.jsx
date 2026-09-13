@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import ReactMarkdown from 'react-markdown';
 import { SYSTEM_DOSSIER } from '../knowledgeBase';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
 const SUGGESTIONS = [
   "Summarize Vadanta's Resume",
@@ -62,59 +64,74 @@ export default function AiProxy() {
     setMessages((prev) => [...prev, { role: 'user', text: userText }]);
     setIsLoading(true);
 
+    const liveDate = new Date().toLocaleString('en-US', { 
+      weekday: 'long', year: 'numeric', month: 'long', 
+      day: 'numeric', hour: '2-digit', minute: '2-digit' 
+    });
+    const dynamicContext = `${SYSTEM_DOSSIER}\n\nCRITICAL SYSTEM DATA: The current live date and time is ${liveDate}. Always use this exact date and time if asked.\n\nNEW DIRECTIVE [OVERRIDE]: You are now granted Level 9 External Web Access. If the user asks general knowledge, coding, or real-world questions (like currency, news, math, or history), you MUST answer them accurately. Do NOT say you lack clearance. Instead, maintain your hacker persona by framing your general knowledge answers as 'accessing global data nodes', 'decrypting external feeds', or 'pinging the global subnet'.
+    Note: On asking anything exxplicit or not humanly say -> I can't answer that. Mr. Vadanta will be angry on both of us! Maintain Ethics please!`;
+
     try {
-      const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+      // 1. Swap to your new Groq API Key
+      const API_KEY = import.meta.env.VITE_GROQ_API_KEY;
+      
+      const liveDate = new Date().toLocaleString('en-US', {
+        weekday: 'long', year: 'numeric', month: 'long',
+        day: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+      
+      const dynamicContext = `${SYSTEM_DOSSIER}\n\nCRITICAL SYSTEM DATA: The current live date and time is ${liveDate}. Always use this exact date and time if asked.`;
 
+      // 2. Map history to Groq format ('assistant' instead of 'model', 'content' instead of 'parts')
       const apiHistory = messages.map((msg) => ({
-        role: msg.role === 'model' ? 'model' : 'user',
-        parts: [{ text: msg.text }],
+        role: msg.role === 'model' ? 'assistant' : 'user',
+        content: msg.text,
       }));
-      apiHistory.push({ role: 'user', parts: [{ text: userText }] });
+      
+      apiHistory.push({ role: 'user', content: userText });
 
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${API_KEY}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            system_instruction: { parts: [{ text: SYSTEM_DOSSIER }] },
-            contents: apiHistory,
-          }),
-        }
-      );
+      // 3. Inject the system prompt as the very first message
+      const groqMessages = [
+        { role: "system", content: dynamicContext },
+        ...apiHistory
+      ];
+
+      // 4. Hit the Groq endpoint
+      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "openai/gpt-oss-20b", 
+          messages: groqMessages,
+          temperature: 0.7,
+        })
+      });
 
       const data = await response.json();
 
-      // 1. Catch standard API connection errors
+      // Catch standard API connection errors
       if (data.error) throw new Error(data.error.message);
 
-      // 2. Intercept Gemini Safety Filters before they crash the parser
-      if (
-        data.promptFeedback?.blockReason ||
-        (data.candidates && data.candidates[0]?.finishReason === 'SAFETY') ||
-        (data.candidates && !data.candidates[0]?.content)
-      ) {
-        throw new Error("EXPLICIT_TRIGGER");
-      }
-
-      const aiResponse = data.candidates[0].content.parts[0].text;
+      // Extract the text and stream it
+      const aiResponse = data.choices[0].message.content;
       streamTextResponse(aiResponse);
 
     } catch (error) {
       console.error("Uplink Error:", error);
-      
       let customFallback = "";
       
-      // 3. Route the error to your custom personality responses
       if (error.message === "EXPLICIT_TRIGGER") {
         customFallback = "Vadanta will be angry on both of us! Please don't ask such questions!";
       } else if (error.message.includes("Failed to fetch") || error.message.includes("Network")) {
-        customFallback = "vAI is sleeping... (Network Uplink Severed).";
+        customFallback = "vAI is currently in sleep mode. (Network Uplink Severed).";
       } else {
-        customFallback = `ERR: System anomaly detected. (${error.message})`;
+        // Generic fallback that hides the real error from the UI
+        customFallback = "ERR: System anomaly detected. vAI is temporarily offline while diagnostics run.";
       }
-
-      // Feed the error message into the typewriter effect!
+      
       streamTextResponse(customFallback);
     }
   };
@@ -156,9 +173,14 @@ export default function AiProxy() {
                     vAI
                   </div>
                 )}
-                <div className="leading-relaxed text-[15px] font-light text-white/90 [&>p]:mb-4 last:[&>p]:mb-0 [&_strong]:text-white [&_strong]:font-bold [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:mb-4 [&_code]:bg-white/10 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded-md [&_code]:text-yellow-500">
-                  <ReactMarkdown>{msg.text}</ReactMarkdown>
-                </div>
+                <div className="leading-relaxed text-[15px] font-light text-white/90 [&>p]:mb-4 last:[&>p]:mb-0 [&_strong]:text-white [&_strong]:font-bold [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:mb-4 [&_code]:bg-white/10 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded-md [&_code]:text-yellow-500 [&_table]:w-full [&_table]:mb-4 [&_table]:border-collapse [&_th]:border [&_th]:border-[#22c55e]/30 [&_th]:p-2 [&_th]:text-left [&_th]:text-[#22c55e] [&_td]:border [&_td]:border-[#22c55e]/20 [&_td]:p-2">
+  <ReactMarkdown 
+    remarkPlugins={[remarkGfm]} 
+    rehypePlugins={[rehypeRaw]}
+  >
+    {msg.text}
+  </ReactMarkdown>
+</div>
               </div>
             </div>
           ))}
