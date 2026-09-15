@@ -289,7 +289,7 @@ function App() {
   const [isCommsWindowOpen, setIsCommsWindowOpen] = useState(false);
   const [guiPingData, setGuiPingData] = useState({ email: "", message: "" });
   const [guiPingStatus, setGuiPingStatus] = useState("IDLE");
-  const [commsView, setCommsView] = useState("PING"); 
+  const [commsView, setCommsView] = useState("PING");
   const [feedbackType, setFeedbackType] = useState("BUG");
 
   // --- TERMINAL CONTACT & SECRETS STATES ---
@@ -634,7 +634,7 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
       const historyArray = terminalHistory;
       const lastEntry = historyArray[historyArray.length - 1];
       const container = terminalScrollRef.current;
-      
+
       if (lastEntry && lastEntry.isManual) {
         const nodes = container.children;
         if (nodes.length >= 2) {
@@ -794,7 +794,7 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
     setIsAiProxyOpen(false);
 
     // 3. HARD RESET all react-rnd configurations to defaults
-    setIdentityConfig({ x: 140, y: 30, width: 290, height: 385});
+    setIdentityConfig({ x: 140, y: 30, width: 290, height: 385 });
     setProjectsConfig({ x: 150, y: 120, width: 500, height: 450 });
     setCertsConfig({ x: 200, y: 150, width: 550, height: 450 });
     setCampusConfig({ x: 220, y: 100, width: 650, height: 400 });
@@ -959,38 +959,74 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
             isManual: true, // Triggers our new smart scroll
             text: (
               <div className="flex flex-col gap-1 mt-1">
-                <span className="text-[#22c55e] font-bold">VADANTA_OS TERMINAL MANUAL // AVAILABLE COMMANDS:</span>
+                <span className="text-[#22c55e] font-bold">
+                  VADANTA_OS TERMINAL MANUAL // AVAILABLE COMMANDS:
+                </span>
                 <br />
                 <span className="text-white/60">-- SYSTEM & POWER --</span>
-                <span> • help          : Displays this system manual</span>
-                <span> • clear / cls   : Clears the terminal screen</span>
-                <span> • ls            : Lists available system files</span>
-                <span> • close         : Closes all active windows</span>
-                <span> • clear cache   : Flushes UI state and resets window memory</span>
-                <span> • reboot        : Restarts the VADANTA_OS kernel</span>
-                <span> • shutdown      : Terminates all processes and powers down</span>
-                <span> • date          : Displays system date and time</span>
-                <span> • timeformat    : Toggles the flip clock between 12H/24H mode</span>
-                <span> • theme &lt;deg&gt;   : Shifts global UI hue (e.g., 'theme 180')</span>
-                <span> • netstat       : Displays active secure network connections</span>
-                <span> • traceroute    : Pings server node location</span>
+                <span> • help : Displays this system manual</span>
+                <span> • clear / cls : Clears the terminal screen</span>
+                <span> • ls : Lists available system files</span>
+                <span> • close : Closes all active windows</span>
+                <span>
+                  {" "}
+                  • clear cache : Flushes UI state and resets window memory
+                </span>
+                <span> • reboot : Restarts the VADANTA_OS kernel</span>
+                <span>
+                  {" "}
+                  • shutdown : Terminates all processes and powers down
+                </span>
+                <span> • date : Displays system date and time</span>
+                <span>
+                  {" "}
+                  • timeformat : Toggles the flip clock between 12H/24H mode
+                </span>
+                <span>
+                  {" "}
+                  • theme &lt;deg&gt; : Shifts global UI hue (e.g., 'theme 180')
+                </span>
+                <span>
+                  {" "}
+                  • netstat : Displays active secure network connections
+                </span>
+                <span> • traceroute : Pings server node location</span>
                 <br />
                 <span className="text-white/60">-- PORTFOLIO & APPS --</span>
-                <span> • whoami        : Outputs current user identity</span>
-                <span> • skills        : Displays technical proficiencies & stack</span>
-                <span> • cat experience: Outputs professional experience logs</span>
-                <span> • roadmap       : Displays active development pipeline</span>
-                <span> • open projects : Mounts the PROJECTS.dir executable</span>
-                <span> • open journey  : Initializes the Journey.log timeline</span>
-                <span> • mount github  : Initializes external GitHub API uplink</span>
-                <span> • hologram      : Project the ABES_Node 3D hologram</span>
-                <span> • ping          : Opens a direct comms link to my inbox</span>
+                <span> • whoami : Outputs current user identity</span>
+                <span>
+                  {" "}
+                  • skills : Displays technical proficiencies & stack
+                </span>
+                <span>
+                  {" "}
+                  • cat experience: Outputs professional experience logs
+                </span>
+                <span> • roadmap : Displays active development pipeline</span>
+                <span>
+                  {" "}
+                  • open projects : Mounts the PROJECTS.dir executable
+                </span>
+                <span>
+                  {" "}
+                  • open journey : Initializes the Journey.log timeline
+                </span>
+                <span>
+                  {" "}
+                  • mount github : Initializes external GitHub API uplink
+                </span>
+                <span> • hologram : Project the ABES_Node 3D hologram</span>
+                <span> • ping : Opens a direct comms link to my inbox</span>
                 <br />
                 <span className="text-white/60">-- SOCIALS --</span>
-                <span> • socials       : Lists external web uplinks (GitHub, LinkedIn, Instagram)</span>
+                <span>
+                  {" "}
+                  • socials : Lists external web uplinks (GitHub, LinkedIn,
+                  Instagram)
+                </span>
                 <br />
                 <span>
-                  * [CLASSIFIED]   : The OS is full of secrets. Try{" "}
+                  * [CLASSIFIED] : The OS is full of secrets. Try{" "}
                   <span className="text-[#d946ef] font-bold animate-pulse drop-shadow-[0_0_8px_rgba(217,70,239,0.8)]">
                     'arcade'
                   </span>
@@ -1036,7 +1072,10 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
           newHistory.push({ type: "output", text: new Date().toString() });
         } else if (lowerCmd === "timeformat") {
           setIs24Hour((prev) => !prev);
-          newHistory.push({ type: "output", text: "[SYSTEM] Clock format toggled." });
+          newHistory.push({
+            type: "output",
+            text: "[SYSTEM] Clock format toggled.",
+          });
         } else if (lowerCmd === "open projects") {
           setIsProjectsWindowOpen(true);
           newHistory.push({
@@ -1060,22 +1099,39 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
             type: "output",
             text: (
               <div className="flex flex-col gap-1 mt-1">
-                <span className="text-[#22c55e] font-bold">EXTERNAL UPLINKS ESTABLISHED:</span>
+                <span className="text-[#22c55e] font-bold">
+                  EXTERNAL UPLINKS ESTABLISHED:
+                </span>
                 <span>
-                  &gt; GITHUB   :{" "}
-                  <a href="https://github.com/VedisVigourous" target="_blank" rel="noopener noreferrer" className="text-white underline hover:text-[#22c55e] transition-colors">
+                  &gt; GITHUB :{" "}
+                  <a
+                    href="https://github.com/VedisVigourous"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white underline hover:text-[#22c55e] transition-colors"
+                  >
                     https://github.com/VedisVigourous
                   </a>
                 </span>
                 <span>
                   &gt; LINKEDIN :{" "}
-                  <a href="https://linkedin.com/in/vadanta" target="_blank" rel="noopener noreferrer" className="text-white underline hover:text-[#22c55e] transition-colors">
+                  <a
+                    href="https://linkedin.com/in/vadanta"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white underline hover:text-[#22c55e] transition-colors"
+                  >
                     https://linkedin.com/in/vadanta
                   </a>
                 </span>
                 <span>
                   &gt; INSTAGRAM:{" "}
-                  <a href="https://instagram.com/vedant_chauhaan" target="_blank" rel="noopener noreferrer" className="text-white underline hover:text-[#22c55e] transition-colors">
+                  <a
+                    href="https://instagram.com/vedant_chauhaan"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white underline hover:text-[#22c55e] transition-colors"
+                  >
                     https://instagram.com/vedant_chauhaan
                   </a>
                 </span>
@@ -1152,11 +1208,20 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
             });
           }
         } else if (lowerCmd === "traceroute") {
-          newHistory.push({ type: "output", text: "Tracing route to Node_Local..." });
+          newHistory.push({
+            type: "output",
+            text: "Tracing route to Node_Local...",
+          });
           newHistory.push({ type: "output", text: "Hop 1: 192.168.1.1 [OK]" });
-          newHistory.push({ type: "output", text: "Hop 2: UP-SERVER-R03 [OK]" });
+          newHistory.push({
+            type: "output",
+            text: "Hop 2: UP-SERVER-R03 [OK]",
+          });
           newHistory.push({ type: "output", text: "Hop 3: Core_Gateway_01" });
-          newHistory.push({ type: "output", text: "Status: [ SECURE CONNECTION ESTABLISHED ]" });
+          newHistory.push({
+            type: "output",
+            text: "Status: [ SECURE CONNECTION ESTABLISHED ]",
+          });
         } else if (lowerCmd === "sudo su") {
           newHistory.push({
             type: "output",
@@ -2228,40 +2293,42 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
               </div>
 
               {/* --- THE MAIL.CONN QUOTE (TOP RIGHT DESKTOP) --- */}
-<div 
-  className={`absolute top-[80px] right-[120px] flex items-center pointer-events-none transition-opacity duration-700 z-0 ${
-    !isTerminalFocused && !isArcadeActive ? "opacity-100 delay-500" : "opacity-0"
-  }`}
->
-  <span 
-    style={{ fontFamily: "'Caveat', cursive" }} 
-    className="text-[#22c55e] text-xl sm:text-2xl rotate-[-4deg] tracking-wide drop-shadow-[0_0_8px_rgba(34,197,94,0.4)] whitespace-nowrap mr-2"
-  >
-    Found a bug or got ideas? Drop a ping!
-  </span>
+              <div
+                className={`absolute top-[80px] right-[120px] flex items-center pointer-events-none transition-opacity duration-700 z-0 ${
+                  !isTerminalFocused && !isArcadeActive
+                    ? "opacity-100 delay-500"
+                    : "opacity-0"
+                }`}
+              >
+                <span
+                  style={{ fontFamily: "'Caveat', cursive" }}
+                  className="text-[#22c55e] text-xl sm:text-2xl rotate-[-4deg] tracking-wide drop-shadow-[0_0_8px_rgba(34,197,94,0.4)] whitespace-nowrap mr-2"
+                >
+                  Found a bug or got ideas? Drop a ping!
+                </span>
 
-  {/* SVG Arrow Pointing Up-Right Toward Mail.conn Icon */}
-  <svg 
-    width="50" 
-    height="40" 
-    viewBox="0 0 50 40" 
-    className="stroke-[#22c55e] fill-none opacity-80 drop-shadow-[0_0_5px_rgba(34,197,94,0.4)] ml-1"
-  >
-    {/* Curve starting higher, directly off the '!' */}
-    <path 
-      d="M 2 12 Q 25 18, 44 6" 
-      strokeWidth="2.5" 
-      strokeLinecap="round" 
-    />
-    {/* Arrowhead snapped to the new end point */}
-    <path 
-      d="M 30 6 L 46 5 L 44 20" 
-      strokeWidth="2.5" 
-      strokeLinecap="round" 
-      strokeLinejoin="round" 
-    />
-  </svg>
-</div>
+                {/* SVG Arrow Pointing Up-Right Toward Mail.conn Icon */}
+                <svg
+                  width="50"
+                  height="40"
+                  viewBox="0 0 50 40"
+                  className="stroke-[#22c55e] fill-none opacity-80 drop-shadow-[0_0_5px_rgba(34,197,94,0.4)] ml-1"
+                >
+                  {/* Curve starting higher, directly off the '!' */}
+                  <path
+                    d="M 2 12 Q 25 18, 44 6"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                  />
+                  {/* Arrowhead snapped to the new end point */}
+                  <path
+                    d="M 30 6 L 46 5 L 44 20"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
 
               {/* --- THE MITOCHONDRIA QUOTE (LOCKED IN BACKGROUND) --- */}
               <link
@@ -2343,7 +2410,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
 
                     {/* Window Content */}
                     <div className="p-4 bg-black/90 cursor-default flex-1 flex items-center justify-center overflow-hidden">
-                      <TerminalProfile themeHue={themeHue}/>
+                      <TerminalProfile themeHue={themeHue} />
                     </div>
                   </div>
                 </Rnd>
@@ -3110,21 +3177,21 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                               : "Message:"}
                         </span>
                         <input
-  ref={terminalInputRef}
-  type="text"
-  value={terminalInput}
-  onChange={(e) => setTerminalInput(e.target.value)}
-  onKeyDown={handleTerminalSubmit}
-  onFocus={() => setIsTerminalFocused(true)}
-  onBlur={() => setIsTerminalFocused(false)}
-  className="bg-transparent border-none outline-none flex-1 text-[#22c55e] focus:text-[#4ade80] placeholder-[#22c55e]/40 focus:ring-0 transition-colors"
-  placeholder={
-    isTerminalFocused
-      ? "type a command..."
-      : "click to initialize terminal..."
-  }
-  spellCheck="false"
-/>
+                          ref={terminalInputRef}
+                          type="text"
+                          value={terminalInput}
+                          onChange={(e) => setTerminalInput(e.target.value)}
+                          onKeyDown={handleTerminalSubmit}
+                          onFocus={() => setIsTerminalFocused(true)}
+                          onBlur={() => setIsTerminalFocused(false)}
+                          className="bg-transparent border-none outline-none flex-1 text-[#22c55e] focus:text-[#4ade80] placeholder-[#22c55e]/40 focus:ring-0 transition-colors"
+                          placeholder={
+                            isTerminalFocused
+                              ? "type a command..."
+                              : "click to initialize terminal..."
+                          }
+                          spellCheck="false"
+                        />
                       </div>
                     </>
                   )}
@@ -3704,108 +3771,182 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
             </div>
 
             {/* Window Body - Multi-Template & Dynamic Placeholders */}
-<div className="flex-1 text-[#22c55e] flex flex-col overflow-hidden">
-  
-  {/* The Navigation Tabs */}
-  <div className="flex border-b border-[#22c55e]/20 shrink-0">
-    <button 
-      onClick={() => { setCommsView("PING"); setGuiPingStatus("IDLE"); }}
-      className={`flex-1 py-2 text-[10px] font-bold tracking-widest uppercase transition-colors ${commsView === "PING" ? "bg-[#22c55e]/20 text-white border-b-2 border-[#22c55e]" : "text-[#22c55e]/50 hover:bg-[#22c55e]/10"}`}
-    >
-      Direct Ping
-    </button>
-    <button 
-      onClick={() => { setCommsView("FEEDBACK"); setGuiPingStatus("IDLE"); }}
-      className={`flex-1 py-2 text-[10px] font-bold tracking-widest uppercase transition-colors ${commsView === "FEEDBACK" ? "bg-orange-500/20 text-white border-b-2 border-orange-500" : "text-orange-500/50 hover:bg-orange-500/10"}`}
-    >
-      System Feedback
-    </button>
-  </div>
+            <div className="flex-1 text-[#22c55e] flex flex-col overflow-hidden">
+              {/* The Navigation Tabs */}
+              <div className="flex border-b border-[#22c55e]/20 shrink-0">
+                <button
+                  onClick={() => {
+                    setCommsView("PING");
+                    setGuiPingStatus("IDLE");
+                  }}
+                  className={`flex-1 py-2 text-[10px] font-bold tracking-widest uppercase transition-colors ${commsView === "PING" ? "bg-[#22c55e]/20 text-white border-b-2 border-[#22c55e]" : "text-[#22c55e]/50 hover:bg-[#22c55e]/10"}`}
+                >
+                  Direct Ping
+                </button>
+                <button
+                  onClick={() => {
+                    setCommsView("FEEDBACK");
+                    setGuiPingStatus("IDLE");
+                  }}
+                  className={`flex-1 py-2 text-[10px] font-bold tracking-widest uppercase transition-colors ${commsView === "FEEDBACK" ? "bg-orange-500/20 text-white border-b-2 border-orange-500" : "text-orange-500/50 hover:bg-orange-500/10"}`}
+                >
+                  System Feedback
+                </button>
+              </div>
 
-  <div className="flex-1 p-5 overflow-y-auto custom-scrollbar flex flex-col">
-    {guiPingStatus === "SUCCESS" ? (
-      <div className="flex-1 flex flex-col items-center justify-center space-y-4">
-        <div className="font-bold tracking-widest text-white text-center">TRANSMISSION SUCCESSFUL</div>
-        <div className="text-xs text-[#22c55e]/70 text-center px-4">Payload securely routed.</div>
-        <button onClick={() => setGuiPingStatus("IDLE")} className="mt-4 border border-[#22c55e] px-4 py-2 hover:bg-[#22c55e] hover:text-black transition-colors text-xs font-bold shrink-0">INITIALIZE NEW LINK</button>
-      </div>
-    ) : (
-      <div className="flex flex-col h-full space-y-4">
-        
-        {/* Dynamic Mode Header */}
-        {commsView === "FEEDBACK" ? (
-          <div className="flex gap-2 shrink-0 mb-2">
-            <button onClick={() => setFeedbackType("BUG")} className={`flex-1 py-1.5 text-xs font-bold border transition-colors ${feedbackType === "BUG" ? "bg-red-500/20 border-red-500 text-red-500" : "border-red-500/30 text-red-500/50 hover:border-red-500"}`}>[ REPORT BUG ]</button>
-            <button onClick={() => setFeedbackType("FEATURE")} className={`flex-1 py-1.5 text-xs font-bold border transition-colors ${feedbackType === "FEATURE" ? "bg-blue-500/20 border-blue-500 text-blue-500" : "border-blue-500/30 text-blue-500/50 hover:border-blue-500"}`}>[ SUGGEST FEATURE ]</button>
+              <div className="flex-1 p-5 overflow-y-auto custom-scrollbar flex flex-col">
+                {guiPingStatus === "SUCCESS" ? (
+                  <div className="flex-1 flex flex-col items-center justify-center space-y-4">
+                    <div className="font-bold tracking-widest text-white text-center">
+                      TRANSMISSION SUCCESSFUL
+                    </div>
+                    <div className="text-xs text-[#22c55e]/70 text-center px-4">
+                      Payload securely routed.
+                    </div>
+                    <button
+                      onClick={() => setGuiPingStatus("IDLE")}
+                      className="mt-4 border border-[#22c55e] px-4 py-2 hover:bg-[#22c55e] hover:text-black transition-colors text-xs font-bold shrink-0"
+                    >
+                      INITIALIZE NEW LINK
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col h-full space-y-4">
+                    {/* Dynamic Mode Header */}
+                    {commsView === "FEEDBACK" ? (
+                      <div className="flex gap-2 shrink-0 mb-2">
+                        <button
+                          onClick={() => setFeedbackType("BUG")}
+                          className={`flex-1 py-1.5 text-xs font-bold border transition-colors ${feedbackType === "BUG" ? "bg-red-500/20 border-red-500 text-red-500" : "border-red-500/30 text-red-500/50 hover:border-red-500"}`}
+                        >
+                          [ REPORT BUG ]
+                        </button>
+                        <button
+                          onClick={() => setFeedbackType("FEATURE")}
+                          className={`flex-1 py-1.5 text-xs font-bold border transition-colors ${feedbackType === "FEATURE" ? "bg-blue-500/20 border-blue-500 text-blue-500" : "border-blue-500/30 text-blue-500/50 hover:border-blue-500"}`}
+                        >
+                          [ SUGGEST FEATURE ]
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="shrink-0 text-center mb-2 pb-3 border-b border-[#22c55e]/20">
+                        <span className="text-[#22c55e]/60 text-[9px] tracking-widest uppercase block mb-1.5">
+                          Or Route Manually To:
+                        </span>
+                        <span className="text-white text-xs font-mono tracking-widest select-all cursor-pointer bg-[#22c55e]/10 px-3 py-1.5 rounded border border-[#22c55e]/30">
+                          vadanta592007@hotmail.com
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Universal Email Input */}
+                    <div className="shrink-0">
+                      <label className="block text-[10px] uppercase tracking-widest mb-1 text-white/70">
+                        Return Address (Email)
+                      </label>
+                      <input
+                        type="email"
+                        value={guiPingData.email}
+                        onChange={(e) => {
+                          setGuiPingData({
+                            ...guiPingData,
+                            email: e.target.value,
+                          });
+                          setGuiPingStatus("IDLE");
+                        }}
+                        className={`w-full bg-[#0a0a0a] border ${commsView === "FEEDBACK" ? "border-orange-500/50 focus:border-orange-500" : "border-[#22c55e]/50 focus:border-[#22c55e]"} text-white p-2 outline-none transition-colors text-sm`}
+                        placeholder="user@node.com"
+                      />
+                    </div>
+
+                    {/* Dynamic Textarea Placeholders & Labels */}
+                    <div className="flex-1 flex flex-col min-h-[100px]">
+                      <label className="block text-[10px] uppercase tracking-widest mb-1 text-white/70">
+                        {commsView === "FEEDBACK"
+                          ? feedbackType === "BUG"
+                            ? "Bug Diagnostics"
+                            : "Feature Architecture"
+                          : "Encrypted Payload (Message)"}
+                      </label>
+                      <textarea
+                        value={guiPingData.message}
+                        onChange={(e) =>
+                          setGuiPingData({
+                            ...guiPingData,
+                            message: e.target.value,
+                          })
+                        }
+                        className={`w-full flex-1 bg-[#0a0a0a] border ${commsView === "FEEDBACK" ? "border-orange-500/50 focus:border-orange-500" : "border-[#22c55e]/50 focus:border-[#22c55e]"} text-white p-2 outline-none transition-colors text-sm resize-none custom-scrollbar`}
+                        placeholder={
+                          commsView === "PING"
+                            ? "Enter transmission data here..."
+                            : feedbackType === "BUG"
+                              ? "Describe the system failure, steps to reproduce, or error codes..."
+                              : "Describe the proposed functionality, its use cases, and potential impact..."
+                        }
+                      />
+                    </div>
+
+                    {/* Dynamic Error & Submit */}
+                    {guiPingStatus === "INVALID_EMAIL" && (
+                      <div className="shrink-0 text-red-500 text-xs font-bold tracking-widest bg-red-500/10 p-2 border border-red-500/30 text-center">
+                        ERR: INVALID EMAIL
+                      </div>
+                    )}
+                    {guiPingStatus === "API_ERROR" && (
+                      <div className="shrink-0 text-red-500 text-xs font-bold tracking-widest bg-red-500/10 p-2 border border-red-500/30 text-center">
+                        ERR: TRANSMISSION FAILED (Check Console)
+                      </div>
+                    )}
+
+                    <button
+                      onClick={() => {
+                        const cleanEmail = guiPingData.email.trim();
+                        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail))
+                          return setGuiPingStatus("INVALID_EMAIL");
+
+                        setGuiPingStatus("SENDING");
+
+                        // The payload already injects BUG or FEATURE right into the text!
+                        const finalPayload =
+                          commsView === "FEEDBACK"
+                            ? `[SYSTEM_FEEDBACK_TYPE: ${feedbackType}]\n\n${guiPingData.message}`
+                            : guiPingData.message;
+
+                        // Simplified Routing: If it's Feedback (Bug OR Feature), use Template 2. Otherwise, Template 1.
+                        const targetTemplate =
+                          commsView === "FEEDBACK"
+                            ? "template_l3izrym"
+                            : "template_wvnet4e";
+
+                        emailjs
+                          .send(
+                            "service_7259ksh",
+                            targetTemplate,
+                            { from_email: cleanEmail, message: finalPayload },
+                            "yWVDlVd10PKZ4Q9l6",
+                          )
+                          .then(() => {
+                            setGuiPingStatus("SUCCESS");
+                            setGuiPingData({ email: "", message: "" });
+                          })
+                          .catch((err) => {
+                            console.error("EmailJS Error: ", err);
+                            setGuiPingStatus("API_ERROR");
+                          });
+                      }}
+                      disabled={guiPingStatus === "SENDING"}
+                      className={`shrink-0 w-full border transition-colors py-2 font-bold tracking-widest text-sm ${commsView === "FEEDBACK" ? "bg-orange-500/20 border-orange-500 hover:bg-orange-500 hover:text-black text-orange-500" : "bg-[#22c55e]/20 border-[#22c55e] hover:bg-[#22c55e] hover:text-black"}`}
+                    >
+                      {guiPingStatus === "SENDING"
+                        ? "ENCRYPTING..."
+                        : "EXECUTE_TRANSMISSION"}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-        ) : (
-          <div className="shrink-0 text-center mb-2 pb-3 border-b border-[#22c55e]/20">
-            <span className="text-[#22c55e]/60 text-[9px] tracking-widest uppercase block mb-1.5">Or Route Manually To:</span>
-            <span className="text-white text-xs font-mono tracking-widest select-all cursor-pointer bg-[#22c55e]/10 px-3 py-1.5 rounded border border-[#22c55e]/30">vadanta592007@hotmail.com</span>
-          </div>
-        )}
-
-        {/* Universal Email Input */}
-        <div className="shrink-0">
-          <label className="block text-[10px] uppercase tracking-widest mb-1 text-white/70">Return Address (Email)</label>
-          <input type="email" value={guiPingData.email} onChange={(e) => { setGuiPingData({ ...guiPingData, email: e.target.value }); setGuiPingStatus("IDLE"); }} className={`w-full bg-[#0a0a0a] border ${commsView === "FEEDBACK" ? "border-orange-500/50 focus:border-orange-500" : "border-[#22c55e]/50 focus:border-[#22c55e]"} text-white p-2 outline-none transition-colors text-sm`} placeholder="user@node.com" />
-        </div>
-
-        {/* Dynamic Textarea Placeholders & Labels */}
-        <div className="flex-1 flex flex-col min-h-[100px]">
-          <label className="block text-[10px] uppercase tracking-widest mb-1 text-white/70">
-            {commsView === "FEEDBACK" ? (feedbackType === "BUG" ? "Bug Diagnostics" : "Feature Architecture") : "Encrypted Payload (Message)"}
-          </label>
-          <textarea 
-            value={guiPingData.message} 
-            onChange={(e) => setGuiPingData({ ...guiPingData, message: e.target.value })} 
-            className={`w-full flex-1 bg-[#0a0a0a] border ${commsView === "FEEDBACK" ? "border-orange-500/50 focus:border-orange-500" : "border-[#22c55e]/50 focus:border-[#22c55e]"} text-white p-2 outline-none transition-colors text-sm resize-none custom-scrollbar`} 
-            placeholder={
-              commsView === "PING" ? "Enter transmission data here..." : 
-              feedbackType === "BUG" ? "Describe the system failure, steps to reproduce, or error codes..." : 
-              "Describe the proposed functionality, its use cases, and potential impact..."
-            } 
-          />
-        </div>
-
-        {/* Dynamic Error & Submit */}
-        {guiPingStatus === "INVALID_EMAIL" && <div className="shrink-0 text-red-500 text-xs font-bold tracking-widest bg-red-500/10 p-2 border border-red-500/30 text-center">ERR: INVALID EMAIL</div>}
-        {guiPingStatus === "API_ERROR" && <div className="shrink-0 text-red-500 text-xs font-bold tracking-widest bg-red-500/10 p-2 border border-red-500/30 text-center">ERR: TRANSMISSION FAILED (Check Console)</div>}
-
-        <button
-          onClick={() => {
-            const cleanEmail = guiPingData.email.trim();
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) return setGuiPingStatus("INVALID_EMAIL");
-            
-            setGuiPingStatus("SENDING");
-            
-            // The payload already injects BUG or FEATURE right into the text!
-            const finalPayload = commsView === "FEEDBACK" 
-              ? `[SYSTEM_FEEDBACK_TYPE: ${feedbackType}]\n\n${guiPingData.message}`
-              : guiPingData.message;
-
-            // Simplified Routing: If it's Feedback (Bug OR Feature), use Template 2. Otherwise, Template 1.
-            const targetTemplate = commsView === "FEEDBACK" 
-              ? "template_l3izrym" 
-              : "template_wvnet4e"; 
-
-            emailjs.send("service_7259ksh", targetTemplate, { from_email: cleanEmail, message: finalPayload }, "yWVDlVd10PKZ4Q9l6")
-              .then(() => { setGuiPingStatus("SUCCESS"); setGuiPingData({ email: "", message: "" }); })
-              .catch((err) => {
-                console.error("EmailJS Error: ", err); 
-                setGuiPingStatus("API_ERROR");
-              });
-          }}
-          disabled={guiPingStatus === "SENDING"}
-          className={`shrink-0 w-full border transition-colors py-2 font-bold tracking-widest text-sm ${commsView === "FEEDBACK" ? "bg-orange-500/20 border-orange-500 hover:bg-orange-500 hover:text-black text-orange-500" : "bg-[#22c55e]/20 border-[#22c55e] hover:bg-[#22c55e] hover:text-black"}`}
-        >
-          {guiPingStatus === "SENDING" ? "ENCRYPTING..." : "EXECUTE_TRANSMISSION"}
-        </button>
-      </div>
-    )}
-  </div>
-</div>
-</div>
         </Rnd>
       )}
 
