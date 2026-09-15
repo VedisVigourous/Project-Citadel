@@ -625,14 +625,27 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
 
   const isExpanded = isTerminalFocused || isHudOpen;
 
-  // NEW SCROLL LOGIC: Target the container, not an element
+  // NEW SCROLL LOGIC: Container-Isolated Smart Targeting
   const terminalScrollRef = useRef(null);
   const terminalInputRef = useRef(null);
 
   useEffect(() => {
     if (terminalScrollRef.current) {
-      terminalScrollRef.current.scrollTop =
-        terminalScrollRef.current.scrollHeight;
+      const historyArray = terminalHistory;
+      const lastEntry = historyArray[historyArray.length - 1];
+      const container = terminalScrollRef.current;
+      
+      if (lastEntry && lastEntry.isManual) {
+        const nodes = container.children;
+        if (nodes.length >= 2) {
+          const targetNode = nodes[nodes.length - 2]; // Target the input command
+          // Scroll precisely to the element within the container
+          container.scrollTop = targetNode.offsetTop - container.offsetTop;
+        }
+      } else {
+        // Normal behavior: snap to bottom
+        container.scrollTop = container.scrollHeight;
+      }
     }
   }, [terminalHistory]);
 
@@ -943,52 +956,131 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
         } else if (lowerCmd === "help") {
           newHistory.push({
             type: "output",
-            text: `AVAILABLE COMMANDS:
-          • help            - Displays this system manual
-          • clear / cls     - Clears the terminal screen
-          • ls              - Lists available system files
-          • whoami          - Outputs current user identity
-          • date            - Displays system date and time
-          • open projects   - Mounts the PROJECTS.dir executable
-          • mount github    - Initializes GitHub API uplink
-          • ping            - Opens a direct comms link to my inbox
-          • cat workspace   - Outputs current development pipeline
-          • theme <deg>     - Shifts global UI hue (e.g., 'theme 180')
-          • traceroute      - Pings server node location
-          • sudo su         - Attempts root escalation
-          • exit            - Exits the CLI Interface
-
-          * Do you like surprises? Try typing: arcade
-          * [CLASSIFIED]: The system is dreaming. It's time to try -> 'wake up'.`,
+            isManual: true, // Triggers our new smart scroll
+            text: (
+              <div className="flex flex-col gap-1 mt-1">
+                <span className="text-[#22c55e] font-bold">VADANTA_OS TERMINAL MANUAL // AVAILABLE COMMANDS:</span>
+                <br />
+                <span className="text-white/60">-- SYSTEM & POWER --</span>
+                <span> • help          : Displays this system manual</span>
+                <span> • clear / cls   : Clears the terminal screen</span>
+                <span> • ls            : Lists available system files</span>
+                <span> • close         : Closes all active windows</span>
+                <span> • clear cache   : Flushes UI state and resets window memory</span>
+                <span> • reboot        : Restarts the VADANTA_OS kernel</span>
+                <span> • shutdown      : Terminates all processes and powers down</span>
+                <span> • date          : Displays system date and time</span>
+                <span> • timeformat    : Toggles the flip clock between 12H/24H mode</span>
+                <span> • theme &lt;deg&gt;   : Shifts global UI hue (e.g., 'theme 180')</span>
+                <span> • netstat       : Displays active secure network connections</span>
+                <span> • traceroute    : Pings server node location</span>
+                <br />
+                <span className="text-white/60">-- PORTFOLIO & APPS --</span>
+                <span> • whoami        : Outputs current user identity</span>
+                <span> • skills        : Displays technical proficiencies & stack</span>
+                <span> • cat experience: Outputs professional experience logs</span>
+                <span> • roadmap       : Displays active development pipeline</span>
+                <span> • open projects : Mounts the PROJECTS.dir executable</span>
+                <span> • open journey  : Initializes the Journey.log timeline</span>
+                <span> • mount github  : Initializes external GitHub API uplink</span>
+                <span> • hologram      : Project the ABES_Node 3D hologram</span>
+                <span> • ping          : Opens a direct comms link to my inbox</span>
+                <br />
+                <span className="text-white/60">-- SOCIALS --</span>
+                <span> • socials       : Lists external web uplinks (GitHub, LinkedIn, Instagram)</span>
+                <br />
+                <span>
+                  * [CLASSIFIED]   : The OS is full of secrets. Try{" "}
+                  <span className="text-[#d946ef] font-bold animate-pulse drop-shadow-[0_0_8px_rgba(217,70,239,0.8)]">
+                    'arcade'
+                  </span>
+                  , 'coffee', 'hack', 'lightmode', or 'wakeup'.
+                </span>
+              </div>
+            ),
           });
         } else if (lowerCmd === "close") {
           handleClearCache();
           newHistory.push({
             type: "output",
-            text: "[SYSTEM] All active windows closed and positions reset.",
+            text: "[SYSTEM] All active windows closed.",
           });
+        } else if (lowerCmd === "clear cache" || lowerCmd === "clearcache") {
+          handleClearCache();
+          newHistory.push({
+            type: "output",
+            text: "[SYSTEM] Cache flushed. UI memory reset to defaults.",
+          });
+        } else if (lowerCmd === "reboot") {
+          handleReboot();
+        } else if (lowerCmd === "shutdown") {
+          handleShutdown();
         } else if (lowerCmd === "ls") {
           newHistory.push({
             type: "output",
-            text: "DIRECTORY LISTING:\n  • IDENTITY.exe\n  • PROJECTS.dir\n  • CERTS.dat\n  • RESUME.tex",
+            text: `DIRECTORY LISTING:
+ • IDENTITY.exe
+ • PROJECTS.dir
+ • CERTS.dat
+ • RESUME.tex
+ • EDUCATION.exe
+ • JOURNEY.log`,
           });
         } else if (lowerCmd === "whoami") {
           setIsIdentityWindowOpen(true);
           newHistory.push({
             type: "output",
-            text: "Vadanta Kumar Chauhaan\n • System Architect & CSE Major",
-          });
-          newHistory.push({
-            type: "output",
-            text: "Executing IDENTITY.exe...",
+            text: "Vadanta Kumar Chauhaan\nSystem Architect & CSE Major\n> Executing IDENTITY.exe...",
           });
         } else if (lowerCmd === "date") {
           newHistory.push({ type: "output", text: new Date().toString() });
+        } else if (lowerCmd === "timeformat") {
+          setIs24Hour((prev) => !prev);
+          newHistory.push({ type: "output", text: "[SYSTEM] Clock format toggled." });
         } else if (lowerCmd === "open projects") {
           setIsProjectsWindowOpen(true);
           newHistory.push({
             type: "output",
             text: "Executing PROJECTS.dir...",
+          });
+        } else if (lowerCmd === "open journey" || lowerCmd === "journey") {
+          setIsJourneyWindowOpen(true);
+          newHistory.push({
+            type: "output",
+            text: "[SYSTEM] Accessing chronological timeline...\n> Executing JOURNEY.log...",
+          });
+        } else if (lowerCmd === "hologram" || lowerCmd === "abes") {
+          setIsHologramActive(true);
+          newHistory.push({
+            type: "output",
+            text: "[SYSTEM] Establishing 3D rendering context...\n> Projecting ABES Node Hologram...",
+          });
+        } else if (lowerCmd === "socials") {
+          newHistory.push({
+            type: "output",
+            text: (
+              <div className="flex flex-col gap-1 mt-1">
+                <span className="text-[#22c55e] font-bold">EXTERNAL UPLINKS ESTABLISHED:</span>
+                <span>
+                  &gt; GITHUB   :{" "}
+                  <a href="https://github.com/VedisVigourous" target="_blank" rel="noopener noreferrer" className="text-white underline hover:text-[#22c55e] transition-colors">
+                    https://github.com/VedisVigourous
+                  </a>
+                </span>
+                <span>
+                  &gt; LINKEDIN :{" "}
+                  <a href="https://linkedin.com/in/vadanta" target="_blank" rel="noopener noreferrer" className="text-white underline hover:text-[#22c55e] transition-colors">
+                    https://linkedin.com/in/vadanta
+                  </a>
+                </span>
+                <span>
+                  &gt; INSTAGRAM:{" "}
+                  <a href="https://instagram.com/vedant_chauhaan" target="_blank" rel="noopener noreferrer" className="text-white underline hover:text-[#22c55e] transition-colors">
+                    https://instagram.com/vedant_chauhaan
+                  </a>
+                </span>
+              </div>
+            ),
           });
         } else if (lowerCmd === "mount github") {
           handleMountGitHub();
@@ -996,38 +1088,55 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
             type: "output",
             text: "Initiating external GitHub uplink...",
           });
-        } else if (lowerCmd === "ping") {
-          setTerminalMode("PING_EMAIL");
+        } else if (lowerCmd === "skills" || lowerCmd === "stack") {
           newHistory.push({
             type: "output",
-            text: "INITIALIZING SECURE COMMS LINK...",
+            text: `TECHNICAL PROFICIENCIES:
+------------------------
+[CORE]     : Java, C++, JavaScript, HTML/CSS
+[CLOUD/AI] : Google Gemini API, Generative AI, Vertex AI, GCP
+[TOOLS]    : Git, GitHub Actions, Chrome Extension API
+[CONCEPTS] : Data Structures & Algorithms (DSA), DOM Manipulation, OOP`,
           });
+        } else if (lowerCmd === "cat experience") {
           newHistory.push({
             type: "output",
-            text: "[!] Direct manual routing available at: vadanta592007@hotmail.com",
+            text: `[ Deloitte ] Technology Job Simulation (Remote)
+> Engineered Python ETL backend logic for unstructured JSON telemetry data.
+> Drafted secure intranet dashboard proposals for industrial device monitoring.`,
           });
+        } else if (lowerCmd === "roadmap" || lowerCmd === "status") {
           newHistory.push({
             type: "output",
-            text: "Please enter your contact email:",
+            text: `ACTIVE DEVELOPMENT PIPELINE:
+[CURRENT OP]  : Scaling UI/UX Architecture & AI Integration
+[NEXT TARGET] : Google Summer of Code (GSoC) & GSSoC
+[COMMUNITY]   : Actively hunting Technical Hackathons & competitive coding events`,
           });
-        } else if (lowerCmd === "cat workspace") {
+        } else if (lowerCmd === "netstat" || lowerCmd === "network") {
           newHistory.push({
             type: "output",
-            text: `[ CURRENT_PIPELINE ]:
- > Architecting scalable Java backend systems
- > Executing advanced DSA & Problem Solving computations
- > Exploring Cloud-native deployments & API integrations
- > Open-Source Targets: GSoC / GSSoC`,
+            text: `ACTIVE SECURE CONNECTIONS:
+Proto Recv-Q Send-Q Local Address           Foreign Address         State
+tcp4       0      0 VADANTA_OS:443          NODE_GCP:https          ESTABLISHED
+tcp4       0      0 HOST_CORE_MAIN:80       GITHUB_API:https        ESTABLISHED
+tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`,
           });
         } else if (lowerCmd === "games" || lowerCmd === "arcade") {
           newHistory.push({
             type: "output",
             text: "INITIATING SYS_ARCADE PROTOCOL... EXPANDING TERMINAL_VIEW",
           });
-          setIsArcadeMounting(true); // Triggers the physical slide-up
+          setIsArcadeMounting(true);
           setTimeout(() => {
-            setIsArcadeActive(true); // Mounts the glowing menu after the slide completes
+            setIsArcadeActive(true);
           }, 700);
+        } else if (lowerCmd === "ping") {
+          setTerminalMode("PING_EMAIL");
+          newHistory.push({
+            type: "output",
+            text: "INITIALIZING SECURE COMMS LINK...\n[!] Direct manual routing available at: vadanta592007@hotmail.com\nPlease enter your contact email:",
+          });
         } else if (baseCmd === "theme") {
           const hue = parseInt(cmdParts[1]);
           if (!isNaN(hue)) {
@@ -1039,46 +1148,30 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
           } else {
             newHistory.push({
               type: "output",
-              text: `Usage: theme <number 0-360>`,
+              text: "Usage: theme <number 0-360>",
             });
           }
         } else if (lowerCmd === "traceroute") {
-          newHistory.push({
-            type: "output",
-            text: "Tracing route to Node_Local...",
-          });
+          newHistory.push({ type: "output", text: "Tracing route to Node_Local..." });
           newHistory.push({ type: "output", text: "Hop 1: 192.168.1.1 [OK]" });
-          newHistory.push({
-            type: "output",
-            text: "Hop 2: UP-SERVER-R03 [OK]",
-          });
-          newHistory.push({
-            type: "output",
-            text: "Hop 3: Delhi_Sector_01_Gateway",
-          });
-          newHistory.push({
-            type: "output",
-            text: "Status: [ SECURE CONNECTION ESTABLISHED ]",
-          });
+          newHistory.push({ type: "output", text: "Hop 2: UP-SERVER-R03 [OK]" });
+          newHistory.push({ type: "output", text: "Hop 3: Core_Gateway_01" });
+          newHistory.push({ type: "output", text: "Status: [ SECURE CONNECTION ESTABLISHED ]" });
         } else if (lowerCmd === "sudo su") {
           newHistory.push({
             type: "output",
-            text: "CRITICAL ERR: ACCESS DENIED. Unauthorized attempt logged and reported to sysadmin.",
+            text: "CRITICAL ERR: ACCESS DENIED. Unauthorized root escalation attempt logged and reported to sysadmin.",
           });
         } else if (lowerCmd === "ssh zion" || lowerCmd === "wakeup") {
           setMatrixActive(true);
-          setMatrixTerminating(false); // Reset on fresh boot
+          setMatrixTerminating(false);
           newHistory.push({
             type: "output",
             text: "MATRIX PROTOCOL INITIATED. SYSTEM OVERRIDE...",
           });
-
-          // Phase 1: Stop spawning new rain after 6 seconds
           setTimeout(() => {
             setMatrixTerminating(true);
           }, 6000);
-
-          // Phase 2: Fully unmount after 9 seconds
           setTimeout(() => {
             setMatrixActive(false);
             setMatrixTerminating(false);
@@ -1090,6 +1183,42 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
               },
             ]);
           }, 9000);
+        } else if (lowerCmd === "coffee" || lowerCmd === "brew") {
+          newHistory.push({
+            type: "output",
+            text: `
+    (  )   (   )  )
+     ) (   )  (  (
+    (____)____)___)
+    |             |]
+    \\             /
+     \`-----------\`
+[SYSTEM]: Caffeine levels replenished. V-Bash engine optimal.`,
+          });
+        } else if (lowerCmd === "sudo rm -rf /") {
+          newHistory.push({
+            type: "output",
+            text: `[CRITICAL]: Nice try. I architected this OS from scratch—you really think I'd leave root access open?\n[SYSTEM]: Incident logged. Deploying defensive countermeasures...`,
+          });
+        } else if (lowerCmd === "hack" || lowerCmd === "breach") {
+          newHistory.push({
+            type: "output",
+            text: `[INITIATING BREACH PROTOCOL]
+> Bypassing UI mainframe... [OK]
+> Decrypting admin passwords... [OK]
+> Accessing secure project vault... 
+> ERROR: Just kidding, bro. This is a React frontend. Go check out my GitHub instead!`,
+          });
+        } else if (lowerCmd === "lightmode" || lowerCmd === "light mode") {
+          newHistory.push({
+            type: "output",
+            text: `[FATAL ERR]: My retinas are burning just thinking about it. Use the toggle switch in the UI... if you dare.`,
+          });
+        } else if (lowerCmd === "konami" || lowerCmd === "up up down down") {
+          newHistory.push({
+            type: "output",
+            text: `[CHEAT CODE ACCEPTED]: Unlimited lives granted. But you still have to debug your own code.`,
+          });
         } else if (lowerCmd === "exit") {
           setIsTerminalFocused(false);
           terminalInputRef.current?.blur();
@@ -1097,24 +1226,6 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
             type: "output",
             text: "[SYSTEM] CLI session suspended. Returning to background mode.",
           });
-
-          // Phase 1: Stop spawning new rain after 6 seconds
-          setTimeout(() => {
-            setMatrixTerminating(true);
-          }, 6000);
-
-          // Phase 2: Fully unmount after 9 seconds (giving the last drops 3s to fall off)
-          setTimeout(() => {
-            setMatrixActive(false);
-            setMatrixTerminating(false);
-            setTerminalHistory((prev) => [
-              ...prev,
-              {
-                type: "output",
-                text: "[SYSTEM] MATRIX PROTOCOL TERMINATED. NORMAL UI RESTORED.",
-              },
-            ]);
-          }, 9000);
         } else {
           newHistory.push({
             type: "output",
@@ -3803,7 +3914,7 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
                         &gt;
                       </span>
                       First-Year Performance:{" "}
-                      <span className="text-red-400 font-bold">9.13 SGPA</span>
+                      <span className="text-red-400 font-bold">9.13 CGPA</span>
                     </li>
                     <li>
                       <span className="text-white font-bold opacity-50 mr-2">
