@@ -13,6 +13,8 @@ import TerminalArcade from "./components/TerminalArcade";
 import Hologram from "./components/Hologram";
 import Engage2P from "./components/Engage2p";
 import AiProxy from "./components/AiProxy";
+import useSound from 'use-sound';
+import bootLogo1 from "./assets/bootLogo1.png";
 
 const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 
@@ -211,6 +213,39 @@ function App() {
     width: 600,
     height: 500,
   });
+
+  // --- AUDIO ENGINE ---
+  const [playBgm, { pause: pauseBgm }] = useSound('/sounds/bgm-ambient.mp3', { volume: 0.25, loop: true });
+  const [playSwoosh] = useSound('/sounds/air-swoosh.mp3', { volume: 0.75 });
+  const [playAppOpen] = useSound('/sounds/app-open.mp3', { volume: 0.65 });
+  const [playScanner, { stop: stopScanner }] = useSound('/sounds/scanner.mp3', { volume: 0.4 });
+  const [playKeystroke] = useSound('/sounds/mech-keystroke.mp3', { 
+    volume: 0.55, 
+    interrupt: false 
+  });
+  
+  const [hasAudioStarted, setHasAudioStarted] = useState(false);
+  const [isMusicMuted, setIsMusicMuted] = useState(false);
+
+  const swooshCooldown = useRef(false);
+
+  const toggleMusic = () => {
+    if (isMusicMuted) {
+      playBgm();
+      setIsMusicMuted(false);
+    } else {
+      pauseBgm();
+      setIsMusicMuted(true);
+    }
+  };
+
+  // Starts BGM on first click anywhere on the page
+  const handleFirstInteraction = () => {
+    if (!hasAudioStarted) {
+      playBgm();
+      setHasAudioStarted(true);
+    }
+  };
 
   // --- VISITOR TRACKING SYSTEM ---
   const [visitorCount, setVisitorCount] = useState(0);
@@ -702,20 +737,32 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
     },
   ];
 
-  // 1. THE FOOLPROOF MOUSE TRACKER
+  // 1. THE UPGRADED MOUSE TRACKER (With Speed-Swoosh)
   useEffect(() => {
     const handleGlobalMouseMove = (e) => {
-      // The check goes INSIDE the function now!
       if (loading) return;
 
+      // Existing 3D tilt logic
       const x = (e.clientX / window.innerWidth - 0.5) * 20;
       const y = (e.clientY / window.innerHeight - 0.5) * 20;
       setBgOffset({ x, y });
+
+      // The Fast-Movement Swoosh Logic
+      // e.movementX/Y calculates the pixel jump between frames
+      const speed = Math.abs(e.movementX) + Math.abs(e.movementY);
+      
+      // If the mouse jumps more than 80 pixels in one frame, it's moving FAST.
+      if (speed > 80 && !swooshCooldown.current) {
+        playSwoosh();
+        swooshCooldown.current = true;
+        // 500ms cooldown so it doesn't spam your ears
+        setTimeout(() => (swooshCooldown.current = false), 500); 
+      }
     };
 
     window.addEventListener("mousemove", handleGlobalMouseMove);
     return () => window.removeEventListener("mousemove", handleGlobalMouseMove);
-  }, [loading]);
+  }, [loading, playSwoosh]);
 
   // ---> NEW CLOCK & NETWORK EFFECT GOES HERE <---
   useEffect(() => {
@@ -953,6 +1000,12 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
           // Do nothing
         } else if (lowerCmd === "clear" || lowerCmd === "cls") {
           newHistory = [];
+        } else if (lowerCmd === "music" || lowerCmd === "toggle music" || lowerCmd === "mute") {
+          toggleMusic();
+          newHistory.push({
+            type: "output",
+            text: `[SYSTEM] Background Audio Engine: ${isMusicMuted ? "ONLINE" : "MUTED"}`
+          });
         } else if (lowerCmd === "help") {
           newHistory.push({
             type: "output",
@@ -968,6 +1021,7 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
                 <span> • clear / cls : Clears the terminal screen</span>
                 <span> • ls : Lists available system files</span>
                 <span> • close : Closes all active windows</span>
+                <span> • music / mute  : Toggles background audio engine</span>
                 <span>
                   {" "}
                   • clear cache : Flushes UI state and resets window memory
@@ -1306,6 +1360,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
 
   return (
     <div
+      onClick={handleFirstInteraction}
       className="bg-slate-950 min-h-screen text-[#22c55e] font-mono overflow-hidden selection:bg-[#22c55e] selection:text-black"
       style={{
         filter: isBlindingLightMode
@@ -1348,142 +1403,113 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
             {/* TOP OS STATUS BAR */}
             <div className="w-full h-8 bg-black/80 backdrop-blur-md border-b border-[#22c55e]/30 flex items-center px-4 relative z-[90]">
               {/* Left Side: Menus */}
-              <div className="flex-1 flex items-center space-x-6">
-                {/* VADANTA_OS Menu */}
-                <div className="relative">
-                  <span
-                    onClick={() =>
-                      setActiveMenu(activeMenu === "vadanta" ? null : "vadanta")
-                    }
-                    className={`font-bold tracking-widest cursor-pointer transition-colors text-xs sm:text-sm ${activeMenu === "vadanta" ? "text-white" : "text-[#22c55e]"}`}
-                  >
-                    VADANTA_OS
-                  </span>
-                  {activeMenu === "vadanta" && (
-                    <div className="absolute top-full left-0 mt-3 w-64 bg-black/95 border border-[#22c55e]/50 shadow-[0_0_15px_rgba(34,197,94,0.2)] py-2 flex flex-col gap-1 z-[9999] backdrop-blur-md text-xs font-mono">
-                      <div
-                        onClick={() => {
-                          setActiveMenu(null);
-                          setIsCoreIdentityOpen(true);
-                        }}
-                        className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors"
-                      >
-                        [ Core_Identity ]
-                      </div>
-                      <div
-                        onClick={() => {
-                          setActiveMenu(null);
-                          triggerTraceRoute();
-                        }}
-                        className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors"
-                      >
-                        [ Breach_Protocol ]
-                      </div>
-                      <div
-                        onClick={() => {
-                          setActiveMenu(null);
-                          handleMountGitHub();
-                        }}
-                        className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors font-bold border-t border-dashed border-[#22c55e]/30 mt-1 pt-2"
-                      >
-                        &gt; Mount_GitHub_Drive
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* File Menu */}
-                <div className="relative hidden sm:block">
-                  <span
-                    onClick={() =>
-                      setActiveMenu(activeMenu === "file" ? null : "file")
-                    }
-                    className={`cursor-pointer transition-colors ${activeMenu === "file" ? "text-[#22c55e]" : "text-slate-500 hover:text-[#22c55e]"}`}
-                  >
-                    File
-                  </span>
-                  {activeMenu === "file" && (
-                    <div className="absolute top-full left-0 mt-3 w-60 bg-black/95 border border-[#22c55e]/50 shadow-[0_0_15px_rgba(34,197,94,0.2)] py-2 flex flex-col gap-1 z-[9999] backdrop-blur-md text-xs font-mono">
-                      <a
-                        href="/resume.pdf"
-                        download
-                        className="block px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors"
-                      >
-                        &gt; Extract_Dossier
-                      </a>
-                      <div
-                        onClick={() => {
-                          setActiveMenu(null);
-                          handleExportLogs();
-                        }}
-                        className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors"
-                      >
-                        &gt; Export_Session_Logs
-                      </div>
-                      <div
-                        onClick={() => {
-                          setActiveMenu(null);
-                          setIsThemeModalOpen(true);
-                        }}
-                        className="px-4 py-2 text-[#BF40BF] hover:bg-[#22c55e]/20 cursor-pointer transition-colors border-t border-dashed border-[#BF40BF]/30 mt-1 pt-2"
-                      >
-                        &gt; Customize_OS_Theme
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* System Menu */}
-                <div className="relative hidden sm:block">
-                  <span
-                    onClick={() =>
-                      setActiveMenu(activeMenu === "system" ? null : "system")
-                    }
-                    className={`cursor-pointer transition-colors ${activeMenu === "system" ? "text-[#22c55e]" : "text-slate-500 hover:text-[#22c55e]"}`}
-                  >
-                    System
-                  </span>
-                  {activeMenu === "system" && (
-                    <div className="absolute top-full left-0 mt-3 w-48 bg-black/95 border border-[#22c55e]/50 shadow-[0_0_15px_rgba(34,197,94,0.2)] py-1 z-[9999] backdrop-blur-md text-xs">
-                      <div
-                        onClick={handleReboot}
-                        className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors"
-                      >
-                        &gt; Reboot_System
-                      </div>
-                      <div
-                        onClick={handleClearCache}
-                        className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors"
-                      >
-                        &gt; Clear_Cache
-                      </div>
-                      <div className="border-t border-[#22c55e]/30 my-1"></div>
-                      <div
-                        onClick={handleShutdown}
-                        className="px-4 py-2 text-red-500 hover:bg-red-500/20 cursor-pointer transition-colors font-bold"
-                      >
-                        &gt; Initiate_Shutdown
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* THE JOKER TRAP: Fake Light Mode Toggle */}
-                <div className="relative hidden sm:flex items-center ml-2 border-l border-[#22c55e]/30 pl-6">
-                  <div
-                    className="flex items-center gap-2 cursor-pointer group"
-                    onClick={() => setIsJokerTrapActive(true)}
-                  >
-                    {/* The Fake Switch */}
-                    <div className="w-7 h-3.5 border rounded-full relative transition-colors duration-300 bg-slate-800 border-slate-600 group-hover:border-red-500">
-                      <div className="w-2.5 h-2.5 rounded-full absolute top-[1px] shadow-sm transition-all duration-300 bg-slate-400 left-[2px] group-hover:bg-red-500"></div>
-                    </div>
-                    <span className="text-[10px] uppercase tracking-widest transition-colors text-slate-500 group-hover:text-red-400">
-                      Light_Mode
-                    </span>
+          <div className="flex-1 flex items-center">
+            
+            {/* 1. THE LOGO */}
+            <div className="relative mr-3">
+              <div
+                onClick={() => setActiveMenu(activeMenu === "vadanta" ? null : "vadanta")}
+                className="relative flex items-center justify-center cursor-pointer select-none font-mono"
+              >
+                <span className="text-xl font-black text-[#22c55e]/30 tracking-tighter">V</span>
+                <span className="absolute top-0 left-0 text-xl font-black text-[#22c55e] tracking-tighter pointer-events-none" style={{ animation: 'cyber-wipe 3s ease-in-out infinite' }}>V</span>
+                <span className="absolute top-0 left-0 text-xl font-black text-white tracking-tighter pointer-events-none" style={{ animation: 'cyber-wipe 3s ease-in-out infinite 0.15s' }}>V</span>
+              </div>
+              
+              {activeMenu === "vadanta" && (
+                <div className="absolute top-full left-0 mt-3 w-64 bg-black/95 border border-[#22c55e]/50 shadow-[0_0_15px_rgba(34,197,94,0.2)] py-2 flex flex-col gap-1 z-[9999] backdrop-blur-md text-xs font-mono">
+                  <div onClick={() => { setActiveMenu(null); setIsCoreIdentityOpen(true); }} className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors">
+                    [ Core_Identity ]
+                  </div>
+                  <div onClick={() => { setActiveMenu(null); triggerTraceRoute(); }} className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors">
+                    [ Breach_Protocol ]
+                  </div>
+                  <div onClick={() => { setActiveMenu(null); handleMountGitHub(); }} className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors font-bold border-t border-dashed border-[#22c55e]/30 mt-1 pt-2">
+                    &gt; Mount_GitHub_Drive
                   </div>
                 </div>
+              )}
+            </div>
+
+            {/* SEPARATOR 1 (Tucked close to the logo) */}
+            <div className="hidden sm:block w-[1px] h-4 bg-[#22c55e]/30 mr-6"></div>
+
+            {/* 2 & 3. FILE & SYSTEM MENUS (Centered perfectly between the separators) */}
+            <div className="flex items-center gap-6 mr-6">
+              {/* File Menu */}
+              <div className="relative hidden sm:block">
+                <span onClick={() => setActiveMenu(activeMenu === "file" ? null : "file")} className={`cursor-pointer transition-colors ${activeMenu === "file" ? "text-[#22c55e]" : "text-slate-500 hover:text-[#22c55e]"}`}>
+                  File
+                </span>
+                {activeMenu === "file" && (
+                  <div className="absolute top-full left-0 mt-3 w-60 bg-black/95 border border-[#22c55e]/50 shadow-[0_0_15px_rgba(34,197,94,0.2)] py-2 flex flex-col gap-1 z-[9999] backdrop-blur-md text-xs font-mono">
+                    <a href="/resume.pdf" download className="block px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors">
+                      &gt; Extract_Dossier
+                    </a>
+                    <div onClick={() => { setActiveMenu(null); handleExportLogs(); }} className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors">
+                      &gt; Export_Session_Logs
+                    </div>
+                    <div onClick={() => { setActiveMenu(null); setIsThemeModalOpen(true); }} className="px-4 py-2 text-[#BF40BF] hover:bg-[#22c55e]/20 cursor-pointer transition-colors border-t border-dashed border-[#BF40BF]/30 mt-1 pt-2">
+                      &gt; Customize_OS_Theme
+                    </div>
+                  </div>
+                )}
               </div>
+
+              {/* System Menu */}
+              <div className="relative hidden sm:block">
+                <span onClick={() => setActiveMenu(activeMenu === "system" ? null : "system")} className={`cursor-pointer transition-colors ${activeMenu === "system" ? "text-[#22c55e]" : "text-slate-500 hover:text-[#22c55e]"}`}>
+                  System
+                </span>
+                {activeMenu === "system" && (
+                  <div className="absolute top-full left-0 mt-3 w-48 bg-black/95 border border-[#22c55e]/50 shadow-[0_0_15px_rgba(34,197,94,0.2)] py-1 z-[9999] backdrop-blur-md text-xs">
+                    <div onClick={handleReboot} className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors">
+                      &gt; Reboot_System
+                    </div>
+                    <div onClick={handleClearCache} className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors">
+                      &gt; Clear_Cache
+                    </div>
+                    <div className="border-t border-[#22c55e]/30 my-1"></div>
+                    <div onClick={handleShutdown} className="px-4 py-2 text-red-500 hover:bg-red-500/20 cursor-pointer transition-colors font-bold">
+                      &gt; Initiate_Shutdown
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* SEPARATOR 2 */}
+            <div className="hidden sm:block w-[1px] h-4 bg-[#22c55e]/30 mr-4"></div>
+
+            {/* THE JOKER TRAP: Fake Light Mode Toggle */}
+            <div className="relative hidden sm:flex items-center mr-4">
+              <div className="flex items-center gap-2 cursor-pointer group" onClick={() => setIsJokerTrapActive(true)}>
+                <div className="w-7 h-3.5 border rounded-full relative transition-colors duration-300 bg-slate-800 border-slate-600 group-hover:border-red-500">
+                  <div className="w-2.5 h-2.5 rounded-full absolute top-[1px] shadow-sm transition-all duration-300 bg-slate-400 left-[2px] group-hover:bg-red-500"></div>
+                </div>
+                <span className="text-[10px] uppercase tracking-widest transition-colors text-slate-500 group-hover:text-red-400">
+                  Light_Mode
+                </span>
+              </div>
+            </div>
+
+            {/* SEPARATOR 3 */}
+            <div className="hidden sm:block w-[1px] h-4 bg-[#22c55e]/30 mr-4"></div>
+
+            {/* BGM AUDIO TOGGLE */}
+            <div className="relative hidden sm:flex items-center">
+              <div className="flex items-center gap-2 cursor-pointer group" onClick={toggleMusic}>
+                <div className={`w-7 h-3.5 border rounded-full relative transition-colors duration-300 ${isMusicMuted ? "bg-red-900/30 border-red-700/50 group-hover:border-red-500" : "bg-[#22c55e]/20 border-[#22c55e]/50 group-hover:border-[#22c55e]"}`}>
+                  <div className={`w-2.5 h-2.5 rounded-full absolute top-[1px] shadow-sm transition-all duration-300 ${isMusicMuted ? "bg-red-500 left-[2px]" : "bg-[#22c55e] left-[14px]"}`}></div>
+                </div>
+                <span className={`text-[10px] uppercase tracking-widest transition-colors ${isMusicMuted ? "text-red-500" : "text-[#22c55e]/70 group-hover:text-[#22c55e]"}`}>
+                  Audio
+                </span>
+              </div>
+            </div>
+
+          </div>
+          {/* End of Left Side Menus */}
 
               {/* CENTER: The Surveillance Camera */}
               <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
@@ -1638,7 +1664,10 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                 <div className="flex items-center justify-between w-[75vw] max-w-5xl mt-6">
                   {/* AI Chatbot Trigger - THE TACTICAL BREACH (Refined Sweep) */}
                   <button
-                    onClick={() => setIsAiProxyOpen(true)}
+                    onClick={() => {
+                      playAppOpen();
+                      setIsAiProxyOpen(true)
+                    }}
                     className="relative overflow-hidden group p-[1.5px] pointer-events-auto hover:-translate-y-1 transition-transform duration-300 drop-shadow-[0_0_15px_rgba(34,197,94,0.2)] hover:drop-shadow-[0_0_30px_rgba(34,197,94,0.6)]"
                     style={{
                       clipPath:
@@ -1695,9 +1724,12 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
               <div className="flex flex-col space-y-6 w-24 mt-4">
                 {/* --- IDENTITY.exe (PREMIUM PAN, ZOOM & NEON SWEEP EDITION) --- */}
                 <div
-                  className="flex flex-col items-center cursor-pointer group w-24"
-                  onClick={() => setIsIdentityWindowOpen((prev) => !prev)}
-                >
+        className="flex flex-col items-center cursor-pointer group w-24"
+        onClick={() => {
+          playAppOpen();
+          setIsIdentityWindowOpen((prev) => !prev);
+        }}
+      >
                   {/* The 3D Icon Wrapper */}
                   <div className="relative w-12 h-12 mb-3">
                     {/* Layer 1 (Back) - Pans Down-Left */}
@@ -1764,7 +1796,10 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                 {/* Desktop Icon: PROJECTS.dir */}
                 <div
                   className="flex flex-col items-center cursor-pointer group w-24 mb-4"
-                  onClick={() => setIsProjectsWindowOpen((prev) => !prev)}
+                  onClick={() => {
+                    playAppOpen();
+                    setIsProjectsWindowOpen((prev) => !prev);
+                  }}
                 >
                   {/* The 3D Icon Wrapper */}
                   <div className="relative w-12 h-12 mb-3">
@@ -1832,7 +1867,10 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                 {/* Desktop Icon: CERTS.dat */}
                 <div
                   className="flex flex-col items-center cursor-pointer group w-24 mb-4"
-                  onClick={() => setIsCertsWindowOpen((prev) => !prev)}
+                  onClick={() => {
+                    playAppOpen();
+                    setIsCertsWindowOpen((prev) => !prev);
+                  }}
                 >
                   {/* The 3D Icon Wrapper */}
                   <div className="relative w-12 h-12 mb-3">
@@ -1900,7 +1938,10 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                 {/* --- RESUME.tex (BLUE EDITION) --- */}
                 <div
                   className="flex flex-col items-center cursor-pointer group w-24 mb-4"
-                  onClick={() => setIsResumeWindowOpen((prev) => !prev)}
+                  onClick={() => {
+                    playAppOpen();
+                    setIsResumeWindowOpen((prev) => !prev);
+                  }}
                 >
                   {/* The 3D Icon Wrapper */}
                   <div className="relative w-12 h-12 mb-3">
@@ -1972,6 +2013,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                 <div
                   className="flex flex-col items-center cursor-pointer group w-24"
                   onClick={() => {
+                    playAppOpen();
                     if (isCommsWindowOpen) {
                       setIsCommsWindowOpen(false);
                       setGuiPingStatus("IDLE");
@@ -2045,7 +2087,10 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                 {/* Desktop Icon: Journey.log */}
                 <div
                   className="flex flex-col items-center cursor-pointer group w-24 mb-4"
-                  onClick={() => setIsJourneyWindowOpen(true)} // <-- THIS IS THE TRIGGER
+                  onClick={() => {
+                    playAppOpen();
+                    setIsJourneyWindowOpen(true);
+                  }} 
                 >
                   {/* The 3D Icon Wrapper */}
                   <div className="relative w-12 h-12 mb-3">
@@ -2112,7 +2157,10 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                 {/* Desktop Icon: Education.exe */}
                 <div
                   className="flex flex-col items-center cursor-pointer group w-24 mb-4"
-                  onClick={() => setIsCampusWindowOpen((prev) => !prev)}
+                  onClick={() => {
+                    playAppOpen();
+                    setIsCampusWindowOpen((prev) => !prev);
+                  }}
                 >
                   {/* The 3D Icon Wrapper */}
                   <div className="relative w-12 h-12 mb-3">
@@ -2179,7 +2227,10 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                 {/* Desktop Icon: engage.2p (Arcade Fuchsia) */}
                 <div
                   className="flex flex-col items-center cursor-pointer group w-24 mb-4"
-                  onClick={() => setIsEngageWindowOpen(!isEngageWindowOpen)}
+                  onClick={() => {
+                    playAppOpen();
+                    setIsEngageWindowOpen(!isEngageWindowOpen);
+                  }}
                 >
                   <div className="relative w-12 h-12 mb-3">
                     {/* Layer 1 (Back) */}
@@ -2586,16 +2637,21 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                                 </div>
                                 <button
                                   onClick={() => {
-                                    setActiveCert({
-                                      name: cert.name,
-                                      path: cert.path,
-                                    });
-                                    setIsDecrypting(true);
-                                    setTimeout(
-                                      () => setIsDecrypting(false),
-                                      2000,
-                                    );
-                                  }}
+          playAppOpen(); // Standard click confirm
+          playScanner(); // Start the scanning audio
+          
+          setActiveCert({
+            name: cert.name,
+            path: cert.path,
+          });
+          setIsDecrypting(true);
+          
+          // Exactly 3 seconds (3000ms)
+          setTimeout(() => {
+            setIsDecrypting(false);
+            stopScanner(); // Cut the scanner audio
+          }, 2000); 
+        }}
                                   className="text-[9px] border border-[#22c55e]/40 px-2 py-1 rounded text-[#22c55e] hover:bg-[#22c55e] hover:text-black font-bold tracking-widest transition-all"
                                 >
                                   [ DECRYPT ]
@@ -3177,11 +3233,14 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                               : "Message:"}
                         </span>
                         <input
-                          ref={terminalInputRef}
-                          type="text"
-                          value={terminalInput}
-                          onChange={(e) => setTerminalInput(e.target.value)}
-                          onKeyDown={handleTerminalSubmit}
+            ref={terminalInputRef}
+            type="text"
+            value={terminalInput}
+            onChange={(e) => setTerminalInput(e.target.value)}
+            onKeyDown={(e) => {
+              playKeystroke(); 
+              handleTerminalSubmit(e);
+            }}
                           onFocus={() => setIsTerminalFocused(true)}
                           onBlur={() => setIsTerminalFocused(false)}
                           className="bg-transparent border-none outline-none flex-1 text-[#22c55e] focus:text-[#4ade80] placeholder-[#22c55e]/40 focus:ring-0 transition-colors"
@@ -3409,6 +3468,13 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
       {/* Cinematic Keyframes & Glitch-Free Rain Physics */}
       {/* Cinematic Keyframes & Glitch-Free Rain Physics */}
       <style>{`
+        @keyframes cyber-wipe {
+          /* inset(top right bottom left) */
+          0% { clip-path: inset(-5px 100% -5px -5px); }
+          50% { clip-path: inset(-5px -5px -5px -5px); }
+          100% { clip-path: inset(-5px -5px -5px 100%); }
+        }
+
         @keyframes cinematicUnfold {
           0% {
             opacity: 0;
