@@ -19,14 +19,13 @@ export default function ChronosSplash({ onComplete }) {
 
   useEffect(() => {
     // THE CYPHER DECRYPT LOGIC
-    const finalName = "ROOT://VADANTA"; 
     let iteration = 0;
+    const finalName = "ROOT://VADANTA";
     const cypherInterval = setInterval(() => {
       setDecryptedTitle(finalName.split("").map((letter, index) => {
         if (index < iteration) return finalName[index];
         return chars.charAt(Math.floor(Math.random() * chars.length));
       }).join(""));
-      
       if (iteration >= finalName.length) clearInterval(cypherInterval);
       iteration += 1 / 4; // Adjust this number to make the decrypt faster or slower
     }, 40);
@@ -34,42 +33,31 @@ export default function ChronosSplash({ onComplete }) {
     // 1. Setup Stencil Text
     const lines = Array(15).fill(0).map(() => {
       const shuffled = [...snippets].sort(() => 0.5 - Math.random());
-      return Array(10).fill(shuffled.join("  |  ")).join("  |  ");
+      return Array(10).fill(shuffled.join(" | ")).join(" | ");
     });
     setRandomizedLines(lines);
 
-    // 2. Setup Rain Columns
     // 2. Setup The Funky Matrix Rain Columns
-    const techWords = ["VIGOUROUS", "GSoC", "ROOT", "C++", "JAVA", "DEDSEC", "SYS", "0x8F", "EXEC"];
-    // Added a bunch of blank spaces at the end of 'chars' to make the rain less dense and more streaky!
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=%\"'#&_(),.;:?!\\|{}<>[]^~       "; 
+    const techWords = ["VIGOUROUS", "GSOC", "ROOT", "C++", "JAVA", "DEDSEC", "SYS", "0x8F", "EXEC"];
+    const rainChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=\"#&_(),.;:?!\\|{}<>[]^~          ";
     
     const columns = Array(35).fill(0).map(() => {
       let col = "";
       const len = Math.floor(Math.random() * 20) + 15;
       for(let i=0; i<len; i++) {
-         // 10% chance to drop a whole vertical tech word into the stream
-         if (Math.random() > 0.9) {
-             const word = techWords[Math.floor(Math.random() * techWords.length)];
-             // Splits the word so it reads vertically, just like the Matrix!
-             col += word.split("").join("\n") + "\n";
-         } else {
-             col += chars.charAt(Math.floor(Math.random() * chars.length)) + "\n";
-         }
+        if (Math.random() > 0.9) {
+          const word = techWords[Math.floor(Math.random() * techWords.length)];
+          col += word.split("").join("\n") + "\n";
+        } else {
+          col += rainChars.charAt(Math.floor(Math.random() * rainChars.length)) + "\n";
+        }
       }
       return col;
     });
     setRainColumns(columns);
 
     // BACKGROUND ANIMATIONS
-    // gsap.to(".bg-matrix", {
-    //   x: "-20%",
-    //   duration: 20,
-    //   repeat: -1,
-    //   ease: "none"
-    // });
-
-    gsap.to(".stencil-layer", {
+    let stencilTween = gsap.to(".stencil-layer", {
       "--mask-size": "35%",
       duration: 1.5,
       yoyo: true,
@@ -78,7 +66,7 @@ export default function ChronosSplash({ onComplete }) {
     });
 
     // CONSTANT GLITCH FOR "BOOTING UP" TEXT
-    gsap.to(".glitch-text", {
+    let glitchTween = gsap.to(".glitch-text", {
       opacity: 0.4,
       duration: 0.05,
       repeat: -1,
@@ -87,67 +75,68 @@ export default function ChronosSplash({ onComplete }) {
     });
 
     // THE MASTER TIMELINE
-    setTimeout(() => {
-      const tl = gsap.timeline({
+    let tl;
+    const masterTimeout = setTimeout(() => {
+      tl = gsap.timeline({
         onComplete: () => {
           clearInterval(cypherInterval);
           onComplete();
         }
       });
 
-      // Step 1: The Pre-Rain Glitch. Nuke the background code first, leave the terminal plate visible for a beat.
-      tl.to([".bg-matrix", ".stencil-layer"], { 
-        opacity: 0, 
-        duration: 0.1, // Super fast snap
-        ease: "power4.out" 
+      // Step 1: The Pre-Rain Glitch.
+      tl.to([".bg-matrix", ".stencil-layer"], {
+        opacity: 0,
+        duration: 0.1, 
+        ease: "power4.out"
       })
-      
-      // Step 2: The CRT Monitor Collapse. Shrink the terminal box vertically, then horizontally, then vanish.
+      // Step 2: The CRT Monitor Collapse.
       .to(".center-logo", {
-         scaleY: 0.02,
-         duration: 0.2,
-         ease: "power2.in"
+        scaleY: 0.02,
+        duration: 0.2,
+        ease: "power2.in"
       })
       .to(".center-logo", {
-         scaleX: 0,
-         opacity: 0,
-         duration: 0.2,
-         ease: "power2.out"
+        scaleX: 0,
+        opacity: 0,
+        duration: 0.2,
+        ease: "power2.out"
       })
-      .set(".phase-1-wrapper", { display: "none" }) // Hard kill to prevent ghosting
-      
-      // Step 3: Cinematic Suspense. A 0.4-second pause of pure blackness.
+      .set(".phase-1-wrapper", { display: "none" })
+      // Step 3: Cinematic Suspense.
       .to({}, { duration: 0.4 })
-      
       // Step 4: The Funky Matrix Rain Drops
       .set(".rain-container", { display: "flex" })
-      .fromTo(".rain-col", 
-        { y: "-100vh", opacity: 1 }, 
-        { y: "100vh", duration: 1.5, stagger: 0.04, ease: "power1.in" }, 
+      .fromTo(".rain-col",
+        { y: "-100vh", opacity: 1 },
+        { y: "100vh", duration: 1.5, stagger: 0.04, ease: "power1.in" },
         "rain-start"
       )
-      
       // Step 5: Vigourous Asset Glitches In AFTER the rain finishes
-      // Changed the delay from +=0.5 to +=2.8 so it waits for the rain!
       .set(".wd2-container", { display: "flex" }, "rain-start+=2.8")
       .fromTo(".wd2-container",
         { opacity: 0, scale: 0.8 },
         { opacity: 1, scale: 1, duration: 0.6, ease: "back.out(1.5)" },
         "rain-start+=2.8"
       )
-
       // Step 6: Hold the logo on screen
       .to({}, { duration: 2.5 })
-
       // Step 7: Final fade out to your Phase 2 Homepage
       .to(containerRef.current, {
         opacity: 0,
         duration: 0.8,
         ease: "power2.inOut"
       });
-
     }, 3100);
 
+    // THE FIX: React Strict Mode Cleanup Function
+    return () => {
+      clearInterval(cypherInterval);
+      clearTimeout(masterTimeout);
+      if (stencilTween) stencilTween.kill();
+      if (glitchTween) glitchTween.kill();
+      if (tl) tl.kill();
+    };
   }, [onComplete]);
 
   return (

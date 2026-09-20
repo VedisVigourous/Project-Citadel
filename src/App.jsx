@@ -568,73 +568,59 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
   useEffect(() => {
     const fetchGitHubActivity = async () => {
       try {
-        const response = await fetch(
-          "https://api.github.com/users/torvalds/events/public?per_page=100",
+        // 1. Set your actual GitHub username
+        const username = "VedisVigourous";
+
+        // 2. Fetch your 4 most recently updated repositories
+        const repoResponse = await fetch(
+          `https://api.github.com/users/${username}/repos?sort=updated&per_page=4`
         );
-        const data = await response.json();
+        
+        if (!repoResponse.ok) throw new Error("API Rate Limited");
+        const repos = await repoResponse.json();
 
-        // FAILSAFE: If GitHub rate-limits us, it returns an object, not an array.
-        if (!Array.isArray(data)) {
-          throw new Error(data.message || "API Rate Limited");
-        }
-
-        const pushEvents = data.filter((event) => event.type === "PushEvent");
-        const liveCommits = [];
-
-        pushEvents.forEach((event) => {
-          event.payload?.commits?.forEach((commit) => {
-            liveCommits.push({
-              id: commit.sha,
-              hash: commit.sha.substring(0, 7),
-              repo: event.repo.name.split("/").pop(),
-              msg: commit.message.split("\n")[0],
-            });
-          });
+        // 3. Fetch the latest commit for each of those repos concurrently
+        const commitPromises = repos.map(async (repo) => {
+          try {
+            const commitResponse = await fetch(
+              `https://api.github.com/repos/${username}/${repo.name}/commits?per_page=1`
+            );
+            if (!commitResponse.ok) return null;
+            
+            const commits = await commitResponse.json();
+            if (commits && commits.length > 0) {
+              const latest = commits[0];
+              return {
+                id: latest.sha,
+                hash: latest.sha.substring(0, 7),
+                repo: repo.name,
+                msg: latest.commit.message.split("\n")[0],
+              };
+            }
+          } catch (e) {
+            return null; // Ignore single repo errors
+          }
+          return null;
         });
 
-        if (liveCommits.length > 0) {
-          setRecentCommits(liveCommits.slice(0, 6));
+        // 4. Wait for all requests to finish and filter out any empties
+        const resolvedCommits = (await Promise.all(commitPromises)).filter(Boolean);
+
+        if (resolvedCommits.length > 0) {
+          setRecentCommits(resolvedCommits.slice(0, 6));
+        } else {
+          throw new Error("No commits found");
         }
       } catch (error) {
         console.warn("GitHub Link Offline/Limited. Using secure cache.");
         // CACHED FALLBACK: Keeps the UI looking premium even if GitHub times out.
         setRecentCommits([
-          {
-            id: 1,
-            hash: "a1b2c3d",
-            repo: "Vadanta_OS_Citadel",
-            msg: "engineered dynamic hud architecture",
-          },
-          {
-            id: 2,
-            hash: "f4e5d6c",
-            repo: "Police_Daily_Performa",
-            msg: "optimized export engine",
-          },
-          {
-            id: 3,
-            hash: "9a8b7c6",
-            repo: "Project_Resonance",
-            msg: "merged gemini vision api logic",
-          },
-          {
-            id: 4,
-            hash: "e5d4c3b",
-            repo: "Vadanta_OS_Citadel",
-            msg: "patched matrix background scroll",
-          },
-          {
-            id: 5,
-            hash: "b2a1f9e",
-            repo: "MLH_GHW_Guesser",
-            msg: "deployed logic-based number guesser",
-          },
-          {
-            id: 6,
-            hash: "c3d4e5f",
-            repo: "Vadanta_OS_Citadel",
-            msg: "initialized secure uplink",
-          },
+          { id: 1, hash: "a1b2c3d", repo: "Vadanta_OS_Citadel", msg: "engineered dynamic hud architecture" },
+          { id: 2, hash: "f4e5d6c", repo: "Police_Daily_Performa", msg: "optimized export engine" },
+          { id: 3, hash: "9a8b7c6", repo: "Project_Resonance", msg: "merged gemini vision api logic" },
+          { id: 4, hash: "e5d4c3b", repo: "Vadanta_OS_Citadel", msg: "patched matrix background scroll" },
+          { id: 5, hash: "b2a1f9e", repo: "MLH_GHW_Guesser", msg: "deployed logic-based number guesser" },
+          { id: 6, hash: "c3d4e5f", repo: "Vadanta_OS_Citadel", msg: "initialized secure uplink" },
         ]);
       }
     };
