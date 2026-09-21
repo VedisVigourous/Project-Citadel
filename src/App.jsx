@@ -1497,10 +1497,10 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
           </div>
           {/* End of Left Side Menus */}
 
-              {/* CENTER: The Surveillance Camera */}
-              <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
-                <SurveillanceLogo />
-              </div>
+              {/* CENTER: The Surveillance Camera (Hidden on Mobile) */}
+          <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center justify-center">
+            <SurveillanceLogo />
+          </div>
 
               {/* Right Side: Network & Live Flip Clock */}
               <div className="flex items-center space-x-4 opacity-90">
@@ -1648,47 +1648,48 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
 
                 {/* BOTTOM ROW: AI Agent & Traffic Tracker */}
                 <div className="flex items-center justify-between w-[75vw] max-w-5xl mt-6">
-                  {/* AI Chatbot Trigger - THE TACTICAL BREACH (Refined Sweep) */}
-                  <button
-                    onClick={() => {
-                      playAppOpen();
-                      setIsAiProxyOpen(true)
-                    }}
-                    className="relative overflow-hidden group p-[1.5px] pointer-events-auto hover:-translate-y-1 transition-transform duration-300 drop-shadow-[0_0_15px_rgba(34,197,94,0.2)] hover:drop-shadow-[0_0_30px_rgba(34,197,94,0.6)]"
-                    style={{
-                      clipPath:
-                        "polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px)",
-                    }}
-                  >
-                    {/* 1. Dual Sharp Lasers (The Border Chase) */}
-                    <span className="absolute -inset-[500%] bg-[conic-gradient(transparent_0_140deg,#22c55e_180deg,transparent_180_320deg,#22c55e_360deg)] animate-[spin_2s_linear_infinite]" />
-
-                    {/* 2. Inner Matte Core */}
-                    <span className="relative flex items-center gap-3 h-full w-full cursor-pointer bg-[#050505] pl-5 pr-8 py-3 group-hover:bg-[#22c55e] transition-colors duration-300 overflow-hidden">
-                      {/* 3. IDLE STATE: The Diagonal Stripe Sweep (Lower opacity, slower animation) */}
-                      <div
-                        className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(34,197,94,0.12)_10px,rgba(34,197,94,0.12)_20px)] group-hover:opacity-0 transition-opacity duration-300 pointer-events-none"
-                        style={{
-                          animation:
-                            "stripeSweep 4.5s ease-in-out infinite alternate",
-                        }}
-                      ></div>
-
-                      {/* 4. HOVER STATE: Solid Black Industrial Stripes */}
-                      <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(0,0,0,0.15)_10px,rgba(0,0,0,0.15)_20px)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-
-                      {/* Radar Ping */}
-                      <div className="relative flex h-2.5 w-2.5 z-10 shrink-0 pointer-events-none">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#22c55e] group-hover:bg-black transition-colors duration-300"></span>
-                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#22c55e] group-hover:bg-black transition-colors duration-300"></span>
-                      </div>
-
-                      {/* Text */}
-                      <span className="text-[13px] font-black tracking-[0.2em] uppercase text-[#22c55e] group-hover:text-black transition-colors duration-300 relative z-10 pointer-events-none drop-shadow-[0_0_8px_rgba(34,197,94,0.5)] group-hover:drop-shadow-none whitespace-nowrap">
-                        Hey There, vAI!
-                      </span>
-                    </span>
-                  </button>
+                  {/* THE TACTICAL BREACH (Refined Sweep) */}
+          {/* AI Chatbot Trigger */}
+          <button
+            onClick={() => {
+              playAppOpen();
+              setIsAiProxyOpen(true);
+            }}
+            /* Added max-md: positioning directly to the button so desktop stays 100% native relative */
+            className="relative max-md:fixed max-md:bottom-[80px] max-md:right-4 max-md:z-[100] overflow-hidden group p-[1.5px] pointer-events-auto hover:-translate-y-1 transition-transform duration-300 drop-shadow-[0_0_15px_rgba(34,197,94,0.2)] hover:drop-shadow-[0_0_30px_rgba(34,197,94,0.6)]"
+            style={{
+              clipPath:
+                "polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px)",
+            }}
+          >
+            {/* 1. Dual Sharp Lasers (The Border Chase) */}
+            <span className="absolute -inset-[500%] bg-[conic-gradient(transparent_0_140deg,#22c55e_180deg,transparent_180_320deg,#22c55e_360deg)] animate-[spin_2s_linear_infinite]" />
+            
+            {/* 2. Inner Matte Core */}
+            <span className="relative flex items-center justify-center gap-2 h-full w-full cursor-pointer bg-[#050505] pl-4 pr-6 py-3 max-md:p-3 group-hover:bg-[#22c55e] transition-colors duration-300 overflow-hidden">
+              
+              {/* 3. IDLE STATE: The Diagonal Stripe Sweep */}
+              <div
+                className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(34,197,94,0.12)_10px,rgba(34,197,94,0.12)_20px)] group-hover:opacity-0 transition-opacity duration-300 pointer-events-none"
+                style={{ animation: "stripeSweep 4.5s ease-in-out infinite alternate" }}
+              ></div>
+              
+              {/* 4. HOVER STATE: Solid Black Industrial Stripes */}
+              <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(0,0,0,0.15)_10px,rgba(0,0,0,0.15)_20px)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+              
+              {/* Radar Ping */}
+              <div className="relative flex h-2.5 w-2.5 z-10 shrink-0 pointer-events-none">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#22c55e] group-hover:bg-black transition-colors duration-300"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#22c55e] group-hover:bg-black transition-colors duration-300"></span>
+              </div>
+              
+              {/* Text (Hidden on mobile for a clean icon-only FAB) */}
+              <span className="text-[13px] max-md:hidden font-black tracking-[0.2em] uppercase text-[#22c55e] group-hover:text-black transition-colors duration-300 relative z-10 pointer-events-none drop-shadow-[0_0_8px_rgba(34,197,94,0.5)] group-hover:drop-shadow-none whitespace-nowrap">
+                Hey There, VAI!
+              </span>
+              
+            </span>
+          </button>
 
                   <style>{`
   @keyframes stripeSweep {
@@ -2295,7 +2296,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
 
               {/* THE AI PROXY QUOTE (LOCKED IN BACKGROUND) */}
               <div
-                className={`absolute bottom-[180px] left-[20%] sm:left-[27%] flex flex-col items-center pointer-events-none transition-opacity duration-700 z-0 ${
+                className={`hidden md:flex absolute bottom-[180px] left-[20%] sm:left-[27%] flex flex-col items-center pointer-events-none transition-opacity duration-700 z-0 ${
                   !isTerminalFocused && !isArcadeActive
                     ? "opacity-100 delay-500"
                     : "opacity-0"
@@ -2331,7 +2332,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
 
               {/* --- THE MAIL.CONN QUOTE (TOP RIGHT DESKTOP) --- */}
               <div
-                className={`absolute top-[80px] right-[120px] flex items-center pointer-events-none transition-opacity duration-700 z-0 ${
+                className={`hidden md:flex absolute top-[80px] right-[120px] flex items-center pointer-events-none transition-opacity duration-700 z-0 ${
                   !isTerminalFocused && !isArcadeActive
                     ? "opacity-100 delay-500"
                     : "opacity-0"
@@ -2373,8 +2374,8 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                 rel="stylesheet"
               />
               <div
-                className={`absolute bottom-[90px] right-[20%] sm:right-[27%] flex flex-col items-center pointer-events-none transition-opacity duration-700 z-0 ${
-                  !isTerminalFocused && !isArcadeActive
+                className={`hidden md:flex absolute bottom-[90px] right-[20%] sm:right-[27%] flex flex-col items-center pointer-events-none transition-opacity duration-700 z-0 ${
+                  !isTerminalFocused && !isArcadeActive 
                     ? "opacity-100 delay-500"
                     : "opacity-0"
                 }`}
