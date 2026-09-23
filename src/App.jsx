@@ -247,6 +247,26 @@ function App() {
     }
   };
 
+  // --- TOUCH RIPPLE SYSTEM ---
+  const [ripples, setRipples] = useState([]);
+
+  const handleGlobalClick = (e) => {
+    handleFirstInteraction(); // Keep the audio trigger working
+
+    // Generate a new ripple at the exact click coordinates
+    const newRipple = {
+      id: Date.now(),
+      x: e.clientX,
+      y: e.clientY,
+    };
+    setRipples((prev) => [...prev, newRipple]);
+
+    // Delete the ripple from memory after the animation finishes (500ms)
+    setTimeout(() => {
+      setRipples((prev) => prev.filter((r) => r.id !== newRipple.id));
+    }, 500);
+  };
+
   // --- VISITOR TRACKING SYSTEM ---
   const [visitorCount, setVisitorCount] = useState(0);
   const [visitorLogs, setVisitorLogs] = useState([]);
@@ -1347,8 +1367,8 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
 
   return (
     <div
-      onClick={handleFirstInteraction}
-      className="bg-slate-950 min-h-screen text-[#22c55e] font-mono overflow-hidden selection:bg-[#22c55e] selection:text-black"
+      onClick={handleGlobalClick}
+      className="bg-slate-950 min-h-screen text-[#22c55e] font-mono overflow-hidden selection:bg-[#22c55e] selection:text-black relative"
       style={{
         filter: isBlindingLightMode
           ? "invert(1) hue-rotate(180deg)"
@@ -1356,19 +1376,65 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
         transition: "filter 0.5s ease-in-out",
       }}
     >
-      <CustomCursor />
+      {/* Hide Custom Cursor on Mobile */}
+      <div className="hidden md:block">
+        <CustomCursor />
+      </div>
+
+      {/* RENDER TOUCH RIPPLES */}
+      {ripples.map((ripple) => (
+        <div
+          key={ripple.id}
+          className="fixed border-2 border-[#22c55e] rounded-full animate-[ping_0.5s_ease-out_forwards] pointer-events-none z-[99999]"
+          style={{
+            left: ripple.x - 15, // Centers the 30px ring
+            top: ripple.y - 15,
+            width: 30,
+            height: 30,
+          }}
+        />
+      ))}
       {loading ? (
         <ChronosSplash onComplete={() => setLoading(false)} />
       ) : (
         <div className="flex flex-col h-screen w-full relative z-10 bg-[#050505]">
-          {/* --- LAYER 1: THE CLEAN CYBER GRID (z-[1]) --- */}
-          <div
-            className="absolute top-[-100px] bottom-[-100px] left-[-100px] right-[-100px] cyber-grid pointer-events-none z-[1]"
-            style={{
-              transform: `translate(${bgOffset.x * 0.5}px, ${bgOffset.y * 0.5}px)`,
-              transition: "transform 0.1s ease-out",
-            }}
-          ></div>
+          {/* LAYER 1: THE CLEAN CYBER GRID */}
+        <div
+          className="absolute top-[-100px] bottom-[-100px] left-[-100px] right-[-100px] cyber-grid pointer-events-none z-[1] max-md:!transform-none"
+          style={{
+            transform: `translate(${bgOffset.x * 0.5}px, ${bgOffset.y * 0.5}px)`,
+            transition: "transform 0.1s ease-out",
+          }}
+        ></div>
+
+        {/* MOBILE ONLY: Live Computer Network Topology */}
+        <div className="fixed inset-0 z-[2] pointer-events-none md:hidden flex items-center justify-center opacity-35 overflow-hidden">
+          <svg 
+            className="w-[150vw] h-[150vh] min-w-[800px] min-h-[800px] animate-[spin_120s_linear_infinite]" 
+            viewBox="0 0 100 100" 
+            preserveAspectRatio="xMidYMid slice"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            {/* Data Lines & Connections */}
+            <path d="M15 15 L35 45 L65 25 L85 55 L75 85 L45 65 Z" stroke="#22c55e" strokeWidth="0.2" fill="none" opacity="0.6" />
+            <path d="M35 45 L45 65 L15 85" stroke="#22c55e" strokeWidth="0.15" fill="none" opacity="0.4" strokeDasharray="1 1" />
+            <path d="M65 25 L85 15" stroke="#22c55e" strokeWidth="0.1" fill="none" opacity="0.3" />
+            <path d="M75 85 L95 95" stroke="#22c55e" strokeWidth="0.2" fill="none" opacity="0.5" />
+            <path d="M15 15 L45 10 L65 25" stroke="#22c55e" strokeWidth="0.1" fill="none" opacity="0.4" />
+            
+            {/* Server Nodes & Endpoints */}
+            <circle cx="15" cy="15" r="0.8" fill="#22c55e" className="animate-pulse" style={{ animationDuration: '2s' }} />
+            <circle cx="35" cy="45" r="1.2" fill="#22c55e" />
+            <circle cx="65" cy="25" r="1.5" fill="#22c55e" className="animate-pulse" style={{ animationDuration: '3s' }} />
+            <circle cx="85" cy="55" r="0.8" fill="#22c55e" />
+            <circle cx="75" cy="85" r="1.2" fill="#22c55e" className="animate-ping" style={{ animationDuration: '4s' }} />
+            <circle cx="45" cy="65" r="1" fill="#22c55e" />
+            <circle cx="15" cy="85" r="0.6" fill="#22c55e" className="animate-pulse" style={{ animationDuration: '2.5s' }} />
+            <circle cx="85" cy="15" r="0.5" fill="#22c55e" />
+            <circle cx="95" cy="95" r="0.8" fill="#22c55e" />
+            <circle cx="45" cy="10" r="0.5" fill="#22c55e" className="animate-pulse" style={{ animationDuration: '1.5s' }} />
+          </svg>
+        </div>
 
           {/* --- LAYER 3: VIGNETTE SHADOW (z-[3]) --- */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#050505_100%)] pointer-events-none z-[3]"></div>
