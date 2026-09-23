@@ -380,6 +380,7 @@ function App() {
 
   // --- TOP RIBBON & DOSSIER STATES ---
   const [activeMenu, setActiveMenu] = useState(null);
+  const [mobileSubMenu, setMobileSubMenu] = useState(null);
   const [isCoreIdentityOpen, setIsCoreIdentityOpen] = useState(false);
   const [isTracing, setIsTracing] = useState(false);
   const [traceText, setTraceText] = useState("");
@@ -1404,6 +1405,8 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
               
               {activeMenu === "vadanta" && (
                 <div className="absolute top-full left-0 mt-3 w-64 bg-black/95 border border-[#22c55e]/50 shadow-[0_0_15px_rgba(34,197,94,0.2)] py-2 flex flex-col gap-1 z-[9999] backdrop-blur-md text-xs font-mono">
+                  
+                  {/* ORIGINAL V-MENU OPTIONS */}
                   <div onClick={() => { setActiveMenu(null); setIsCoreIdentityOpen(true); }} className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors">
                     [ Core_Identity ]
                   </div>
@@ -1413,6 +1416,42 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                   <div onClick={() => { setActiveMenu(null); handleMountGitHub(); }} className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors font-bold border-t border-dashed border-[#22c55e]/30 mt-1 pt-2">
                     &gt; Mount_GitHub_Drive
                   </div>
+
+                  {/* MOBILE-ONLY ACCORDION (File & System) */}
+                  <div className="sm:hidden border-t border-dashed border-[#22c55e]/30 mt-1 pt-1">
+                    {/* File Accordion */}
+                    <div 
+                      onClick={(e) => { e.stopPropagation(); setMobileSubMenu(mobileSubMenu === "file" ? null : "file"); }} 
+                      className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors flex justify-between items-center"
+                    >
+                      <span>&gt; File</span>
+                      <span className="text-[10px]">{mobileSubMenu === "file" ? "[-]" : "[+]"}</span>
+                    </div>
+                    {mobileSubMenu === "file" && (
+                      <div className="pl-6 flex flex-col gap-1 pb-1 border-b border-[#22c55e]/10">
+                        <a href="/resume.pdf" download className="block py-2 text-[#22c55e] hover:text-white transition-colors">&gt; Extract_Dossier</a>
+                        <div onClick={() => { setActiveMenu(null); handleExportLogs(); }} className="py-2 text-[#22c55e] hover:text-white cursor-pointer transition-colors">&gt; Export_Session_Logs</div>
+                        <div onClick={() => { setActiveMenu(null); setIsThemeModalOpen(true); }} className="py-2 text-[#BF40BF] hover:text-white cursor-pointer transition-colors">&gt; Customize_Theme</div>
+                      </div>
+                    )}
+
+                    {/* System Accordion */}
+                    <div 
+                      onClick={(e) => { e.stopPropagation(); setMobileSubMenu(mobileSubMenu === "system" ? null : "system"); }} 
+                      className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors flex justify-between items-center"
+                    >
+                      <span>&gt; System</span>
+                      <span className="text-[10px]">{mobileSubMenu === "system" ? "[-]" : "[+]"}</span>
+                    </div>
+                    {mobileSubMenu === "system" && (
+                      <div className="pl-6 flex flex-col gap-1 pb-1">
+                        <div onClick={handleReboot} className="py-2 text-[#22c55e] hover:text-white cursor-pointer transition-colors">&gt; Reboot_System</div>
+                        <div onClick={handleClearCache} className="py-2 text-[#22c55e] hover:text-white cursor-pointer transition-colors">&gt; Clear_Cache</div>
+                        <div onClick={handleShutdown} className="py-2 text-red-500 hover:text-red-400 cursor-pointer transition-colors font-bold">&gt; Initiate_Shutdown</div>
+                      </div>
+                    )}
+                  </div>
+
                 </div>
               )}
             </div>
@@ -1502,67 +1541,51 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
             <SurveillanceLogo />
           </div>
 
-              {/* Right Side: Network & Live Flip Clock */}
-              <div className="flex items-center space-x-4 opacity-90">
-                {/* Live Network Widget */}
-                <div className="flex items-center space-x-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-ping"></span>
-                  <span className="tracking-widest font-mono text-xs text-[#22c55e]">
-                    NET: {netSpeed.dl}MB/s | {netSpeed.ping}MS
-                  </span>
-                </div>
+          {/* Right Side: Network, Clock & Mobile WiFi */}
+          <div className="flex items-center gap-3 sm:gap-4 opacity-90 relative z-50">
+            
+            {/* 1. MOBILE-ONLY LIVE WIFI ICON */}
+            <div className="flex sm:hidden items-center justify-center">
+              <svg className="w-4 h-4 text-[#22c55e] animate-pulse drop-shadow-[0_0_5px_rgba(34,197,94,0.6)]" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 21c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm-4.6-4.6c2.5-2.5 6.6-2.5 9.2 0l1.4-1.4c-3.3-3.3-8.6-3.3-11.9 0l1.3 1.4zm-4.2-4.2c4.9-4.9 12.8-4.9 17.7 0l1.4-1.4c-5.7-5.7-14.9-5.7-20.5 0l1.4 1.4zm-4.2-4.2c7.2-7.2 18.9-7.2 26.1 0l1.4-1.4c-8-8-21-8-29 0l1.4 1.4z"/>
+              </svg>
+            </div>
 
-                {/* Live Date */}
-                <div className="uppercase tracking-widest text-[#22c55e]/70">
-                  {time.toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "2-digit",
-                    year: "numeric",
-                  })}
-                </div>
-
-                {/* Cyber Flip Clock Widget & Toggle */}
-                <div className="flex items-center space-x-1 font-bold font-mono text-[11px]">
-                  <div
-                    className="flex items-center bg-[#050505] border border-[#22c55e]/40 rounded cursor-pointer text-[9px] tracking-wider overflow-hidden shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]"
-                    onClick={() => setIs24Hour(!is24Hour)}
-                  >
-                    <div
-                      className={`px-1.5 py-[2px] transition-colors ${!is24Hour ? "bg-[#22c55e]/30 text-[#22c55e]" : "text-[#22c55e]/40 hover:bg-[#22c55e]/10"}`}
-                    >
-                      12
-                    </div>
-                    <div className="w-[1px] h-[12px] bg-[#22c55e]/40"></div>
-                    <div
-                      className={`px-1.5 py-[2px] transition-colors ${is24Hour ? "bg-[#22c55e]/30 text-[#22c55e]" : "text-[#22c55e]/40 hover:bg-[#22c55e]/10"}`}
-                    >
-                      24
-                    </div>
-                  </div>
-                  <div className="w-[1px] h-3 bg-[#22c55e]/30 mx-1"></div>
-                  <div className="flex items-center justify-center bg-[#0a0a0a] border border-[#22c55e]/40 w-[22px] h-[18px] rounded shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]">
-                    {hours}
-                  </div>
-                  <span className="text-[#22c55e]/70 animate-pulse mb-0.5">
-                    :
-                  </span>
-                  <div className="flex items-center justify-center bg-[#0a0a0a] border border-[#22c55e]/40 w-[22px] h-[18px] rounded shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]">
-                    {mins}
-                  </div>
-                  <span className="text-[#22c55e]/70 animate-pulse mb-0.5">
-                    :
-                  </span>
-                  <div className="flex items-center justify-center bg-[#0a0a0a] border border-[#22c55e]/20 w-[22px] h-[18px] rounded text-[#22c55e]/70 shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]">
-                    {secs}
-                  </div>
-                  {!is24Hour && (
-                    <span className="text-[9px] text-[#22c55e]/70 ml-1">
-                      {ampm}
-                    </span>
-                  )}
-                </div>
+            {/* 2. DESKTOP-ONLY NETWORK STATS & DATE */}
+            <div className="hidden sm:flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-ping"></span>
+                <span className="tracking-widest font-mono text-xs text-[#22c55e]">
+                  NET: {netSpeed.dl} MB/s | {netSpeed.ping}MS
+                </span>
+              </div>
+              <span className="text-[#22c55e]/40">|</span>
+              <div className="uppercase tracking-widest text-[#22c55e]/70 text-xs">
+                {time.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" })}
               </div>
             </div>
+
+            {/* 3. YOUR CLOCK (Visible on Mobile & Desktop) */}
+            <div className="flex items-center space-x-1 font-bold font-mono text-[11px]">
+              {/* === Keep your existing Flip Clock Toggle and Digits here === */}
+              <div
+                className="flex items-center bg-[#050505] border border-[#22c55e]/40 rounded cursor-pointer text-[9px] tracking-wider overflow-hidden shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]"
+                onClick={() => setIs24Hour(!is24Hour)}
+              >
+                <div className={`px-1.5 py-[2px] transition-colors ${!is24Hour ? "bg-[#22c55e]/30 text-[#22c55e]" : "text-[#22c55e]/40 hover:bg-[#22c55e]/10"}`}>12</div>
+                <div className="w-[1px] h-[12px] bg-[#22c55e]/40"></div>
+                <div className={`px-1.5 py-[2px] transition-colors ${is24Hour ? "bg-[#22c55e]/30 text-[#22c55e]" : "text-[#22c55e]/40 hover:bg-[#22c55e]/10"}`}>24</div>
+              </div>
+              <div className="w-[1px] h-4 bg-[#22c55e]/40 mx-3"></div>
+              <div className="flex items-center justify-center bg-[#0a0a0a] border border-[#22c55e]/40 w-[22px] h-[18px] rounded shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]">{hours}</div>
+              <span className="text-[#22c55e]/70 animate-pulse mb-0.5">:</span>
+              <div className="flex items-center justify-center bg-[#0a0a0a] border border-[#22c55e]/40 w-[22px] h-[18px] rounded shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]">{mins}</div>
+              <span className="text-[#22c55e]/70 animate-pulse mb-0.5">:</span>
+              <div className="flex items-center justify-center bg-[#0a0a0a] border border-[#22c55e]/20 w-[22px] h-[18px] rounded text-[#22c55e]/70 shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]">{secs}</div>
+              {!is24Hour && <span className="text-[9px] text-[#22c55e]/70 ml-1">{ampm}</span>}
+            </div>
+            </div>
+          </div>
 
             {/* DESKTOP WORKSPACE */}
             <div className="flex-grow p-4 relative overflow-hidden">
