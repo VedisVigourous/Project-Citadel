@@ -1368,7 +1368,8 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
   return (
     <div
       onClick={handleGlobalClick}
-      className="bg-slate-950 min-h-screen text-[#22c55e] font-mono overflow-hidden selection:bg-[#22c55e] selection:text-black relative"
+      // Replaced min-h-screen with fixed inset-0 and h-[100dvh] to kill mobile scrolling
+      className="fixed inset-0 w-full h-[100dvh] bg-slate-950 text-[#22c55e] font-mono overflow-hidden selection:bg-[#22c55e] selection:text-black touch-none"
       style={{
         filter: isBlindingLightMode
           ? "invert(1) hue-rotate(180deg)"
@@ -1407,41 +1408,47 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
           }}
         ></div>
 
-        {/* MOBILE ONLY: Live Computer Network Topology */}
-        <div className="fixed inset-0 z-[2] pointer-events-none md:hidden flex items-center justify-center opacity-35 overflow-hidden">
-          <svg 
-            className="w-[150vw] h-[150vh] min-w-[800px] min-h-[800px] animate-[spin_120s_linear_infinite]" 
-            viewBox="0 0 100 100" 
-            preserveAspectRatio="xMidYMid slice"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            {/* Data Lines & Connections */}
-            <path d="M15 15 L35 45 L65 25 L85 55 L75 85 L45 65 Z" stroke="#22c55e" strokeWidth="0.2" fill="none" opacity="0.6" />
-            <path d="M35 45 L45 65 L15 85" stroke="#22c55e" strokeWidth="0.15" fill="none" opacity="0.4" strokeDasharray="1 1" />
-            <path d="M65 25 L85 15" stroke="#22c55e" strokeWidth="0.1" fill="none" opacity="0.3" />
-            <path d="M75 85 L95 95" stroke="#22c55e" strokeWidth="0.2" fill="none" opacity="0.5" />
-            <path d="M15 15 L45 10 L65 25" stroke="#22c55e" strokeWidth="0.1" fill="none" opacity="0.4" />
-            
-            {/* Server Nodes & Endpoints */}
-            <circle cx="15" cy="15" r="0.8" fill="#22c55e" className="animate-pulse" style={{ animationDuration: '2s' }} />
-            <circle cx="35" cy="45" r="1.2" fill="#22c55e" />
-            <circle cx="65" cy="25" r="1.5" fill="#22c55e" className="animate-pulse" style={{ animationDuration: '3s' }} />
-            <circle cx="85" cy="55" r="0.8" fill="#22c55e" />
-            <circle cx="75" cy="85" r="1.2" fill="#22c55e" className="animate-ping" style={{ animationDuration: '4s' }} />
-            <circle cx="45" cy="65" r="1" fill="#22c55e" />
-            <circle cx="15" cy="85" r="0.6" fill="#22c55e" className="animate-pulse" style={{ animationDuration: '2.5s' }} />
-            <circle cx="85" cy="15" r="0.5" fill="#22c55e" />
-            <circle cx="95" cy="95" r="0.8" fill="#22c55e" />
-            <circle cx="45" cy="10" r="0.5" fill="#22c55e" className="animate-pulse" style={{ animationDuration: '1.5s' }} />
-          </svg>
+        {/* MOBILE ONLY: Telemetry Heatmap */}
+        <div className="fixed inset-0 z-[1] pointer-events-none md:hidden bg-[#030a05] overflow-hidden">
+          
+          {/* Topographical Data Points */}
+          <div 
+            className="absolute inset-0 opacity-[0.15]"
+            style={{
+              backgroundImage: `radial-gradient(circle, #22c55e 1px, transparent 1px)`,
+              backgroundSize: '24px 24px'
+            }}
+          ></div>
+
+          {/* Core Engine Pulse */}
+          <div 
+            className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(34,197,94,0.12)_0%,transparent_70%)] animate-pulse" 
+            style={{ animationDuration: '2.5s' }}
+          ></div>
+
+          {/* Sweeping Heat Wave Scanner */}
+          <div 
+            className="absolute left-0 w-full h-[45vh] bg-gradient-to-b from-transparent via-[#22c55e]/10 to-[#22c55e]/30 border-b-[2px] border-[#22c55e]/60 shadow-[0_4px_20px_rgba(34,197,94,0.3)]"
+            style={{ animation: "telemetrySweep 4.5s ease-in-out infinite" }}
+          ></div>
+
+          {/* Standalone Keyframe for the Sweep */}
+          <style>{`
+            @keyframes telemetrySweep {
+              0% { transform: translateY(-100vh); opacity: 0; }
+              15% { opacity: 1; }
+              85% { opacity: 1; }
+              100% { transform: translateY(100vh); opacity: 0; }
+            }
+          `}</style>
         </div>
 
           {/* --- LAYER 3: VIGNETTE SHADOW (z-[3]) --- */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#050505_100%)] pointer-events-none z-[3]"></div>
 
-          {/* --- LAYER 3.5: CHAOTIC FULL-WIDTH AUDIO VISUALIZER (z-[4]) --- */}
-          {!isArcadeActive && (
-            <div className="absolute bottom-[40px] left-0 w-full flex items-end justify-center gap-[4px] px-4 h-20 z-[4] pointer-events-none opacity-40 overflow-hidden">
+          {/* LAYER 3.5: CHAOTIC FULL-WIDTH AUDIO VISUALIZER (z-[4]) */}
+        {isArcadeActive && (
+          <div className="absolute bottom-[40px] left-0 w-full flex items-end justify-center gap-[4px] px-4 h-20 z-[4] pointer-events-none opacity-40 overflow-hidden max-md:hidden">
               {[...Array(190)].map((_, i) => (
                 <div
                   key={i}
@@ -1653,16 +1660,29 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
             </div>
           </div>
 
-            {/* DESKTOP WORKSPACE */}
-            <div className="flex-grow p-4 relative overflow-hidden">
-              {/* --- CENTRAL CHART & MODULES --- */}
-              <div
-                className="absolute inset-0 flex flex-col items-center justify-center pb-24 pointer-events-none z-0"
-                style={{
-                  transform: `translate(${bgOffset.x * 2.5}px, ${bgOffset.y * 2.5}px)`,
-                  transition: "transform 0.1s ease-out",
-                }}
-              >
+          {/* DESKTOP WORKSPACE (Strictly Hidden on Mobile) */}
+        <div className="hidden md:flex flex-grow p-4 relative overflow-hidden">
+
+          {/* MOBILE WORKSPACE (The Clean Slate) */}
+        <div className="flex md:hidden flex-col h-[calc(100dvh-120px)] w-full px-4 relative z-40">
+           
+           {/* Placeholder so we can verify the boundaries */}
+           <div className="flex-grow flex items-center justify-center border-2 border-dashed border-[#22c55e]/30 rounded-[2rem]">
+             <div className="text-[#22c55e]/50 text-xs font-mono text-center leading-loose">
+               [ MOBILE CANVAS LOCKED ]<br/>No scrolling allowed.<br/>Awaiting Module 1...
+             </div>
+           </div>
+
+        </div>
+          
+          {/* --- CENTRAL CHART & MODULES */}
+          <div
+            className="absolute inset-0 flex flex-col items-center justify-center pb-24 pointer-events-none z-0 max-md:relative max-md:inset-auto max-md:pb-0 max-md:transform-none max-md:gap-2 max-md:scale-[0.90] max-md:origin-top max-md:w-full"
+            style={window.innerWidth < 768 ? {} : {
+              transform: `translate(${bgOffset.x * 2.5}px, ${bgOffset.y * 2.5}px)`,
+              transition: "transform 0.1s ease-out",
+            }}
+          >
                 {/* TOP ROW: GitHub & Socials */}
                 <div className="flex items-center gap-4 mb-6 relative z-50">
                   {/* GitHub Node */}
@@ -1796,8 +1816,8 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                 </div>
               </div>
 
-              {/* Desktop Icons */}
-              <div className="flex flex-col space-y-6 w-24 mt-4">
+            {/* Desktop Icons (Left Side) -> Mobile iOS Grid Row 1 */}
+          <div className="flex flex-col space-y-6 w-24 mt-4 max-md:grid max-md:grid-cols-4 max-md:w-full max-md:px-4 max-md:gap-x-3 max-md:space-y-0 max-md:mt-0 relative z-40 max-md:[&_span]:hidden max-md:scale-[0.90] max-md:origin-top">
                 {/* --- IDENTITY.exe (PREMIUM PAN, ZOOM & NEON SWEEP EDITION) --- */}
                 <div
         className="flex flex-col items-center cursor-pointer group w-24"
@@ -2083,8 +2103,8 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                 </div>
               </div>
 
-              {/* --- RIGHT SIDE ICONS (New Utilities) --- */}
-              <div className="absolute top-4 right-4 mt-4 flex flex-col space-y-6 w-24 items-center z-40">
+              {/* RIGHT SIDE ICONS -> Mobile iOS Grid Row 2 */}
+          <div className="absolute top-4 right-4 mt-4 flex flex-col space-y-6 w-24 items-center z-40 max-md:relative max-md:top-auto max-md:right-auto max-md:grid max-md:grid-cols-4 max-md:w-full max-md:px-4 max-md:gap-x-3 max-md:space-y-0 max-md:-mt-4 max-md:[&_span]:hidden max-md:scale-[0.90] max-md:origin-top">
                 {/* Mail.conn Desktop Icon */}
                 <div
                   className="flex flex-col items-center cursor-pointer group w-24"
@@ -3147,16 +3167,16 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                 </div>
               </div>
 
-              {/* 2. MAIN TERMINAL BAR */}
-              <div
-                className={`absolute bottom-0 w-full font-mono text-xs transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden pointer-events-auto flex flex-col justify-end ${
-                  isArcadeActive || isArcadeMounting
-                    ? "h-[100vh] bg-[#050505] z-[9999]"
-                    : isTerminalFocused
-                      ? "bg-[#050505]/95 backdrop-blur-md border-t border-[#22c55e]/30 shadow-[0_-10px_30px_rgba(34,197,94,0.15)] z-[80]"
-                      : "bg-[#050505]/60 backdrop-blur-sm border-t border-[#22c55e]/10 shadow-none z-[80]"
-                }`}
-              >
+              {/* 2. MAIN TERMINAL BAR (iOS/Android Floating Dock) */}
+        <div
+          className={`absolute w-full font-mono text-xs transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden pointer-events-auto flex flex-col justify-end ${
+            isArcadeActive || isArcadeMounting
+              ? "bottom-0 h-[100dvh] bg-[#050505] z-[9999]"
+              : isTerminalFocused
+              ? "bottom-0 bg-[#050505]/95 backdrop-blur-md border-t border-[#22c55e]/30 z-[80] max-md:h-[100dvh] max-md:!justify-start max-md:pt-4 max-md:w-full max-md:rounded-none max-md:mx-0"
+              : "bottom-0 bg-[#050505]/60 backdrop-blur-sm border-t border-[#22c55e]/10 shadow-none z-[80] max-md:bottom-[85px] max-md:h-14 max-md:w-[calc(100%-32px)] max-md:mx-4 max-md:rounded-2xl max-md:border max-md:border-[#22c55e]/30 max-md:bg-[#050505]/40"
+          }`}
+        >
                 {/* Idle Clue & Toggle Arrow Container */}
                 <div className="absolute right-4 bottom-0 h-[44px] flex items-center gap-4 z-[75]">
                   <div
@@ -3275,13 +3295,13 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                   ) : (
                     <>
                       <div
-                        ref={terminalScrollRef}
-                        className={`overflow-y-auto flex flex-col pr-2 transition-all duration-500 ease-in-out ${
-                          isTerminalFocused
-                            ? "opacity-100 max-h-[40vh] mb-3"
-                            : "opacity-0 max-h-0 mb-0"
-                        }`}
-                      >
+                ref={terminalScrollRef}
+                className={`overflow-y-auto flex flex-col pr-2 transition-all duration-500 ease-in-out ${
+                  isTerminalFocused
+                    ? "opacity-100 max-h-[40vh] max-md:max-h-full max-md:flex-1 mb-3"
+                    : "opacity-0 max-h-0 mb-0"
+                }`}
+              >
                         {terminalHistory.map((line, index) => (
                           <div
                             key={index}
