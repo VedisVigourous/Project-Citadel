@@ -13,7 +13,7 @@ import TerminalArcade from "./components/TerminalArcade";
 import Hologram from "./components/Hologram";
 import Engage2P from "./components/Engage2p";
 import AiProxy from "./components/AiProxy";
-import useSound from 'use-sound';
+import useSound from "use-sound";
 import bootLogo1 from "./assets/bootLogo1.png";
 
 const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
@@ -215,15 +215,20 @@ function App() {
   });
 
   // --- AUDIO ENGINE ---
-  const [playBgm, { pause: pauseBgm }] = useSound('/sounds/bgm-ambient.mp3', { volume: 0.25, loop: true });
-  const [playSwoosh] = useSound('/sounds/air-swoosh.mp3', { volume: 0.75 });
-  const [playAppOpen] = useSound('/sounds/app-open.mp3', { volume: 0.65 });
-  const [playScanner, { stop: stopScanner }] = useSound('/sounds/scanner.mp3', { volume: 0.4 });
-  const [playKeystroke] = useSound('/sounds/mech-keystroke.mp3', { 
-    volume: 0.55, 
-    interrupt: false 
+  const [playBgm, { pause: pauseBgm }] = useSound("/sounds/bgm-ambient.mp3", {
+    volume: 0.25,
+    loop: true,
   });
-  
+  const [playSwoosh] = useSound("/sounds/air-swoosh.mp3", { volume: 0.75 });
+  const [playAppOpen] = useSound("/sounds/app-open.mp3", { volume: 0.65 });
+  const [playScanner, { stop: stopScanner }] = useSound("/sounds/scanner.mp3", {
+    volume: 0.4,
+  });
+  const [playKeystroke] = useSound("/sounds/mech-keystroke.mp3", {
+    volume: 0.55,
+    interrupt: false,
+  });
+
   const [hasAudioStarted, setHasAudioStarted] = useState(false);
   const [isMusicMuted, setIsMusicMuted] = useState(false);
 
@@ -594,9 +599,9 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
 
         // 2. Fetch your 4 most recently updated repositories
         const repoResponse = await fetch(
-          `https://api.github.com/users/${username}/repos?sort=updated&per_page=4`
+          `https://api.github.com/users/${username}/repos?sort=updated&per_page=4`,
         );
-        
+
         if (!repoResponse.ok) throw new Error("API Rate Limited");
         const repos = await repoResponse.json();
 
@@ -604,10 +609,10 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
         const commitPromises = repos.map(async (repo) => {
           try {
             const commitResponse = await fetch(
-              `https://api.github.com/repos/${username}/${repo.name}/commits?per_page=1`
+              `https://api.github.com/repos/${username}/${repo.name}/commits?per_page=1`,
             );
             if (!commitResponse.ok) return null;
-            
+
             const commits = await commitResponse.json();
             if (commits && commits.length > 0) {
               const latest = commits[0];
@@ -625,7 +630,9 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
         });
 
         // 4. Wait for all requests to finish and filter out any empties
-        const resolvedCommits = (await Promise.all(commitPromises)).filter(Boolean);
+        const resolvedCommits = (await Promise.all(commitPromises)).filter(
+          Boolean,
+        );
 
         if (resolvedCommits.length > 0) {
           setRecentCommits(resolvedCommits.slice(0, 6));
@@ -636,12 +643,42 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
         console.warn("GitHub Link Offline/Limited. Using secure cache.");
         // CACHED FALLBACK: Keeps the UI looking premium even if GitHub times out.
         setRecentCommits([
-          { id: 1, hash: "a1b2c3d", repo: "Vadanta_OS_Citadel", msg: "engineered dynamic hud architecture" },
-          { id: 2, hash: "f4e5d6c", repo: "Police_Daily_Performa", msg: "optimized export engine" },
-          { id: 3, hash: "9a8b7c6", repo: "Project_Resonance", msg: "merged gemini vision api logic" },
-          { id: 4, hash: "e5d4c3b", repo: "Vadanta_OS_Citadel", msg: "patched matrix background scroll" },
-          { id: 5, hash: "b2a1f9e", repo: "MLH_GHW_Guesser", msg: "deployed logic-based number guesser" },
-          { id: 6, hash: "c3d4e5f", repo: "Vadanta_OS_Citadel", msg: "initialized secure uplink" },
+          {
+            id: 1,
+            hash: "a1b2c3d",
+            repo: "Vadanta_OS_Citadel",
+            msg: "engineered dynamic hud architecture",
+          },
+          {
+            id: 2,
+            hash: "f4e5d6c",
+            repo: "Police_Daily_Performa",
+            msg: "optimized export engine",
+          },
+          {
+            id: 3,
+            hash: "9a8b7c6",
+            repo: "Project_Resonance",
+            msg: "merged gemini vision api logic",
+          },
+          {
+            id: 4,
+            hash: "e5d4c3b",
+            repo: "Vadanta_OS_Citadel",
+            msg: "patched matrix background scroll",
+          },
+          {
+            id: 5,
+            hash: "b2a1f9e",
+            repo: "MLH_GHW_Guesser",
+            msg: "deployed logic-based number guesser",
+          },
+          {
+            id: 6,
+            hash: "c3d4e5f",
+            repo: "Vadanta_OS_Citadel",
+            msg: "initialized secure uplink",
+          },
         ]);
       }
     };
@@ -757,13 +794,13 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
       // The Fast-Movement Swoosh Logic
       // e.movementX/Y calculates the pixel jump between frames
       const speed = Math.abs(e.movementX) + Math.abs(e.movementY);
-      
+
       // If the mouse jumps more than 80 pixels in one frame, it's moving FAST.
       if (speed > 80 && !swooshCooldown.current) {
         playSwoosh();
         swooshCooldown.current = true;
         // 500ms cooldown so it doesn't spam your ears
-        setTimeout(() => (swooshCooldown.current = false), 500); 
+        setTimeout(() => (swooshCooldown.current = false), 500);
       }
     };
 
@@ -1007,11 +1044,15 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
           // Do nothing
         } else if (lowerCmd === "clear" || lowerCmd === "cls") {
           newHistory = [];
-        } else if (lowerCmd === "music" || lowerCmd === "toggle music" || lowerCmd === "mute") {
+        } else if (
+          lowerCmd === "music" ||
+          lowerCmd === "toggle music" ||
+          lowerCmd === "mute"
+        ) {
           toggleMusic();
           newHistory.push({
             type: "output",
-            text: `[SYSTEM] Background Audio Engine: ${isMusicMuted ? "ONLINE" : "MUTED"}`
+            text: `[SYSTEM] Background Audio Engine: ${isMusicMuted ? "ONLINE" : "MUTED"}`,
           });
         } else if (lowerCmd === "help") {
           newHistory.push({
@@ -1028,7 +1069,7 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
                 <span> • clear / cls : Clears the terminal screen</span>
                 <span> • ls : Lists available system files</span>
                 <span> • close : Closes all active windows</span>
-                <span> • music / mute  : Toggles background audio engine</span>
+                <span> • music / mute : Toggles background audio engine</span>
                 <span>
                   {" "}
                   • clear cache : Flushes UI state and resets window memory
@@ -1400,40 +1441,39 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
       ) : (
         <div className="flex flex-col h-screen w-full relative z-10 bg-[#050505]">
           {/* LAYER 1: THE CLEAN CYBER GRID */}
-        <div
-          className="absolute top-[-100px] bottom-[-100px] left-[-100px] right-[-100px] cyber-grid pointer-events-none z-[1] max-md:!transform-none"
-          style={{
-            transform: `translate(${bgOffset.x * 0.5}px, ${bgOffset.y * 0.5}px)`,
-            transition: "transform 0.1s ease-out",
-          }}
-        ></div>
-
-        {/* MOBILE ONLY: Telemetry Heatmap */}
-        <div className="fixed inset-0 z-[1] pointer-events-none md:hidden bg-[#030a05] overflow-hidden">
-          
-          {/* Topographical Data Points */}
-          <div 
-            className="absolute inset-0 opacity-[0.15]"
+          <div
+            className="absolute top-[-100px] bottom-[-100px] left-[-100px] right-[-100px] cyber-grid pointer-events-none z-[1] max-md:!transform-none"
             style={{
-              backgroundImage: `radial-gradient(circle, #22c55e 1px, transparent 1px)`,
-              backgroundSize: '24px 24px'
+              transform: `translate(${bgOffset.x * 0.5}px, ${bgOffset.y * 0.5}px)`,
+              transition: "transform 0.1s ease-out",
             }}
           ></div>
 
-          {/* Core Engine Pulse */}
-          <div 
-            className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(34,197,94,0.12)_0%,transparent_70%)] animate-pulse" 
-            style={{ animationDuration: '2.5s' }}
-          ></div>
+          {/* MOBILE ONLY: Telemetry Heatmap */}
+          <div className="fixed inset-0 z-[1] pointer-events-none md:hidden bg-[#030a05] overflow-hidden">
+            {/* Topographical Data Points */}
+            <div
+              className="absolute inset-0 opacity-[0.15]"
+              style={{
+                backgroundImage: `radial-gradient(circle, #22c55e 1px, transparent 1px)`,
+                backgroundSize: "24px 24px",
+              }}
+            ></div>
 
-          {/* Sweeping Heat Wave Scanner */}
-          <div 
-            className="absolute left-0 w-full h-[45vh] bg-gradient-to-b from-transparent via-[#22c55e]/10 to-[#22c55e]/30 border-b-[2px] border-[#22c55e]/60 shadow-[0_4px_20px_rgba(34,197,94,0.3)]"
-            style={{ animation: "telemetrySweep 4.5s ease-in-out infinite" }}
-          ></div>
+            {/* Core Engine Pulse */}
+            <div
+              className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(34,197,94,0.12)_0%,transparent_70%)] animate-pulse"
+              style={{ animationDuration: "2.5s" }}
+            ></div>
 
-          {/* Standalone Keyframe for the Sweep */}
-          <style>{`
+            {/* Sweeping Heat Wave Scanner */}
+            <div
+              className="absolute left-0 w-full h-[45vh] bg-gradient-to-b from-transparent via-[#22c55e]/10 to-[#22c55e]/30 border-b-[2px] border-[#22c55e]/60 shadow-[0_4px_20px_rgba(34,197,94,0.3)]"
+              style={{ animation: "telemetrySweep 4.5s ease-in-out infinite" }}
+            ></div>
+
+            {/* Standalone Keyframe for the Sweep */}
+            <style>{`
             @keyframes telemetrySweep {
               0% { transform: translateY(-100vh); opacity: 0; }
               15% { opacity: 1; }
@@ -1441,14 +1481,14 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
               100% { transform: translateY(100vh); opacity: 0; }
             }
           `}</style>
-        </div>
+          </div>
 
           {/* --- LAYER 3: VIGNETTE SHADOW (z-[3]) --- */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#050505_100%)] pointer-events-none z-[3]"></div>
 
           {/* LAYER 3.5: CHAOTIC FULL-WIDTH AUDIO VISUALIZER (z-[4]) */}
-        {isArcadeActive && (
-          <div className="absolute bottom-[40px] left-0 w-full flex items-end justify-center gap-[4px] px-4 h-20 z-[4] pointer-events-none opacity-40 overflow-hidden max-md:hidden">
+          {isArcadeActive && (
+            <div className="absolute bottom-[40px] left-0 w-full flex items-end justify-center gap-[4px] px-4 h-20 z-[4] pointer-events-none opacity-40 overflow-hidden max-md:hidden">
               {[...Array(190)].map((_, i) => (
                 <div
                   key={i}
@@ -1463,226 +1503,389 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
             {/* TOP OS STATUS BAR */}
             <div className="w-full h-8 bg-black/80 backdrop-blur-md border-b border-[#22c55e]/30 flex items-center px-4 relative z-[90]">
               {/* Left Side: Menus */}
-          <div className="flex-1 flex items-center">
-            
-            {/* 1. THE LOGO */}
-            <div className="relative mr-3">
-              <div
-                onClick={() => setActiveMenu(activeMenu === "vadanta" ? null : "vadanta")}
-                className="relative flex items-center justify-center cursor-pointer select-none font-mono"
-              >
-                <span className="text-xl font-black text-[#22c55e]/30 tracking-tighter">V</span>
-                <span className="absolute top-0 left-0 text-xl font-black text-[#22c55e] tracking-tighter pointer-events-none" style={{ animation: 'cyber-wipe 3s ease-in-out infinite' }}>V</span>
-                <span className="absolute top-0 left-0 text-xl font-black text-white tracking-tighter pointer-events-none" style={{ animation: 'cyber-wipe 3s ease-in-out infinite 0.15s' }}>V</span>
-              </div>
-              
-              {activeMenu === "vadanta" && (
-                <div className="absolute top-full left-0 mt-3 w-64 bg-black/95 border border-[#22c55e]/50 shadow-[0_0_15px_rgba(34,197,94,0.2)] py-2 flex flex-col gap-1 z-[9999] backdrop-blur-md text-xs font-mono">
-                  
-                  {/* ORIGINAL V-MENU OPTIONS */}
-                  <div onClick={() => { setActiveMenu(null); setIsCoreIdentityOpen(true); }} className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors">
-                    [ Core_Identity ]
-                  </div>
-                  <div onClick={() => { setActiveMenu(null); triggerTraceRoute(); }} className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors">
-                    [ Breach_Protocol ]
-                  </div>
-                  <div onClick={() => { setActiveMenu(null); handleMountGitHub(); }} className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors font-bold border-t border-dashed border-[#22c55e]/30 mt-1 pt-2">
-                    &gt; Mount_GitHub_Drive
+              <div className="flex-1 flex items-center">
+                {/* 1. THE LOGO */}
+                <div className="relative mr-3">
+                  <div
+                    onClick={() =>
+                      setActiveMenu(activeMenu === "vadanta" ? null : "vadanta")
+                    }
+                    className="relative flex items-center justify-center cursor-pointer select-none font-mono"
+                  >
+                    <span className="text-xl font-black text-[#22c55e]/30 tracking-tighter">
+                      V
+                    </span>
+                    <span
+                      className="absolute top-0 left-0 text-xl font-black text-[#22c55e] tracking-tighter pointer-events-none"
+                      style={{
+                        animation: "cyber-wipe 3s ease-in-out infinite",
+                      }}
+                    >
+                      V
+                    </span>
+                    <span
+                      className="absolute top-0 left-0 text-xl font-black text-white tracking-tighter pointer-events-none"
+                      style={{
+                        animation: "cyber-wipe 3s ease-in-out infinite 0.15s",
+                      }}
+                    >
+                      V
+                    </span>
                   </div>
 
-                  {/* MOBILE-ONLY ACCORDION (File & System) */}
-                  <div className="sm:hidden border-t border-dashed border-[#22c55e]/30 mt-1 pt-1">
-                    {/* File Accordion */}
-                    <div 
-                      onClick={(e) => { e.stopPropagation(); setMobileSubMenu(mobileSubMenu === "file" ? null : "file"); }} 
-                      className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors flex justify-between items-center"
-                    >
-                      <span>&gt; File</span>
-                      <span className="text-[10px]">{mobileSubMenu === "file" ? "[-]" : "[+]"}</span>
+                  {activeMenu === "vadanta" && (
+                    <div className="absolute top-full left-0 mt-3 w-64 bg-black/95 border border-[#22c55e]/50 shadow-[0_0_15px_rgba(34,197,94,0.2)] py-2 flex flex-col gap-1 z-[9999] backdrop-blur-md text-xs font-mono">
+                      {/* ORIGINAL V-MENU OPTIONS */}
+                      <div
+                        onClick={() => {
+                          setActiveMenu(null);
+                          setIsCoreIdentityOpen(true);
+                        }}
+                        className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors"
+                      >
+                        [ Core_Identity ]
+                      </div>
+                      <div
+                        onClick={() => {
+                          setActiveMenu(null);
+                          triggerTraceRoute();
+                        }}
+                        className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors"
+                      >
+                        [ Breach_Protocol ]
+                      </div>
+                      <div
+                        onClick={() => {
+                          setActiveMenu(null);
+                          handleMountGitHub();
+                        }}
+                        className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors font-bold border-t border-dashed border-[#22c55e]/30 mt-1 pt-2"
+                      >
+                        &gt; Mount_GitHub_Drive
+                      </div>
+
+                      {/* MOBILE-ONLY ACCORDION (File & System) */}
+                      <div className="sm:hidden border-t border-dashed border-[#22c55e]/30 mt-1 pt-1">
+                        {/* File Accordion */}
+                        <div
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setMobileSubMenu(
+                              mobileSubMenu === "file" ? null : "file",
+                            );
+                          }}
+                          className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors flex justify-between items-center"
+                        >
+                          <span>&gt; File</span>
+                          <span className="text-[10px]">
+                            {mobileSubMenu === "file" ? "[-]" : "[+]"}
+                          </span>
+                        </div>
+                        {mobileSubMenu === "file" && (
+                          <div className="pl-6 flex flex-col gap-1 pb-1 border-b border-[#22c55e]/10">
+                            <a
+                              href="/resume.pdf"
+                              download
+                              className="block py-2 text-[#22c55e] hover:text-white transition-colors"
+                            >
+                              &gt; Extract_Dossier
+                            </a>
+                            <div
+                              onClick={() => {
+                                setActiveMenu(null);
+                                handleExportLogs();
+                              }}
+                              className="py-2 text-[#22c55e] hover:text-white cursor-pointer transition-colors"
+                            >
+                              &gt; Export_Session_Logs
+                            </div>
+                            <div
+                              onClick={() => {
+                                setActiveMenu(null);
+                                setIsThemeModalOpen(true);
+                              }}
+                              className="py-2 text-[#BF40BF] hover:text-white cursor-pointer transition-colors"
+                            >
+                              &gt; Customize_Theme
+                            </div>
+                          </div>
+                        )}
+
+                        {/* System Accordion */}
+                        <div
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setMobileSubMenu(
+                              mobileSubMenu === "system" ? null : "system",
+                            );
+                          }}
+                          className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors flex justify-between items-center"
+                        >
+                          <span>&gt; System</span>
+                          <span className="text-[10px]">
+                            {mobileSubMenu === "system" ? "[-]" : "[+]"}
+                          </span>
+                        </div>
+                        {mobileSubMenu === "system" && (
+                          <div className="pl-6 flex flex-col gap-1 pb-1">
+                            <div
+                              onClick={handleReboot}
+                              className="py-2 text-[#22c55e] hover:text-white cursor-pointer transition-colors"
+                            >
+                              &gt; Reboot_System
+                            </div>
+                            <div
+                              onClick={handleClearCache}
+                              className="py-2 text-[#22c55e] hover:text-white cursor-pointer transition-colors"
+                            >
+                              &gt; Clear_Cache
+                            </div>
+                            <div
+                              onClick={handleShutdown}
+                              className="py-2 text-red-500 hover:text-red-400 cursor-pointer transition-colors font-bold"
+                            >
+                              &gt; Initiate_Shutdown
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    {mobileSubMenu === "file" && (
-                      <div className="pl-6 flex flex-col gap-1 pb-1 border-b border-[#22c55e]/10">
-                        <a href="/resume.pdf" download className="block py-2 text-[#22c55e] hover:text-white transition-colors">&gt; Extract_Dossier</a>
-                        <div onClick={() => { setActiveMenu(null); handleExportLogs(); }} className="py-2 text-[#22c55e] hover:text-white cursor-pointer transition-colors">&gt; Export_Session_Logs</div>
-                        <div onClick={() => { setActiveMenu(null); setIsThemeModalOpen(true); }} className="py-2 text-[#BF40BF] hover:text-white cursor-pointer transition-colors">&gt; Customize_Theme</div>
+                  )}
+                </div>
+
+                {/* SEPARATOR 1 (Tucked close to the logo) */}
+                <div className="hidden sm:block w-[1px] h-4 bg-[#22c55e]/30 mr-6"></div>
+
+                {/* 2 & 3. FILE & SYSTEM MENUS (Centered perfectly between the separators) */}
+                <div className="flex items-center gap-6 mr-6">
+                  {/* File Menu */}
+                  <div className="relative hidden sm:block">
+                    <span
+                      onClick={() =>
+                        setActiveMenu(activeMenu === "file" ? null : "file")
+                      }
+                      className={`cursor-pointer transition-colors ${activeMenu === "file" ? "text-[#22c55e]" : "text-slate-500 hover:text-[#22c55e]"}`}
+                    >
+                      File
+                    </span>
+                    {activeMenu === "file" && (
+                      <div className="absolute top-full left-0 mt-3 w-60 bg-black/95 border border-[#22c55e]/50 shadow-[0_0_15px_rgba(34,197,94,0.2)] py-2 flex flex-col gap-1 z-[9999] backdrop-blur-md text-xs font-mono">
+                        <a
+                          href="/resume.pdf"
+                          download
+                          className="block px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors"
+                        >
+                          &gt; Extract_Dossier
+                        </a>
+                        <div
+                          onClick={() => {
+                            setActiveMenu(null);
+                            handleExportLogs();
+                          }}
+                          className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors"
+                        >
+                          &gt; Export_Session_Logs
+                        </div>
+                        <div
+                          onClick={() => {
+                            setActiveMenu(null);
+                            setIsThemeModalOpen(true);
+                          }}
+                          className="px-4 py-2 text-[#BF40BF] hover:bg-[#22c55e]/20 cursor-pointer transition-colors border-t border-dashed border-[#BF40BF]/30 mt-1 pt-2"
+                        >
+                          &gt; Customize_OS_Theme
+                        </div>
                       </div>
                     )}
+                  </div>
 
-                    {/* System Accordion */}
-                    <div 
-                      onClick={(e) => { e.stopPropagation(); setMobileSubMenu(mobileSubMenu === "system" ? null : "system"); }} 
-                      className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors flex justify-between items-center"
+                  {/* System Menu */}
+                  <div className="relative hidden sm:block">
+                    <span
+                      onClick={() =>
+                        setActiveMenu(activeMenu === "system" ? null : "system")
+                      }
+                      className={`cursor-pointer transition-colors ${activeMenu === "system" ? "text-[#22c55e]" : "text-slate-500 hover:text-[#22c55e]"}`}
                     >
-                      <span>&gt; System</span>
-                      <span className="text-[10px]">{mobileSubMenu === "system" ? "[-]" : "[+]"}</span>
-                    </div>
-                    {mobileSubMenu === "system" && (
-                      <div className="pl-6 flex flex-col gap-1 pb-1">
-                        <div onClick={handleReboot} className="py-2 text-[#22c55e] hover:text-white cursor-pointer transition-colors">&gt; Reboot_System</div>
-                        <div onClick={handleClearCache} className="py-2 text-[#22c55e] hover:text-white cursor-pointer transition-colors">&gt; Clear_Cache</div>
-                        <div onClick={handleShutdown} className="py-2 text-red-500 hover:text-red-400 cursor-pointer transition-colors font-bold">&gt; Initiate_Shutdown</div>
+                      System
+                    </span>
+                    {activeMenu === "system" && (
+                      <div className="absolute top-full left-0 mt-3 w-48 bg-black/95 border border-[#22c55e]/50 shadow-[0_0_15px_rgba(34,197,94,0.2)] py-1 z-[9999] backdrop-blur-md text-xs">
+                        <div
+                          onClick={handleReboot}
+                          className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors"
+                        >
+                          &gt; Reboot_System
+                        </div>
+                        <div
+                          onClick={handleClearCache}
+                          className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors"
+                        >
+                          &gt; Clear_Cache
+                        </div>
+                        <div className="border-t border-[#22c55e]/30 my-1"></div>
+                        <div
+                          onClick={handleShutdown}
+                          className="px-4 py-2 text-red-500 hover:bg-red-500/20 cursor-pointer transition-colors font-bold"
+                        >
+                          &gt; Initiate_Shutdown
+                        </div>
                       </div>
                     )}
                   </div>
-
                 </div>
-              )}
-            </div>
 
-            {/* SEPARATOR 1 (Tucked close to the logo) */}
-            <div className="hidden sm:block w-[1px] h-4 bg-[#22c55e]/30 mr-6"></div>
+                {/* SEPARATOR 2 */}
+                <div className="hidden sm:block w-[1px] h-4 bg-[#22c55e]/30 mr-4"></div>
 
-            {/* 2 & 3. FILE & SYSTEM MENUS (Centered perfectly between the separators) */}
-            <div className="flex items-center gap-6 mr-6">
-              {/* File Menu */}
-              <div className="relative hidden sm:block">
-                <span onClick={() => setActiveMenu(activeMenu === "file" ? null : "file")} className={`cursor-pointer transition-colors ${activeMenu === "file" ? "text-[#22c55e]" : "text-slate-500 hover:text-[#22c55e]"}`}>
-                  File
-                </span>
-                {activeMenu === "file" && (
-                  <div className="absolute top-full left-0 mt-3 w-60 bg-black/95 border border-[#22c55e]/50 shadow-[0_0_15px_rgba(34,197,94,0.2)] py-2 flex flex-col gap-1 z-[9999] backdrop-blur-md text-xs font-mono">
-                    <a href="/resume.pdf" download className="block px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors">
-                      &gt; Extract_Dossier
-                    </a>
-                    <div onClick={() => { setActiveMenu(null); handleExportLogs(); }} className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors">
-                      &gt; Export_Session_Logs
+                {/* THE JOKER TRAP: Fake Light Mode Toggle */}
+                <div className="relative hidden sm:flex items-center mr-4">
+                  <div
+                    className="flex items-center gap-2 cursor-pointer group"
+                    onClick={() => setIsJokerTrapActive(true)}
+                  >
+                    <div className="w-7 h-3.5 border rounded-full relative transition-colors duration-300 bg-slate-800 border-slate-600 group-hover:border-red-500">
+                      <div className="w-2.5 h-2.5 rounded-full absolute top-[1px] shadow-sm transition-all duration-300 bg-slate-400 left-[2px] group-hover:bg-red-500"></div>
                     </div>
-                    <div onClick={() => { setActiveMenu(null); setIsThemeModalOpen(true); }} className="px-4 py-2 text-[#BF40BF] hover:bg-[#22c55e]/20 cursor-pointer transition-colors border-t border-dashed border-[#BF40BF]/30 mt-1 pt-2">
-                      &gt; Customize_OS_Theme
-                    </div>
+                    <span className="text-[10px] uppercase tracking-widest transition-colors text-slate-500 group-hover:text-red-400">
+                      Light_Mode
+                    </span>
                   </div>
-                )}
-              </div>
+                </div>
 
-              {/* System Menu */}
-              <div className="relative hidden sm:block">
-                <span onClick={() => setActiveMenu(activeMenu === "system" ? null : "system")} className={`cursor-pointer transition-colors ${activeMenu === "system" ? "text-[#22c55e]" : "text-slate-500 hover:text-[#22c55e]"}`}>
-                  System
-                </span>
-                {activeMenu === "system" && (
-                  <div className="absolute top-full left-0 mt-3 w-48 bg-black/95 border border-[#22c55e]/50 shadow-[0_0_15px_rgba(34,197,94,0.2)] py-1 z-[9999] backdrop-blur-md text-xs">
-                    <div onClick={handleReboot} className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors">
-                      &gt; Reboot_System
+                {/* SEPARATOR 3 */}
+                <div className="hidden sm:block w-[1px] h-4 bg-[#22c55e]/30 mr-4"></div>
+
+                {/* BGM AUDIO TOGGLE */}
+                <div className="relative hidden sm:flex items-center">
+                  <div
+                    className="flex items-center gap-2 cursor-pointer group"
+                    onClick={toggleMusic}
+                  >
+                    <div
+                      className={`w-7 h-3.5 border rounded-full relative transition-colors duration-300 ${isMusicMuted ? "bg-red-900/30 border-red-700/50 group-hover:border-red-500" : "bg-[#22c55e]/20 border-[#22c55e]/50 group-hover:border-[#22c55e]"}`}
+                    >
+                      <div
+                        className={`w-2.5 h-2.5 rounded-full absolute top-[1px] shadow-sm transition-all duration-300 ${isMusicMuted ? "bg-red-500 left-[2px]" : "bg-[#22c55e] left-[14px]"}`}
+                      ></div>
                     </div>
-                    <div onClick={handleClearCache} className="px-4 py-2 text-[#22c55e] hover:bg-[#22c55e]/20 cursor-pointer transition-colors">
-                      &gt; Clear_Cache
-                    </div>
-                    <div className="border-t border-[#22c55e]/30 my-1"></div>
-                    <div onClick={handleShutdown} className="px-4 py-2 text-red-500 hover:bg-red-500/20 cursor-pointer transition-colors font-bold">
-                      &gt; Initiate_Shutdown
-                    </div>
+                    <span
+                      className={`text-[10px] uppercase tracking-widest transition-colors ${isMusicMuted ? "text-red-500" : "text-[#22c55e]/70 group-hover:text-[#22c55e]"}`}
+                    >
+                      Audio
+                    </span>
                   </div>
-                )}
-              </div>
-            </div>
-
-            {/* SEPARATOR 2 */}
-            <div className="hidden sm:block w-[1px] h-4 bg-[#22c55e]/30 mr-4"></div>
-
-            {/* THE JOKER TRAP: Fake Light Mode Toggle */}
-            <div className="relative hidden sm:flex items-center mr-4">
-              <div className="flex items-center gap-2 cursor-pointer group" onClick={() => setIsJokerTrapActive(true)}>
-                <div className="w-7 h-3.5 border rounded-full relative transition-colors duration-300 bg-slate-800 border-slate-600 group-hover:border-red-500">
-                  <div className="w-2.5 h-2.5 rounded-full absolute top-[1px] shadow-sm transition-all duration-300 bg-slate-400 left-[2px] group-hover:bg-red-500"></div>
                 </div>
-                <span className="text-[10px] uppercase tracking-widest transition-colors text-slate-500 group-hover:text-red-400">
-                  Light_Mode
-                </span>
               </div>
-            </div>
-
-            {/* SEPARATOR 3 */}
-            <div className="hidden sm:block w-[1px] h-4 bg-[#22c55e]/30 mr-4"></div>
-
-            {/* BGM AUDIO TOGGLE */}
-            <div className="relative hidden sm:flex items-center">
-              <div className="flex items-center gap-2 cursor-pointer group" onClick={toggleMusic}>
-                <div className={`w-7 h-3.5 border rounded-full relative transition-colors duration-300 ${isMusicMuted ? "bg-red-900/30 border-red-700/50 group-hover:border-red-500" : "bg-[#22c55e]/20 border-[#22c55e]/50 group-hover:border-[#22c55e]"}`}>
-                  <div className={`w-2.5 h-2.5 rounded-full absolute top-[1px] shadow-sm transition-all duration-300 ${isMusicMuted ? "bg-red-500 left-[2px]" : "bg-[#22c55e] left-[14px]"}`}></div>
-                </div>
-                <span className={`text-[10px] uppercase tracking-widest transition-colors ${isMusicMuted ? "text-red-500" : "text-[#22c55e]/70 group-hover:text-[#22c55e]"}`}>
-                  Audio
-                </span>
-              </div>
-            </div>
-
-          </div>
-          {/* End of Left Side Menus */}
+              {/* End of Left Side Menus */}
 
               {/* CENTER: The Surveillance Camera (Hidden on Mobile) */}
-          <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center justify-center">
-            <SurveillanceLogo />
-          </div>
+              <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center justify-center">
+                <SurveillanceLogo />
+              </div>
 
-          {/* Right Side: Network, Clock & Mobile WiFi */}
-          <div className="flex items-center gap-3 sm:gap-4 opacity-90 relative z-50">
-            
-            {/* 1. MOBILE-ONLY LIVE WIFI ICON */}
-            <div className="flex sm:hidden items-center justify-center">
-              <svg className="w-4 h-4 text-[#22c55e] animate-pulse drop-shadow-[0_0_5px_rgba(34,197,94,0.6)]" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 21c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm-4.6-4.6c2.5-2.5 6.6-2.5 9.2 0l1.4-1.4c-3.3-3.3-8.6-3.3-11.9 0l1.3 1.4zm-4.2-4.2c4.9-4.9 12.8-4.9 17.7 0l1.4-1.4c-5.7-5.7-14.9-5.7-20.5 0l1.4 1.4zm-4.2-4.2c7.2-7.2 18.9-7.2 26.1 0l1.4-1.4c-8-8-21-8-29 0l1.4 1.4z"/>
-              </svg>
+              {/* Right Side: Network, Clock & Mobile WiFi */}
+              <div className="flex items-center gap-3 sm:gap-4 opacity-90 relative z-50">
+                {/* 1. MOBILE-ONLY LIVE WIFI ICON */}
+                <div className="flex sm:hidden items-center justify-center">
+                  <svg
+                    className="w-4 h-4 text-[#22c55e] animate-pulse drop-shadow-[0_0_5px_rgba(34,197,94,0.6)]"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 21c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm-4.6-4.6c2.5-2.5 6.6-2.5 9.2 0l1.4-1.4c-3.3-3.3-8.6-3.3-11.9 0l1.3 1.4zm-4.2-4.2c4.9-4.9 12.8-4.9 17.7 0l1.4-1.4c-5.7-5.7-14.9-5.7-20.5 0l1.4 1.4zm-4.2-4.2c7.2-7.2 18.9-7.2 26.1 0l1.4-1.4c-8-8-21-8-29 0l1.4 1.4z" />
+                  </svg>
+                </div>
+
+                {/* 2. DESKTOP-ONLY NETWORK STATS & DATE */}
+                <div className="hidden sm:flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-ping"></span>
+                    <span className="tracking-widest font-mono text-xs text-[#22c55e]">
+                      NET: {netSpeed.dl} MB/s | {netSpeed.ping}MS
+                    </span>
+                  </div>
+                  <span className="text-[#22c55e]/40">|</span>
+                  <div className="uppercase tracking-widest text-[#22c55e]/70 text-xs">
+                    {time.toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "2-digit",
+                      year: "numeric",
+                    })}
+                  </div>
+                </div>
+
+                {/* 3. YOUR CLOCK (Visible on Mobile & Desktop) */}
+                <div className="flex items-center space-x-1 font-bold font-mono text-[11px]">
+                  {/* === Keep your existing Flip Clock Toggle and Digits here === */}
+                  <div
+                    className="flex items-center bg-[#050505] border border-[#22c55e]/40 rounded cursor-pointer text-[9px] tracking-wider overflow-hidden shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]"
+                    onClick={() => setIs24Hour(!is24Hour)}
+                  >
+                    <div
+                      className={`px-1.5 py-[2px] transition-colors ${!is24Hour ? "bg-[#22c55e]/30 text-[#22c55e]" : "text-[#22c55e]/40 hover:bg-[#22c55e]/10"}`}
+                    >
+                      12
+                    </div>
+                    <div className="w-[1px] h-[12px] bg-[#22c55e]/40"></div>
+                    <div
+                      className={`px-1.5 py-[2px] transition-colors ${is24Hour ? "bg-[#22c55e]/30 text-[#22c55e]" : "text-[#22c55e]/40 hover:bg-[#22c55e]/10"}`}
+                    >
+                      24
+                    </div>
+                  </div>
+                  <div className="w-[1px] h-4 bg-[#22c55e]/40 mx-3"></div>
+                  <div className="flex items-center justify-center bg-[#0a0a0a] border border-[#22c55e]/40 w-[22px] h-[18px] rounded shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]">
+                    {hours}
+                  </div>
+                  <span className="text-[#22c55e]/70 animate-pulse mb-0.5">
+                    :
+                  </span>
+                  <div className="flex items-center justify-center bg-[#0a0a0a] border border-[#22c55e]/40 w-[22px] h-[18px] rounded shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]">
+                    {mins}
+                  </div>
+                  <span className="text-[#22c55e]/70 animate-pulse mb-0.5">
+                    :
+                  </span>
+                  <div className="flex items-center justify-center bg-[#0a0a0a] border border-[#22c55e]/20 w-[22px] h-[18px] rounded text-[#22c55e]/70 shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]">
+                    {secs}
+                  </div>
+                  {!is24Hour && (
+                    <span className="text-[9px] text-[#22c55e]/70 ml-1">
+                      {ampm}
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
 
-            {/* 2. DESKTOP-ONLY NETWORK STATS & DATE */}
-            <div className="hidden sm:flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-ping"></span>
-                <span className="tracking-widest font-mono text-xs text-[#22c55e]">
-                  NET: {netSpeed.dl} MB/s | {netSpeed.ping}MS
-                </span>
+            {/* DESKTOP WORKSPACE (Strictly Hidden on Mobile) */}
+            <div className="hidden md:flex flex-grow p-4 relative overflow-hidden">
+              {/* MOBILE WORKSPACE (The Clean Slate) */}
+              <div className="flex md:hidden flex-col h-[calc(100dvh-120px)] w-full px-4 relative z-40">
+                {/* Placeholder so we can verify the boundaries */}
+                <div className="flex-grow flex items-center justify-center border-2 border-dashed border-[#22c55e]/30 rounded-[2rem]">
+                  <div className="text-[#22c55e]/50 text-xs font-mono text-center leading-loose">
+                    [ MOBILE CANVAS LOCKED ]<br />
+                    No scrolling allowed.
+                    <br />
+                    Awaiting Module 1...
+                  </div>
+                </div>
               </div>
-              <span className="text-[#22c55e]/40">|</span>
-              <div className="uppercase tracking-widest text-[#22c55e]/70 text-xs">
-                {time.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" })}
-              </div>
-            </div>
 
-            {/* 3. YOUR CLOCK (Visible on Mobile & Desktop) */}
-            <div className="flex items-center space-x-1 font-bold font-mono text-[11px]">
-              {/* === Keep your existing Flip Clock Toggle and Digits here === */}
+              {/* --- CENTRAL CHART & MODULES */}
               <div
-                className="flex items-center bg-[#050505] border border-[#22c55e]/40 rounded cursor-pointer text-[9px] tracking-wider overflow-hidden shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]"
-                onClick={() => setIs24Hour(!is24Hour)}
+                className="absolute inset-0 flex flex-col items-center justify-center pb-24 pointer-events-none z-0 max-md:relative max-md:inset-auto max-md:pb-0 max-md:transform-none max-md:gap-2 max-md:scale-[0.90] max-md:origin-top max-md:w-full"
+                style={
+                  window.innerWidth < 768
+                    ? {}
+                    : {
+                        transform: `translate(${bgOffset.x * 2.5}px, ${bgOffset.y * 2.5}px)`,
+                        transition: "transform 0.1s ease-out",
+                      }
+                }
               >
-                <div className={`px-1.5 py-[2px] transition-colors ${!is24Hour ? "bg-[#22c55e]/30 text-[#22c55e]" : "text-[#22c55e]/40 hover:bg-[#22c55e]/10"}`}>12</div>
-                <div className="w-[1px] h-[12px] bg-[#22c55e]/40"></div>
-                <div className={`px-1.5 py-[2px] transition-colors ${is24Hour ? "bg-[#22c55e]/30 text-[#22c55e]" : "text-[#22c55e]/40 hover:bg-[#22c55e]/10"}`}>24</div>
-              </div>
-              <div className="w-[1px] h-4 bg-[#22c55e]/40 mx-3"></div>
-              <div className="flex items-center justify-center bg-[#0a0a0a] border border-[#22c55e]/40 w-[22px] h-[18px] rounded shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]">{hours}</div>
-              <span className="text-[#22c55e]/70 animate-pulse mb-0.5">:</span>
-              <div className="flex items-center justify-center bg-[#0a0a0a] border border-[#22c55e]/40 w-[22px] h-[18px] rounded shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]">{mins}</div>
-              <span className="text-[#22c55e]/70 animate-pulse mb-0.5">:</span>
-              <div className="flex items-center justify-center bg-[#0a0a0a] border border-[#22c55e]/20 w-[22px] h-[18px] rounded text-[#22c55e]/70 shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]">{secs}</div>
-              {!is24Hour && <span className="text-[9px] text-[#22c55e]/70 ml-1">{ampm}</span>}
-            </div>
-            </div>
-          </div>
-
-          {/* DESKTOP WORKSPACE (Strictly Hidden on Mobile) */}
-        <div className="hidden md:flex flex-grow p-4 relative overflow-hidden">
-
-          {/* MOBILE WORKSPACE (The Clean Slate) */}
-        <div className="flex md:hidden flex-col h-[calc(100dvh-120px)] w-full px-4 relative z-40">
-           
-           {/* Placeholder so we can verify the boundaries */}
-           <div className="flex-grow flex items-center justify-center border-2 border-dashed border-[#22c55e]/30 rounded-[2rem]">
-             <div className="text-[#22c55e]/50 text-xs font-mono text-center leading-loose">
-               [ MOBILE CANVAS LOCKED ]<br/>No scrolling allowed.<br/>Awaiting Module 1...
-             </div>
-           </div>
-
-        </div>
-          
-          {/* --- CENTRAL CHART & MODULES */}
-          <div
-            className="absolute inset-0 flex flex-col items-center justify-center pb-24 pointer-events-none z-0 max-md:relative max-md:inset-auto max-md:pb-0 max-md:transform-none max-md:gap-2 max-md:scale-[0.90] max-md:origin-top max-md:w-full"
-            style={window.innerWidth < 768 ? {} : {
-              transform: `translate(${bgOffset.x * 2.5}px, ${bgOffset.y * 2.5}px)`,
-              transition: "transform 0.1s ease-out",
-            }}
-          >
                 {/* TOP ROW: GitHub & Socials */}
                 <div className="flex items-center gap-4 mb-6 relative z-50">
                   {/* GitHub Node */}
@@ -1758,47 +1961,48 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                 {/* BOTTOM ROW: AI Agent & Traffic Tracker */}
                 <div className="flex items-center justify-between w-[75vw] max-w-5xl mt-6">
                   {/* THE TACTICAL BREACH (Refined Sweep) */}
-          {/* AI Chatbot Trigger */}
-          <button
-            onClick={() => {
-              playAppOpen();
-              setIsAiProxyOpen(true);
-            }}
-            /* Added max-md: positioning directly to the button so desktop stays 100% native relative */
-            className="relative max-md:fixed max-md:bottom-[80px] max-md:right-4 max-md:z-[100] overflow-hidden group p-[1.5px] pointer-events-auto hover:-translate-y-1 transition-transform duration-300 drop-shadow-[0_0_15px_rgba(34,197,94,0.2)] hover:drop-shadow-[0_0_30px_rgba(34,197,94,0.6)]"
-            style={{
-              clipPath:
-                "polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px)",
-            }}
-          >
-            {/* 1. Dual Sharp Lasers (The Border Chase) */}
-            <span className="absolute -inset-[500%] bg-[conic-gradient(transparent_0_140deg,#22c55e_180deg,transparent_180_320deg,#22c55e_360deg)] animate-[spin_2s_linear_infinite]" />
-            
-            {/* 2. Inner Matte Core */}
-            <span className="relative flex items-center justify-center gap-2 h-full w-full cursor-pointer bg-[#050505] pl-4 pr-6 py-3 max-md:p-3 group-hover:bg-[#22c55e] transition-colors duration-300 overflow-hidden">
-              
-              {/* 3. IDLE STATE: The Diagonal Stripe Sweep */}
-              <div
-                className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(34,197,94,0.12)_10px,rgba(34,197,94,0.12)_20px)] group-hover:opacity-0 transition-opacity duration-300 pointer-events-none"
-                style={{ animation: "stripeSweep 4.5s ease-in-out infinite alternate" }}
-              ></div>
-              
-              {/* 4. HOVER STATE: Solid Black Industrial Stripes */}
-              <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(0,0,0,0.15)_10px,rgba(0,0,0,0.15)_20px)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-              
-              {/* Radar Ping */}
-              <div className="relative flex h-2.5 w-2.5 z-10 shrink-0 pointer-events-none">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#22c55e] group-hover:bg-black transition-colors duration-300"></span>
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#22c55e] group-hover:bg-black transition-colors duration-300"></span>
-              </div>
-              
-              {/* Text (Hidden on mobile for a clean icon-only FAB) */}
-              <span className="text-[13px] max-md:hidden font-black tracking-[0.2em] uppercase text-[#22c55e] group-hover:text-black transition-colors duration-300 relative z-10 pointer-events-none drop-shadow-[0_0_8px_rgba(34,197,94,0.5)] group-hover:drop-shadow-none whitespace-nowrap">
-                Hey There, VAI!
-              </span>
-              
-            </span>
-          </button>
+                  {/* AI Chatbot Trigger */}
+                  <button
+                    onClick={() => {
+                      playAppOpen();
+                      setIsAiProxyOpen(true);
+                    }}
+                    /* Added max-md: positioning directly to the button so desktop stays 100% native relative */
+                    className="relative max-md:fixed max-md:bottom-[80px] max-md:right-4 max-md:z-[100] overflow-hidden group p-[1.5px] pointer-events-auto hover:-translate-y-1 transition-transform duration-300 drop-shadow-[0_0_15px_rgba(34,197,94,0.2)] hover:drop-shadow-[0_0_30px_rgba(34,197,94,0.6)]"
+                    style={{
+                      clipPath:
+                        "polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px)",
+                    }}
+                  >
+                    {/* 1. Dual Sharp Lasers (The Border Chase) */}
+                    <span className="absolute -inset-[500%] bg-[conic-gradient(transparent_0_140deg,#22c55e_180deg,transparent_180_320deg,#22c55e_360deg)] animate-[spin_2s_linear_infinite]" />
+
+                    {/* 2. Inner Matte Core */}
+                    <span className="relative flex items-center justify-center gap-2 h-full w-full cursor-pointer bg-[#050505] pl-4 pr-6 py-3 max-md:p-3 group-hover:bg-[#22c55e] transition-colors duration-300 overflow-hidden">
+                      {/* 3. IDLE STATE: The Diagonal Stripe Sweep */}
+                      <div
+                        className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(34,197,94,0.12)_10px,rgba(34,197,94,0.12)_20px)] group-hover:opacity-0 transition-opacity duration-300 pointer-events-none"
+                        style={{
+                          animation:
+                            "stripeSweep 4.5s ease-in-out infinite alternate",
+                        }}
+                      ></div>
+
+                      {/* 4. HOVER STATE: Solid Black Industrial Stripes */}
+                      <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(0,0,0,0.15)_10px,rgba(0,0,0,0.15)_20px)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+
+                      {/* Radar Ping */}
+                      <div className="relative flex h-2.5 w-2.5 z-10 shrink-0 pointer-events-none">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#22c55e] group-hover:bg-black transition-colors duration-300"></span>
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#22c55e] group-hover:bg-black transition-colors duration-300"></span>
+                      </div>
+
+                      {/* Text (Hidden on mobile for a clean icon-only FAB) */}
+                      <span className="text-[13px] max-md:hidden font-black tracking-[0.2em] uppercase text-[#22c55e] group-hover:text-black transition-colors duration-300 relative z-10 pointer-events-none drop-shadow-[0_0_8px_rgba(34,197,94,0.5)] group-hover:drop-shadow-none whitespace-nowrap">
+                        Hey There, VAI!
+                      </span>
+                    </span>
+                  </button>
 
                   <style>{`
   @keyframes stripeSweep {
@@ -1816,16 +2020,16 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                 </div>
               </div>
 
-            {/* Desktop Icons (Left Side) -> Mobile iOS Grid Row 1 */}
-          <div className="flex flex-col space-y-6 w-24 mt-4 max-md:grid max-md:grid-cols-4 max-md:w-full max-md:px-4 max-md:gap-x-3 max-md:space-y-0 max-md:mt-0 relative z-40 max-md:[&_span]:hidden max-md:scale-[0.90] max-md:origin-top">
+              {/* Desktop Icons (Left Side) -> Mobile iOS Grid Row 1 */}
+              <div className="flex flex-col space-y-6 w-24 mt-4 max-md:grid max-md:grid-cols-4 max-md:w-full max-md:px-4 max-md:gap-x-3 max-md:space-y-0 max-md:mt-0 relative z-40 max-md:[&_span]:hidden max-md:scale-[0.90] max-md:origin-top">
                 {/* --- IDENTITY.exe (PREMIUM PAN, ZOOM & NEON SWEEP EDITION) --- */}
                 <div
-        className="flex flex-col items-center cursor-pointer group w-24"
-        onClick={() => {
-          playAppOpen();
-          setIsIdentityWindowOpen((prev) => !prev);
-        }}
-      >
+                  className="flex flex-col items-center cursor-pointer group w-24"
+                  onClick={() => {
+                    playAppOpen();
+                    setIsIdentityWindowOpen((prev) => !prev);
+                  }}
+                >
                   {/* The 3D Icon Wrapper */}
                   <div className="relative w-12 h-12 mb-3">
                     {/* Layer 1 (Back) - Pans Down-Left */}
@@ -2104,7 +2308,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
               </div>
 
               {/* RIGHT SIDE ICONS -> Mobile iOS Grid Row 2 */}
-          <div className="absolute top-4 right-4 mt-4 flex flex-col space-y-6 w-24 items-center z-40 max-md:relative max-md:top-auto max-md:right-auto max-md:grid max-md:grid-cols-4 max-md:w-full max-md:px-4 max-md:gap-x-3 max-md:space-y-0 max-md:-mt-4 max-md:[&_span]:hidden max-md:scale-[0.90] max-md:origin-top">
+              <div className="absolute top-4 right-4 mt-4 flex flex-col space-y-6 w-24 items-center z-40 max-md:relative max-md:top-auto max-md:right-auto max-md:grid max-md:grid-cols-4 max-md:w-full max-md:px-4 max-md:gap-x-3 max-md:space-y-0 max-md:-mt-4 max-md:[&_span]:hidden max-md:scale-[0.90] max-md:origin-top">
                 {/* Mail.conn Desktop Icon */}
                 <div
                   className="flex flex-col items-center cursor-pointer group w-24"
@@ -2186,7 +2390,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                   onClick={() => {
                     playAppOpen();
                     setIsJourneyWindowOpen(true);
-                  }} 
+                  }}
                 >
                   {/* The 3D Icon Wrapper */}
                   <div className="relative w-12 h-12 mb-3">
@@ -2484,7 +2688,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
               />
               <div
                 className={`hidden md:flex absolute bottom-[90px] right-[20%] sm:right-[27%] flex flex-col items-center pointer-events-none transition-opacity duration-700 z-0 ${
-                  !isTerminalFocused && !isArcadeActive 
+                  !isTerminalFocused && !isArcadeActive
                     ? "opacity-100 delay-500"
                     : "opacity-0"
                 }`}
@@ -2733,21 +2937,21 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                                 </div>
                                 <button
                                   onClick={() => {
-          playAppOpen(); // Standard click confirm
-          playScanner(); // Start the scanning audio
-          
-          setActiveCert({
-            name: cert.name,
-            path: cert.path,
-          });
-          setIsDecrypting(true);
-          
-          // Exactly 3 seconds (3000ms)
-          setTimeout(() => {
-            setIsDecrypting(false);
-            stopScanner(); // Cut the scanner audio
-          }, 2000); 
-        }}
+                                    playAppOpen(); // Standard click confirm
+                                    playScanner(); // Start the scanning audio
+
+                                    setActiveCert({
+                                      name: cert.name,
+                                      path: cert.path,
+                                    });
+                                    setIsDecrypting(true);
+
+                                    // Exactly 3 seconds (3000ms)
+                                    setTimeout(() => {
+                                      setIsDecrypting(false);
+                                      stopScanner(); // Cut the scanner audio
+                                    }, 2000);
+                                  }}
                                   className="text-[9px] border border-[#22c55e]/40 px-2 py-1 rounded text-[#22c55e] hover:bg-[#22c55e] hover:text-black font-bold tracking-widest transition-all"
                                 >
                                   [ DECRYPT ]
@@ -3168,17 +3372,17 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
               </div>
 
               {/* 2. MAIN TERMINAL BAR (iOS/Android Floating Dock) */}
-        <div
-          className={`absolute w-full font-mono text-xs transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden pointer-events-auto flex flex-col justify-end ${
-            isArcadeActive || isArcadeMounting
-              ? "bottom-0 h-[100dvh] bg-[#050505] z-[9999]"
-              : isTerminalFocused
-              ? "bottom-0 bg-[#050505]/95 backdrop-blur-md border-t border-[#22c55e]/30 z-[80] max-md:h-[100dvh] max-md:!justify-start max-md:pt-4 max-md:w-full max-md:rounded-none max-md:mx-0"
-              : "bottom-0 bg-[#050505]/60 backdrop-blur-sm border-t border-[#22c55e]/10 shadow-none z-[80] max-md:bottom-[85px] max-md:h-14 max-md:w-[calc(100%-32px)] max-md:mx-4 max-md:rounded-2xl max-md:border max-md:border-[#22c55e]/30 max-md:bg-[#050505]/40"
-          }`}
-        >
-                {/* Idle Clue & Toggle Arrow Container */}
-                <div className="absolute right-4 bottom-0 h-[44px] flex items-center gap-4 z-[75]">
+              <div
+                className={`absolute w-full font-mono text-xs transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden pointer-events-auto flex flex-col justify-end ${
+                  isArcadeActive || isArcadeMounting
+                    ? "bottom-0 h-[100dvh] bg-[#050505] z-[9999]"
+                    : isTerminalFocused
+                      ? "bottom-0 bg-[#050505]/95 backdrop-blur-md border-t border-[#22c55e]/30 z-[80] max-md:h-[100dvh] max-md:!justify-start max-md:pt-4 max-md:w-full max-md:rounded-none max-md:mx-0"
+                      : "bottom-0 bg-[#050505]/60 backdrop-blur-sm border-t border-[#22c55e]/10 shadow-none z-[80] max-md:bottom-[85px] max-md:h-14 max-md:w-[calc(100%-32px)] max-md:mx-4 max-md:rounded-2xl max-md:border max-md:border-[#22c55e]/30 max-md:bg-[#050505]/40"
+                }`}
+              >
+                {/* Idle Clue & Toggle Arrow Container (Hidden on Mobile) */}
+                <div className="absolute right-4 bottom-0 h-[44px] flex items-center gap-4 z-[75] max-md:hidden">
                   <div
                     className={`flex items-center gap-2 text-[#22c55e]/50 transition-all duration-500 ${
                       isTerminalFocused
@@ -3295,13 +3499,13 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                   ) : (
                     <>
                       <div
-                ref={terminalScrollRef}
-                className={`overflow-y-auto flex flex-col pr-2 transition-all duration-500 ease-in-out ${
-                  isTerminalFocused
-                    ? "opacity-100 max-h-[40vh] max-md:max-h-full max-md:flex-1 mb-3"
-                    : "opacity-0 max-h-0 mb-0"
-                }`}
-              >
+                        ref={terminalScrollRef}
+                        className={`overflow-y-auto flex flex-col pr-2 transition-all duration-500 ease-in-out ${
+                          isTerminalFocused
+                            ? "opacity-100 max-h-[40vh] max-md:max-h-full max-md:flex-1 mb-3"
+                            : "opacity-0 max-h-0 mb-0"
+                        }`}
+                      >
                         {terminalHistory.map((line, index) => (
                           <div
                             key={index}
@@ -3320,7 +3524,10 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                         ))}
                       </div>
 
-                      <div className="flex items-center gap-2 text-[#22c55e] shrink-0 h-5">
+                      {/* --- DESKTOP & MOBILE-OPEN INPUT (The Real Input) --- */}
+                      <div
+                        className={`flex items-center gap-2 text-[#22c55e] shrink-0 h-5 ${!isTerminalFocused ? "max-md:hidden" : ""}`}
+                      >
                         <span className="text-white mr-2">
                           {terminalMode === "NORMAL"
                             ? "root@vadanta:~$"
@@ -3329,14 +3536,14 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                               : "Message:"}
                         </span>
                         <input
-            ref={terminalInputRef}
-            type="text"
-            value={terminalInput}
-            onChange={(e) => setTerminalInput(e.target.value)}
-            onKeyDown={(e) => {
-              playKeystroke(); 
-              handleTerminalSubmit(e);
-            }}
+                          ref={terminalInputRef}
+                          type="text"
+                          value={terminalInput}
+                          onChange={(e) => setTerminalInput(e.target.value)}
+                          onKeyDown={(e) => {
+                            playKeystroke();
+                            handleTerminalSubmit(e);
+                          }}
                           onFocus={() => setIsTerminalFocused(true)}
                           onBlur={() => setIsTerminalFocused(false)}
                           className="bg-transparent border-none outline-none flex-1 text-[#22c55e] focus:text-[#4ade80] placeholder-[#22c55e]/40 focus:ring-0 transition-colors"
@@ -3348,18 +3555,53 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                           spellCheck="false"
                         />
                       </div>
+
+                      {/* --- MOBILE CLOSED DOCK FACE (The Sleek Widget) --- */}
+                      {!isTerminalFocused && (
+                        <div
+                          className="hidden max-md:flex items-center justify-between w-full h-full px-3 cursor-pointer pointer-events-auto"
+                          onClick={() => {
+                            setIsTerminalFocused(true);
+                            setTimeout(
+                              () => terminalInputRef.current?.focus(),
+                              100,
+                            );
+                          }}
+                        >
+                          {/* Left Side: Authentic Blinking Root */}
+                          <div className="flex items-center font-bold tracking-wider text-[12px]">
+                            <span className="text-white/90">
+                              root@vadanta:~
+                            </span>
+                            {/* Notice the steps(2,start) for a rigid, real-terminal blink instead of a soft fade */}
+                            <span className="text-[#22c55e] ml-[3px] text-sm font-black animate-[pulse_1s_steps(2,start)_infinite] drop-shadow-[0_0_8px_rgba(34,197,94,0.8)]">
+                              _
+                            </span>
+                          </div>
+
+                          {/* Right Side: Pro Commit Tracker */}
+                          <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-[#22c55e]/50">
+                            <span className="font-bold text-[#22c55e]/70">
+                              commit
+                            </span>
+                            <span className="border border-[#22c55e]/20 bg-[#22c55e]/5 px-1.5 py-1 rounded shadow-[inset_0_0_8px_rgba(34,197,94,0.1)] text-[#22c55e] font-mono">
+                              {recentCommits[0]?.hash || "SYS_OK"}
+                            </span>
+                          </div>
+                        </div>
+                      )}
                     </>
                   )}
                 </div>
               </div>
+
+              {/* GLOBAL SCANLINE OVERLAY */}
+              <div className="pointer-events-none fixed inset-0 z-50 h-full w-full bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%] opacity-20"></div>
             </div>
 
-            {/* GLOBAL SCANLINE OVERLAY */}
-            <div className="pointer-events-none fixed inset-0 z-50 h-full w-full bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%] opacity-20"></div>
+            {/* THE SECRET MATRIX PROTOCOL */}
+            {matrixActive && <MatrixRain terminating={matrixTerminating} />}
           </div>
-
-          {/* THE SECRET MATRIX PROTOCOL */}
-          {matrixActive && <MatrixRain terminating={matrixTerminating} />}
         </div>
       )}
 
