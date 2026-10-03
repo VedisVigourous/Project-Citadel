@@ -209,23 +209,25 @@ function App() {
   const [graphData, setGraphData] = useState([]);
 
   useEffect(() => {
-  const fetchGraphData = async () => {
-    setIsGraphLoading(true);
-    try {
-      // Replace this with your actual GitHub stats or graph API endpoint
-      const response = await fetch('https://api.github.com/users/yourusername/events'); 
-      const data = await response.json();
-      setGraphData(data);
-    } catch (error) {
-      console.error("Failed to fetch graph data:", error);
-    } finally {
-      // Whether it succeeds or fails, turn off the loading skeleton
-      setIsGraphLoading(false); 
-    }
-  };
+    const fetchGraphData = async () => {
+      setIsGraphLoading(true);
+      try {
+        // Replace this with your actual GitHub stats or graph API endpoint
+        const response = await fetch(
+          "https://api.github.com/users/yourusername/events",
+        );
+        const data = await response.json();
+        setGraphData(data);
+      } catch (error) {
+        console.error("Failed to fetch graph data:", error);
+      } finally {
+        // Whether it succeeds or fails, turn off the loading skeleton
+        setIsGraphLoading(false);
+      }
+    };
 
-  fetchGraphData();
-}, []);
+    fetchGraphData();
+  }, []);
 
   // --- AI Assistant Proxy States ---
   const [isAiProxyOpen, setIsAiProxyOpen] = useState(false);
@@ -1970,35 +1972,40 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
 
                 {/* Desktop Graph Container - Adjust positioning classes as needed */}
                 {isGraphLoading ? (
-  /* The Skeleton State */
-  <div className="relative p-4 rounded-xl border border-[#22c55e]/20 bg-[#050505]/40 backdrop-blur-sm shadow-[0_0_20px_rgba(0,0,0,0.5)] flex gap-1 w-max">
-    {[...Array(50)].map((_, colIndex) => ( // Expanded to 50 columns to better match the width of your ghchart
-      <div key={colIndex} className="flex flex-col gap-1">
-        {[...Array(7)].map((_, rowIndex) => (
-          <div
-            key={`${colIndex}-${rowIndex}`}
-            className="w-3 h-3 bg-gray-600/40 rounded-sm animate-pulse"
-            style={{ animationDelay: `${colIndex * 75}ms` }}
-          ></div>
-        ))}
-      </div>
-    ))}
-  </div>
-) : (
-  /* CENTER: The Chart (Your actual image) */
-  <div className="relative p-4 rounded-xl border border-[#22c55e]/20 bg-[#050505]/40 backdrop-blur-sm shadow-[0_0_20px_rgba(0,0,0,0.5)]">
-    <img 
-      src="https://ghchart.rshah.org/22c55e/vedisvigourous"
-      alt="VedisVigourous Live Commits"
-      className="w-[75vw] max-w-5xl opacity-70"
-      style={{
-        filter: "invert(0.85) hue-rotate(180deg) contrast(1.8)",
-      }}
-      // Optional: Automatically turn off the skeleton when the image finishes downloading
-      onLoad={() => setIsGraphLoading(false)} 
-    />
-  </div>
-)}
+                  /* The Skeleton State */
+                  <div className="relative p-4 rounded-xl border border-[#22c55e]/20 bg-[#050505]/40 backdrop-blur-sm shadow-[0_0_20px_rgba(0,0,0,0.5)] flex gap-1 w-max">
+                    {[...Array(50)].map(
+                      (
+                        _,
+                        colIndex, // Expanded to 50 columns to better match the width of your ghchart
+                      ) => (
+                        <div key={colIndex} className="flex flex-col gap-1">
+                          {[...Array(7)].map((_, rowIndex) => (
+                            <div
+                              key={`${colIndex}-${rowIndex}`}
+                              className="w-3 h-3 bg-gray-600/40 rounded-sm animate-pulse"
+                              style={{ animationDelay: `${colIndex * 75}ms` }}
+                            ></div>
+                          ))}
+                        </div>
+                      ),
+                    )}
+                  </div>
+                ) : (
+                  /* CENTER: The Chart (Your actual image) */
+                  <div className="relative p-4 rounded-xl border border-[#22c55e]/20 bg-[#050505]/40 backdrop-blur-sm shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+                    <img
+                      src="https://ghchart.rshah.org/22c55e/vedisvigourous"
+                      alt="VedisVigourous Live Commits"
+                      className="w-[75vw] max-w-5xl opacity-70"
+                      style={{
+                        filter: "invert(0.85) hue-rotate(180deg) contrast(1.8)",
+                      }}
+                      // Optional: Automatically turn off the skeleton when the image finishes downloading
+                      onLoad={() => setIsGraphLoading(false)}
+                    />
+                  </div>
+                )}
 
                 {/* BOTTOM ROW: AI Agent & Traffic Tracker */}
                 <div className="flex items-center justify-between w-[75vw] max-w-5xl mt-6">
@@ -3365,7 +3372,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
             <div className="absolute left-0 right-0 bottom-0 z-[70] pointer-events-none">
               {/* 1. FLOATING GITHUB HUD (Visible ONLY when CLI is closed & Arrow is clicked) */}
               <div
-                className={`absolute right-4 bottom-[56px] w-[340px] bg-[#050505]/95 backdrop-blur-md border border-[#22c55e]/30 shadow-[0_0_20px_rgba(34,197,94,0.15)] rounded-lg p-5 flex flex-col pointer-events-auto transition-all duration-500 origin-bottom-right ${
+                className={`max-md:hidden absolute right-4 bottom-[56px] w-[340px] bg-[#050505]/95 backdrop-blur-md border border-[#22c55e]/30 shadow-[0_0_20px_rgba(34,197,94,0.15)] rounded-lg p-5 flex flex-col pointer-events-auto transition-all duration-500 origin-bottom-right ${
                   !isTerminalFocused && isHudOpen
                     ? "opacity-100 scale-100 translate-y-0"
                     : "opacity-0 scale-95 translate-y-4 pointer-events-none"
@@ -3414,15 +3421,15 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
               </div>
 
               {/* 2. MAIN TERMINAL BAR (iOS/Android Floating Dock) */}
-        <div
-          className={`absolute w-full font-mono text-xs transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden pointer-events-auto flex flex-col justify-end ${
-            isArcadeActive || isArcadeMounting
-              ? "bottom-0 h-[100dvh] bg-[#050505] z-[9999]"
-              : isTerminalFocused
-              ? "bottom-0 bg-[#050505]/95 backdrop-blur-xl border-t border-[#22c55e]/30 shadow-[0_0_30px_rgba(34,197,94,0.2)] z-[80] max-md:bottom-[85px] max-md:h-[60vh] max-md:w-[calc(100%-32px)] max-md:mx-4 max-md:rounded-2xl max-md:border max-md:border-[#22c55e]/40 max-md:!justify-between max-md:pb-3 max-md:pt-2"
-              : "bottom-0 bg-[#050505]/60 backdrop-blur-sm border-t border-[#22c55e]/10 shadow-none z-[80] max-md:bottom-[85px] max-md:h-14 max-md:w-[calc(100%-32px)] max-md:mx-4 max-md:rounded-2xl max-md:border max-md:border-[#22c55e]/30 max-md:bg-[#050505]/40"
-          }`}
-          >
+              <div
+                className={`absolute w-full font-mono text-xs transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden pointer-events-auto flex flex-col justify-end ${
+                  isArcadeActive || isArcadeMounting
+                    ? "bottom-0 h-[100dvh] bg-[#050505] z-[9999]"
+                    : isTerminalFocused
+                      ? "bottom-0 bg-[#050505]/95 backdrop-blur-xl border-t border-[#22c55e]/30 shadow-[0_0_30px_rgba(34,197,94,0.2)] z-[80] max-md:bottom-0 max-md:h-[calc(100dvh-32px)] max-md:w-full max-md:mx-0 max-md:rounded-none max-md:border-x-0 max-md:border-b-0 max-md:border-[#22c55e]/40 max-md:pb-4 max-md:pt-0"
+                      : "bottom-0 bg-[#050505]/60 backdrop-blur-sm border-t border-[#22c55e]/10 shadow-none z-[80] max-md:bottom-[85px] max-md:h-14 max-md:w-[calc(100%-32px)] max-md:mx-4 max-md:rounded-2xl max-md:border max-md:border-[#22c55e]/30 max-md:bg-[#050505]/40"
+                }`}
+              >
                 {/* Idle Clue & Toggle Arrow Container (Hidden on Mobile) */}
                 <div className="absolute right-4 bottom-0 h-[44px] flex items-center gap-4 z-[75] max-md:hidden">
                   <div
@@ -3466,7 +3473,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
 
                 {/* INTEGRATED GITHUB HUD (Visible ONLY when CLI is focused) */}
                 <div
-                  className={`absolute right-0 top-0 bottom-0 w-[340px] border-l border-[#22c55e]/20 bg-gradient-to-r from-transparent to-[#050505]/80 p-5 flex flex-col justify-end transition-all duration-700 delay-100 ${
+                  className={`max-md:hidden absolute right-0 top-0 bottom-0 w-[340px] border-l border-[#22c55e]/20 bg-gradient-to-r from-transparent to-[#050505]/80 p-5 flex flex-col justify-end transition-all duration-700 delay-100 ${
                     isTerminalFocused && !isArcadeActive
                       ? "opacity-100 translate-x-0"
                       : "opacity-0 translate-x-12 pointer-events-none"
@@ -3517,7 +3524,9 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                 {/* 3. TERMINAL CHAT AREA */}
                 <div
                   className={`w-full h-full px-4 py-3 flex flex-col justify-end transition-all duration-700 ${
-                    isTerminalFocused && !isArcadeActive ? "pr-[360px]" : "pr-4"
+                    isTerminalFocused && !isArcadeActive
+                      ? "pr-[360px] max-md:pr-4"
+                      : "pr-4"
                   }`}
                 >
                   {isArcadeActive ? (
@@ -3540,94 +3549,133 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                     />
                   ) : (
                     <>
-                  {/* MOBILE ONLY: Opened Terminal Commit Header */}
-                  {isTerminalFocused && (
-                    <div className="hidden max-md:flex flex-col shrink-0 px-4 pt-2 pb-3 mb-2 border-b border-[#22c55e]/20">
-                      <span className="text-[#22c55e]/50 text-[9px] uppercase tracking-widest mb-1">Latest Commit Detail</span>
-                      <div className="flex items-center gap-2 text-[11px]">
-                        <span className="text-[#22c55e] font-bold shrink-0">[{recentCommits[0]?.hash || "SYS_OK"}]</span>
-                        <span className="text-white/80 truncate">{recentCommits[0]?.msg || "System initialized."}</span>
-                      </div>
-                    </div>
-                  )}
+                      {/* MOBILE ONLY: Opened Terminal Commit Header */}
+                      {isTerminalFocused && (
+                        <div className="hidden max-md:flex absolute top-0 left-0 w-full shrink-0 px-4 py-3 border-b border-[#22c55e]/30 bg-[#050505]/95 backdrop-blur-md z-10 items-center justify-between gap-3">
+                          <div className="flex-1 flex items-center gap-2 text-[#22c55e]/70 text-[10px] tracking-widest uppercase truncate">
+                            <span className="w-1.5 h-1.5 bg-[#22c55e] animate-pulse rounded-full shrink-0"></span>
+                            <span className="truncate">
+                              COMMIT [{recentCommits[0]?.hash || "SYS_OK"}]:{" "}
+                              {recentCommits[0]?.msg || "System initialized."}
+                            </span>
+                          </div>
 
-                  {/* SCROLLING HISTORY */}
-                  <div
-                    ref={terminalScrollRef}
-                    className={`overflow-y-auto flex flex-col pr-2 transition-all duration-500 ease-in-out ${
-                      isTerminalFocused
-                        ? "opacity-100 max-h-[40vh] max-md:max-h-full max-md:flex-1 mb-3 max-md:px-2 max-md:mb-1"
-                        : "opacity-0 max-h-0 mb-0"
-                    }`}
-                  >
-                    {terminalHistory.map((line, index) => (
-                      <div key={index} className="border-b border-[#22c55e]/15 pb-2 mb-2 last:border-0 last:pb-0 last:mb-0 flex flex-col gap-1">
-                        {line.type === "input" ? (
-                          <div className="text-[#22c55e] font-bold">{line.text}</div>
-                        ) : (
-                          <div className="text-gray-300 pl-2 leading-relaxed whitespace-pre-wrap drop-shadow-sm">{line.text}</div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+                          <button
+                            onClick={() => setIsTerminalFocused(false)}
+                            className="text-[#22c55e] border border-[#22c55e]/50 bg-[#22c55e]/10 px-3 py-1.5 rounded text-[9px] font-black tracking-widest shrink-0 transition-colors active:bg-[#22c55e] active:text-black"
+                          >
+                            CLOSE
+                          </button>
+                        </div>
+                      )}
 
-                  {/* --- DESKTOP & MOBILE-OPEN INPUT (The Real Input) --- */}
-                  <div className={`flex items-center justify-between gap-2 text-[#22c55e] shrink-0 h-6 max-md:px-3 max-md:mb-1 ${!isTerminalFocused ? "max-md:hidden" : ""}`}>
-                    <div className="flex items-center flex-1 min-w-0">
-                      <span className="text-white/90 font-bold tracking-wider text-[12px] mr-[3px]">
-                        {terminalMode === "NORMAL"
-                          ? "root@vadanta:~"
-                          : terminalMode === "PING_EMAIL"
-                          ? "Email:"
-                          : "Message:"}
-                      </span>
-                      <input
-                        ref={terminalInputRef}
-                        type="text"
-                        value={terminalInput}
-                        onChange={(e) => setTerminalInput(e.target.value)}
-                        onKeyDown={(e) => {
-                          playKeystroke();
-                          handleTerminalSubmit(e);
-                        }}
-                        onFocus={() => setIsTerminalFocused(true)}
-                        onBlur={() => setIsTerminalFocused(false)}
-                        className="bg-transparent border-none outline-none flex-1 text-[#22c55e] font-black text-[14px] focus:text-[#4ade80] placeholder-[#22c55e]/40 focus:ring-0 transition-colors"
-                        placeholder=""
-                        spellCheck="false"
-                      />
-                    </div>
-                    {/* The "commit" text floating on the right during typing */}
-                    <div className="hidden max-md:flex items-center text-[10px] uppercase tracking-widest text-[#22c55e]/50 shrink-0">
-                      <span className="font-bold text-[#22c55e]/70">commit</span>
-                    </div>
-                  </div>
+                      {/* SCROLLING HISTORY */}
+                      <div
+                        ref={terminalScrollRef}
+                        className={`overflow-y-auto flex flex-col pr-2 transition-all duration-500 ease-in-out ${
+                          isTerminalFocused
+                            ? "opacity-100 max-h-[40vh] max-md:max-h-full max-md:flex-1 mb-3 max-md:px-2 max-md:pt-14 max-md:mb-1"
+                            : "opacity-0 max-h-0 mb-0"
+                        }`}
+                      >
+                        {terminalHistory.map((line, index) => (
+                          <div
+                            key={index}
+                            className="border-b border-[#22c55e]/15 pb-2 mb-2 last:border-0 last:pb-0 last:mb-0 flex flex-col gap-1"
+                          >
+                            {line.type === "input" ? (
+                              <div className="text-[#22c55e] font-bold">
+                                {line.text}
+                              </div>
+                            ) : (
+                              <div className="text-gray-300 pl-2 leading-relaxed whitespace-pre-wrap drop-shadow-sm">
+                                {line.text}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
 
-                  {/* --- MOBILE CLOSED DOCK FACE (The Sleek Widget) --- */}
-                  {!isTerminalFocused && (
-                    <div 
-                      className="hidden max-md:flex items-center justify-between w-full h-full px-3 cursor-pointer pointer-events-auto"
-                      onClick={() => {
-                         setIsTerminalFocused(true);
-                         setTimeout(() => terminalInputRef.current?.focus(), 100);
-                      }}
-                    >
-                      {/* Left Side: Authentic Blinking Root */}
-                      <div className="flex items-center font-bold tracking-wider text-[12px]">
-                        <span className="text-white/90">root@vadanta:~</span>
-                        <span className="text-[#22c55e] ml-[3px] text-sm font-black animate-[pulse_1s_steps(2,start)_infinite] drop-shadow-[0_0_8px_rgba(34,197,94,0.8)]">_</span>
+                      {/* --- DESKTOP & MOBILE-OPEN INPUT (The Real Input) --- */}
+                      <div
+                        className={`flex items-center justify-between gap-2 text-[#22c55e] shrink-0 h-6 max-md:px-3 max-md:mb-1 ${!isTerminalFocused ? "max-md:hidden" : ""}`}
+                      >
+                        <div className="flex items-center flex-1 min-w-0">
+                          <span className="text-white/90 font-bold tracking-wider text-[12px] mr-[3px]">
+                            {terminalMode === "NORMAL"
+                              ? "root@vadanta:~"
+                              : terminalMode === "PING_EMAIL"
+                                ? "Email:"
+                                : "Message:"}
+                          </span>
+                          <input
+                            ref={terminalInputRef}
+                            type="text"
+                            value={terminalInput}
+                            onChange={(e) => setTerminalInput(e.target.value)}
+                            onKeyDown={(e) => {
+                              playKeystroke();
+                              handleTerminalSubmit(e);
+                            }}
+                            onFocus={() => setIsTerminalFocused(true)}
+                            className="bg-transparent border-none outline-none flex-1 text-[#22c55e] font-black text-[14px] focus:text-[#4ade80] placeholder-[#22c55e]/40 focus:ring-0 transition-colors"
+                            placeholder=""
+                            spellCheck="false"
+                          />
+                        </div>
+                        {/* The "commit" text floating on the right during typing */}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            playKeystroke();
+                            handleTerminalSubmit({ key: "Enter" });
+                          }}
+                          onTouchStart={(e) => {
+                            e.preventDefault();
+                            playKeystroke();
+                            handleTerminalSubmit({ key: "Enter" });
+                          }}
+                          className="hidden max-md:flex items-center justify-center text-[10px] uppercase tracking-widest text-[#22c55e] border border-[#22c55e]/40 bg-[#22c55e]/10 px-3 py-1.5 rounded active:bg-[#22c55e] active:text-black transition-colors shrink-0 font-bold"
+                        >
+                          ENTER
+                        </button>
                       </div>
-                      
-                      {/* Right Side: Pro Commit Tracker */}
-                      <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-[#22c55e]/50">
-                         <span className="font-bold text-[#22c55e]/70">commit</span>
-                         <span className="border border-[#22c55e]/20 bg-[#22c55e]/5 px-1.5 py-1 rounded shadow-[inset_0_0_8px_rgba(34,197,94,0.1)] text-[#22c55e] font-mono">
-                           {recentCommits[0]?.hash || "SYS_OK"}
-                         </span>
-                      </div>
-                    </div>
-                  )}
-                </>
+
+                      {/* --- MOBILE CLOSED DOCK FACE (The Sleek Widget) --- */}
+                      {!isTerminalFocused && (
+                        <div
+                          className="hidden max-md:flex items-center justify-between w-full h-full px-3 cursor-pointer pointer-events-auto"
+                          onClick={() => {
+                            setIsTerminalFocused(true);
+                            setTimeout(
+                              () => terminalInputRef.current?.focus(),
+                              100,
+                            );
+                          }}
+                        >
+                          {/* Left Side: Authentic Blinking Root */}
+                          <div className="flex items-center font-bold tracking-wider text-[12px]">
+                            <span className="text-white/90">
+                              root@vadanta:~
+                            </span>
+                            <span className="text-[#22c55e] ml-[3px] text-sm font-black animate-[pulse_1s_steps(2,start)_infinite] drop-shadow-[0_0_8px_rgba(34,197,94,0.8)]">
+                              _
+                            </span>
+                          </div>
+
+                          {/* Right Side: Pro Commit Tracker */}
+                          <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-[#22c55e]/50">
+                            <span className="font-bold text-[#22c55e]/70">
+                              commit
+                            </span>
+                            <span className="border border-[#22c55e]/20 bg-[#22c55e]/5 px-1.5 py-1 rounded shadow-[inset_0_0_8px_rgba(34,197,94,0.1)] text-[#22c55e] font-mono">
+                              {recentCommits[0]?.hash || "SYS_OK"}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
