@@ -752,6 +752,19 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
     }
   }, [terminalHistory]);
 
+  useEffect(() => {
+    if (!isTerminalFocused) {
+      // 1. Force the keyboard to close when the terminal hides
+      terminalInputRef.current?.blur();
+
+      // 2. Give the keyboard 150ms to retract, then snap the void away
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        document.body.scrollTop = 0;
+      }, 150);
+    }
+  }, [isTerminalFocused]);
+
   // --- PROJECT VAULT DATA ---
   const projectsData = [
     {
@@ -978,6 +991,10 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
     if (e.key === "Enter") {
       const rawCmd = terminalInput.trim();
       const lowerCmd = rawCmd.toLowerCase();
+      if (lowerCmd === "" && terminalMode === "NORMAL") {
+        setTerminalInput("");
+        return;
+      }
       const cmdParts = lowerCmd.split(" ");
       const baseCmd = cmdParts[0];
 
@@ -985,7 +1002,7 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
 
       // Format input line based on mode
       if (terminalMode === "NORMAL") {
-        newHistory.push({ type: "input", text: `root@vadanta:~$ ${rawCmd}` });
+        newHistory.push({ type: "input", text: `> ${rawCmd}` });
       } else if (terminalMode === "PING_EMAIL") {
         newHistory.push({ type: "input", text: `Email: ${rawCmd}` });
       } else if (terminalMode === "PING_MSG") {
@@ -3426,7 +3443,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                   isArcadeActive || isArcadeMounting
                     ? "bottom-0 h-[100dvh] bg-[#050505] z-[9999]"
                     : isTerminalFocused
-                      ? "bottom-0 bg-[#050505]/95 backdrop-blur-xl border-t border-[#22c55e]/30 shadow-[0_0_30px_rgba(34,197,94,0.2)] z-[80] max-md:bottom-0 max-md:h-[calc(100dvh-32px)] max-md:w-full max-md:mx-0 max-md:rounded-none max-md:border-x-0 max-md:border-b-0 max-md:border-[#22c55e]/40 max-md:pb-4 max-md:pt-0"
+                      ? "bottom-0 bg-[#050505]/95 backdrop-blur-xl border-t border-[#22c55e]/30 shadow-[0_0_30px_rgba(34,197,94,0.2)] z-[80] max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:top-[32px] max-md:h-[calc(100dvh-32px)] max-md:w-full max-md:m-0 max-md:rounded-none max-md:border-0 max-md:z-[9999] max-md:pb-2"
                       : "bottom-0 bg-[#050505]/60 backdrop-blur-sm border-t border-[#22c55e]/10 shadow-none z-[80] max-md:bottom-[85px] max-md:h-14 max-md:w-[calc(100%-32px)] max-md:mx-4 max-md:rounded-2xl max-md:border max-md:border-[#22c55e]/30 max-md:bg-[#050505]/40"
                 }`}
               >
@@ -3524,6 +3541,8 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                 {/* 3. TERMINAL CHAT AREA */}
                 <div
                   className={`w-full h-full px-4 py-3 flex flex-col justify-end transition-all duration-700 ${
+                    isTerminalFocused ? "max-md:pt-[65px]" : ""
+                  } ${
                     isTerminalFocused && !isArcadeActive
                       ? "pr-[360px] max-md:pr-4"
                       : "pr-4"
@@ -3561,7 +3580,11 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                           </div>
 
                           <button
-                            onClick={() => setIsTerminalFocused(false)}
+                            onClick={() => {
+                              setIsTerminalFocused(false);
+                              terminalInputRef.current?.blur();
+                              setTimeout(() => window.scrollTo(0, 0), 100);
+                            }}
                             className="text-[#22c55e] border border-[#22c55e]/50 bg-[#22c55e]/10 px-3 py-1.5 rounded text-[9px] font-black tracking-widest shrink-0 transition-colors active:bg-[#22c55e] active:text-black"
                           >
                             CLOSE
@@ -3574,7 +3597,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                         ref={terminalScrollRef}
                         className={`overflow-y-auto flex flex-col pr-2 transition-all duration-500 ease-in-out ${
                           isTerminalFocused
-                            ? "opacity-100 max-h-[40vh] max-md:max-h-full max-md:flex-1 mb-3 max-md:px-2 max-md:pt-14 max-md:mb-1"
+                            ? "opacity-100 max-h-[40vh] max-md:max-h-full max-md:min-h-0 mb-3 max-md:px-2"
                             : "opacity-0 max-h-0 mb-0"
                         }`}
                       >
@@ -3621,8 +3644,12 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                             onBlur={() => {
                               if (window.innerWidth >= 768)
                                 setIsTerminalFocused(false);
+                              setTimeout(() => {
+                                window.scrollTo(0, 0);
+                                document.body.scrollTop = 0;
+                              }, 100);
                             }}
-                            className="bg-transparent border-none outline-none flex-1 text-[#22c55e] font-black text-[14px] focus:text-[#4ade80] placeholder-transparent md:placeholder-[#22c55e]/40 focus:ring-0 transition-colors"
+                            className="bg-transparent border-none outline-none flex-1 text-[#22c55e] font-black text-[16px] md:text-[14px] focus:text-[#4ade80] placeholder-transparent md:placeholder-[#22c55e]/40 focus:ring-0 transition-colors"
                             placeholder=" Type a command..."
                             spellCheck="false"
                           />
@@ -3661,7 +3688,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                           {/* Left Side: Authentic Blinking Root */}
                           <div className="flex items-center font-bold tracking-wider text-[12px]">
                             <span className="text-white/90">
-                              root@vadanta:~ 
+                              root@vadanta:~
                             </span>
                             <span className="text-[#22c55e] ml-[3px] text-sm font-black animate-[pulse_1s_steps(2,start)_infinite] drop-shadow-[0_0_8px_rgba(34,197,94,0.8)]">
                               _
