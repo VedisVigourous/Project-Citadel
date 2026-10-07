@@ -3618,8 +3618,12 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                               handleTerminalSubmit(e);
                             }}
                             onFocus={() => setIsTerminalFocused(true)}
-                            className="bg-transparent border-none outline-none flex-1 text-[#22c55e] font-black text-[14px] focus:text-[#4ade80] placeholder-[#22c55e]/40 focus:ring-0 transition-colors"
-                            placeholder=""
+                            onBlur={() => {
+                              if (window.innerWidth >= 768)
+                                setIsTerminalFocused(false);
+                            }}
+                            className="bg-transparent border-none outline-none flex-1 text-[#22c55e] font-black text-[14px] focus:text-[#4ade80] placeholder-transparent md:placeholder-[#22c55e]/40 focus:ring-0 transition-colors"
+                            placeholder=" Type a command..."
                             spellCheck="false"
                           />
                         </div>
@@ -3657,7 +3661,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                           {/* Left Side: Authentic Blinking Root */}
                           <div className="flex items-center font-bold tracking-wider text-[12px]">
                             <span className="text-white/90">
-                              root@vadanta:~
+                              root@vadanta:~ 
                             </span>
                             <span className="text-[#22c55e] ml-[3px] text-sm font-black animate-[pulse_1s_steps(2,start)_infinite] drop-shadow-[0_0_8px_rgba(34,197,94,0.8)]">
                               _
