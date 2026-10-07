@@ -13,15 +13,16 @@ const SurveillanceLogo = () => {
   // 15-second continuous security sweep loop
   useEffect(() => {
     const securitySweep = setInterval(() => {
-      setIsDetected(true);
-      setShowReticle(true);
-      setLockedTarget({ x: currentMouse.current.x, y: currentMouse.current.y });
+      if (window.innerWidth >= 768) {
+        setIsDetected(true);
+        setShowReticle(true);
+        setLockedTarget({ x: currentMouse.current.x, y: currentMouse.current.y });
 
-      // Wait 2 seconds, then revert everything to normal
-      setTimeout(() => {
-        setShowReticle(false);
-        setIsDetected(false);
-      }, 2000);
+        setTimeout(() => {
+          setShowReticle(false);
+          setIsDetected(false);
+        }, 2000);
+      }
     }, 15000);
 
     return () => clearInterval(securitySweep);

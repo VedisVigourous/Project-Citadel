@@ -258,15 +258,27 @@ function App() {
 
   const swooshCooldown = useRef(false);
 
-  const toggleMusic = () => {
-    if (isMusicMuted) {
-      playBgm();
-      setIsMusicMuted(false);
-    } else {
-      pauseBgm();
-      setIsMusicMuted(true);
-    }
-  };
+  const [audioToast, setAudioToast] = useState({ show: false, muted: false });
+const [isMobileDevice, setIsMobileDevice] = useState(window.innerWidth < 768);
+
+useEffect(() => {
+  const handleResize = () => setIsMobileDevice(window.innerWidth < 768);
+  window.addEventListener("resize", handleResize);
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
+
+const toggleMusic = () => {
+  if (isMusicMuted) {
+    playBgm();
+    setIsMusicMuted(false);
+    setAudioToast({ show: true, muted: false });
+  } else {
+    pauseBgm();
+    setIsMusicMuted(true);
+    setAudioToast({ show: true, muted: true });
+  }
+  setTimeout(() => setAudioToast(prev => ({ ...prev, show: false })), 2500);
+};
 
   // Starts BGM on first click anywhere on the page
   const handleFirstInteraction = () => {
@@ -1459,10 +1471,8 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
         transition: "filter 0.5s ease-in-out",
       }}
     >
-      {/* Hide Custom Cursor on Mobile */}
-      <div className="hidden md:block">
-        <CustomCursor />
-      </div>
+      {/* Fully unmount Custom Cursor on mobile */}
+{!isMobileDevice && <CustomCursor />}
 
       {/* RENDER TOUCH RIPPLES */}
       {ripples.map((ripple) => (
@@ -1541,6 +1551,27 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
 
           {/* --- LAYER 4: MAIN OS CONTENT (z-[10]) --- */}
           <div className="relative z-[10] w-full h-full flex flex-col">
+            {/* DYNAMIC ISLAND TOAST */}
+<div className={`fixed top-12 left-1/2 -translate-x-1/2 z-[99999] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${audioToast.show ? "translate-y-0 opacity-100 scale-100" : "-translate-y-12 opacity-0 scale-90 pointer-events-none"}`}>
+  <div className="bg-black/90 border border-[#22c55e]/50 shadow-[0_0_20px_rgba(0,0,0,0.8)] backdrop-blur-md rounded-full px-5 py-2 flex items-center gap-3">
+    {audioToast.muted ? (
+      <svg className="w-4 h-4 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+        <line x1="23" y1="9" x2="17" y2="15"></line>
+        <line x1="17" y1="9" x2="23" y2="15"></line>
+      </svg>
+    ) : (
+      <svg className="w-4 h-4 text-[#22c55e]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+      </svg>
+    )}
+    <span className={`text-[10px] font-bold tracking-widest uppercase ${audioToast.muted ? "text-red-500" : "text-[#22c55e]"}`}>
+      {audioToast.muted ? "Silent Mode" : "Ringer Mode"}
+    </span>
+  </div>
+</div>
+
             {/* TOP OS STATUS BAR */}
             <div className="w-full h-8 bg-black/80 backdrop-blur-md border-b border-[#22c55e]/30 flex items-center px-4 relative z-[90]">
               {/* Left Side: Menus */}
@@ -1827,16 +1858,21 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
 
               {/* Right Side: Network, Clock & Mobile WiFi */}
               <div className="flex items-center gap-3 sm:gap-4 opacity-90 relative z-50">
-                {/* 1. MOBILE-ONLY LIVE WIFI ICON */}
-                <div className="flex sm:hidden items-center justify-center">
-                  <svg
-                    className="w-4 h-4 text-[#22c55e] animate-pulse drop-shadow-[0_0_5px_rgba(34,197,94,0.6)]"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M12 21c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm-4.6-4.6c2.5-2.5 6.6-2.5 9.2 0l1.4-1.4c-3.3-3.3-8.6-3.3-11.9 0l1.3 1.4zm-4.2-4.2c4.9-4.9 12.8-4.9 17.7 0l1.4-1.4c-5.7-5.7-14.9-5.7-20.5 0l1.4 1.4zm-4.2-4.2c7.2-7.2 18.9-7.2 26.1 0l1.4-1.4c-8-8-21-8-29 0l1.4 1.4z" />
-                  </svg>
-                </div>
+                {/* MOBILE AUDIO TOGGLE (Replaces WiFi on Right Side) */}
+<div onClick={toggleMusic} className="cursor-pointer flex sm:hidden items-center justify-center mr-1">
+  {isMusicMuted ? (
+    <svg className="w-[18px] h-[18px] text-red-500 opacity-80 drop-shadow-[0_0_5px_rgba(239,68,68,0.4)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+      <line x1="23" y1="9" x2="17" y2="15"></line>
+      <line x1="17" y1="9" x2="23" y2="15"></line>
+    </svg>
+  ) : (
+    <svg className="w-[18px] h-[18px] text-[#22c55e] animate-pulse drop-shadow-[0_0_5px_rgba(34,197,94,0.6)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+      <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+    </svg>
+  )}
+</div>
 
                 {/* 2. DESKTOP-ONLY NETWORK STATS & DATE */}
                 <div className="hidden sm:flex items-center space-x-4">
@@ -2034,7 +2070,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                       setIsAiProxyOpen(true);
                     }}
                     /* Added max-md: positioning directly to the button so desktop stays 100% native relative */
-                    className="relative max-md:fixed max-md:bottom-[80px] max-md:right-4 max-md:z-[100] overflow-hidden group p-[1.5px] pointer-events-auto hover:-translate-y-1 transition-transform duration-300 drop-shadow-[0_0_15px_rgba(34,197,94,0.2)] hover:drop-shadow-[0_0_30px_rgba(34,197,94,0.6)]"
+                    className="relative max-md:fixed max-md:bottom-[calc(0.5rem+env(safe-area-inset-bottom))]  max-md:right-4 max-md:z-[100] overflow-hidden group p-[1.5px] pointer-events-auto hover:-translate-y-1 transition-transform duration-300 drop-shadow-[0_0_15px_rgba(34,197,94,0.2)] hover:drop-shadow-[0_0_30px_rgba(34,197,94,0.6)]"
                     style={{
                       clipPath:
                         "polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px)",
