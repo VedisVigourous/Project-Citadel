@@ -1013,39 +1013,14 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
       let newHistory = [...terminalHistory];
 
       // Format input line based on mode
-      if (terminalMode === "NORMAL") {
-        newHistory.push({ type: "input", text: `> ${rawCmd}` });
-      } else if (terminalMode === "PING_EMAIL") {
-        newHistory.push({ type: "input", text: `Email: ${rawCmd}` });
-      } else if (terminalMode === "PING_MSG") {
-        newHistory.push({
-          type: "output",
-          text: `[SYSTEM] Encrypting payload from ${pingData.email}...`,
-        });
-
-        // --- REAL EMAILJS TRANSMISSION ---
-        emailjs.send(
-          "service_7259ksh",
-          "template_6c5menn",
-          {
-            from_email: pingData.email,
-            message: rawCmd,
-          },
-          "yWVDlVd10PKZ4Q9l6",
-        );
-
-        newHistory.push({
-          type: "output",
-          text: `[SYSTEM] Routing to server... [OK]`,
-        });
-        newHistory.push({
-          type: "output",
-          text: "TRANSMISSION SUCCESSFUL. I will get back to you shortly.",
-        });
-
-        setTerminalMode("NORMAL");
-        setPingData({ email: "", message: "" });
-      }
+      // Format input line based on mode
+    if (terminalMode === "NORMAL") {
+      newHistory.push({ type: "input", text: `> ${rawCmd}` });
+    } else if (terminalMode === "PING_EMAIL") {
+      newHistory.push({ type: "input", text: `Email: ${rawCmd}` });
+    } else if (terminalMode === "PING_MSG") {
+      newHistory.push({ type: "input", text: `Message: ${rawCmd}` });
+    }
 
       // --- PING MULTI-STEP LOGIC ---
       if (terminalMode === "PING_EMAIL") {
@@ -1071,25 +1046,34 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
           });
         }
       } else if (terminalMode === "PING_MSG") {
-        newHistory.push({
-          type: "output",
-          text: `[SYSTEM] Encrypting payload from ${pingData.email}...`,
-        });
+      newHistory.push({
+        type: "output",
+        text: `[SYSTEM] Encrypting payload from ${pingData.email}...`,
+      });
 
-        // TODO: EmailJS real transmission goes here (See Step 2 below)
+      // REAL EMAILJS TRANSMISSION (Using the original CLI template!)
+      emailjs.send(
+        "service_7259ksh",
+        "template_wvnet4e",
+        {
+          from_email: pingData.email,
+          message: rawCmd,
+        },
+        "yWVDlVd10PKZ4Q9l6"
+      ).catch((err) => console.error("CLI Mail Error: ", err));
 
-        newHistory.push({
-          type: "output",
-          text: `[SYSTEM] Routing to server... [OK]`,
-        });
-        newHistory.push({
-          type: "output",
-          text: "TRANSMISSION SUCCESSFUL. I will get back to you shortly.",
-        });
+      newHistory.push({
+        type: "output",
+        text: `[SYSTEM] Routing to server... [OK]`,
+      });
+      newHistory.push({
+        type: "output",
+        text: "TRANSMISSION SUCCESSFUL. I will get back to you shortly.",
+      });
 
-        setTerminalMode("NORMAL");
-        setPingData({ email: "", message: "" });
-      }
+      setTerminalMode("NORMAL");
+      setPingData({ email: "", message: "" });
+    }
 
       // --- NORMAL COMMANDS ---
       else {
