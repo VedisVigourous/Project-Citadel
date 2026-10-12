@@ -3461,7 +3461,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
               <div
                 className={`absolute w-full font-mono text-xs transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden pointer-events-auto flex flex-col justify-end ${
                   isArcadeActive || isArcadeMounting
-                    ? "bottom-0 h-[100dvh] bg-[#050505] z-[9999]"
+            ? "bottom-0 h-[100dvh] bg-[#050505] z-[9999] max-md:fixed max-md:inset-x-0 max-md:top-[32px] max-md:h-[calc(100dvh-32px)]"
                     : isTerminalFocused
                       ? "bottom-0 bg-[#050505]/95 backdrop-blur-xl border-t border-[#22c55e]/30 shadow-[0_0_30px_rgba(34,197,94,0.2)] z-[80] max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:top-[32px] max-md:h-[calc(100dvh-32px)] max-md:w-full max-md:m-0 max-md:rounded-none max-md:border-0 max-md:z-[9999] max-md:pb-2"
                       : "bottom-0 bg-[#050505]/60 backdrop-blur-sm border-t border-[#22c55e]/10 shadow-none z-[80] max-md:bottom-[85px] max-md:h-14 max-md:w-[calc(100%-32px)] max-md:mx-4 max-md:rounded-2xl max-md:border max-md:border-[#22c55e]/30 max-md:bg-[#050505]/40"

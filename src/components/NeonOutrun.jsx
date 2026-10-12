@@ -36,7 +36,13 @@ export default function NeonOutrun({ onExit }) {
       if ((e.key === 'a' || e.key === 'ArrowLeft') && game.targetLane > 0) game.targetLane--;
       if ((e.key === 'd' || e.key === 'ArrowRight') && game.targetLane < 3) game.targetLane++;
     };
+    const handleTouchStart = (e) => {
+      const touchX = e.touches[0].clientX;
+      if (touchX < window.innerWidth / 2 && game.targetLane > 0) game.targetLane--;
+      else if (touchX >= window.innerWidth / 2 && game.targetLane < 3) game.targetLane++;
+    };
     window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('touchstart', handleTouchStart);
 
     const update = () => {
       game.frames++;
@@ -157,17 +163,20 @@ export default function NeonOutrun({ onExit }) {
     animationId = requestAnimationFrame(update);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('touchstart', handleTouchStart);
       cancelAnimationFrame(animationId);
     };
   }, [gameStarted, gameOver]);
 
   return (
-    <div className="w-full h-full bg-black relative flex items-center justify-center font-mono overflow-hidden">
+    <div className="w-full h-full bg-black relative flex items-center justify-center font-mono overflow-hidden touch-none">
       {!gameStarted && !gameOver && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
           <div className="text-center border border-cyan-500/50 bg-[#050505] p-8 shadow-[0_0_30px_rgba(6,182,212,0.3)]">
             <h2 className="text-cyan-400 text-3xl font-black mb-4 tracking-widest">NEON OUTRUN</h2>
-            <p className="text-cyan-500/70 text-xs mb-8">4 LANES. [A]/[D] TO SWITCH. SURVIVE THE TRAFFIC.</p>
+            <p className="text-cyan-500/70 text-[10px] sm:text-xs mb-8 uppercase tracking-widest">
+          [A]/[D] OR TAP LEFT/RIGHT TO SWITCH LANES.
+        </p>
             <button onClick={() => setGameStarted(true)} className="text-cyan-400 border border-cyan-500 px-6 py-2 hover:bg-cyan-500 hover:text-black font-bold transition-all shadow-[0_0_15px_rgba(6,182,212,0.4)]">ENGAGE ENGINE</button>
           </div>
         </div>
@@ -186,10 +195,18 @@ export default function NeonOutrun({ onExit }) {
         </div>
       )}
 
-      <div className="absolute top-8 left-8 text-cyan-400 text-2xl font-black z-10 drop-shadow-[0_0_10px_#06b6d4]">
-        SCORE: {score.toString().padStart(6, '0')}
+      {/* RESPONSIVE TOP HUD */}
+      <div className="absolute top-4 left-0 w-full px-4 sm:px-8 flex justify-between items-center z-10 pointer-events-none">
+        <div className="text-cyan-400 text-lg sm:text-2xl font-black drop-shadow-[0_0_10px_#06b6d4]">
+          SCORE: {score.toString().padStart(6, '0')}
+        </div>
+        <button 
+          onClick={onExit} 
+          className="pointer-events-auto text-cyan-500/50 border border-cyan-500/30 hover:bg-cyan-500/20 px-3 py-1 sm:px-4 text-[10px] sm:text-xs transition-all tracking-widest cursor-pointer bg-black/40 backdrop-blur-sm"
+        >
+          [ ABORT ]
+        </button>
       </div>
-      <button onClick={onExit} className="absolute top-8 right-8 text-cyan-500/50 border border-cyan-500/30 hover:bg-cyan-500/20 px-4 py-1 z-10 text-xs transition-all tracking-widest cursor-pointer">[ ABORT ]</button>
       
       <canvas ref={canvasRef} width={1000} height={700} className="w-full h-full object-cover" />
     </div>
