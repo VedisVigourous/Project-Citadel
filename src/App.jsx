@@ -259,26 +259,26 @@ function App() {
   const swooshCooldown = useRef(false);
 
   const [audioToast, setAudioToast] = useState({ show: false, muted: false });
-const [isMobileDevice, setIsMobileDevice] = useState(window.innerWidth < 768);
+  const [isMobileDevice, setIsMobileDevice] = useState(window.innerWidth < 768);
 
-useEffect(() => {
-  const handleResize = () => setIsMobileDevice(window.innerWidth < 768);
-  window.addEventListener("resize", handleResize);
-  return () => window.removeEventListener("resize", handleResize);
-}, []);
+  useEffect(() => {
+    const handleResize = () => setIsMobileDevice(window.innerWidth < 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
-const toggleMusic = () => {
-  if (isMusicMuted) {
-    playBgm();
-    setIsMusicMuted(false);
-    setAudioToast({ show: true, muted: false });
-  } else {
-    pauseBgm();
-    setIsMusicMuted(true);
-    setAudioToast({ show: true, muted: true });
-  }
-  setTimeout(() => setAudioToast(prev => ({ ...prev, show: false })), 2500);
-};
+  const toggleMusic = () => {
+    if (isMusicMuted) {
+      playBgm();
+      setIsMusicMuted(false);
+      setAudioToast({ show: true, muted: false });
+    } else {
+      pauseBgm();
+      setIsMusicMuted(true);
+      setAudioToast({ show: true, muted: true });
+    }
+    setTimeout(() => setAudioToast((prev) => ({ ...prev, show: false })), 2500);
+  };
 
   // Starts BGM on first click anywhere on the page
   const handleFirstInteraction = () => {
@@ -1014,13 +1014,13 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
 
       // Format input line based on mode
       // Format input line based on mode
-    if (terminalMode === "NORMAL") {
-      newHistory.push({ type: "input", text: `> ${rawCmd}` });
-    } else if (terminalMode === "PING_EMAIL") {
-      newHistory.push({ type: "input", text: `Email: ${rawCmd}` });
-    } else if (terminalMode === "PING_MSG") {
-      newHistory.push({ type: "input", text: `Message: ${rawCmd}` });
-    }
+      if (terminalMode === "NORMAL") {
+        newHistory.push({ type: "input", text: `> ${rawCmd}` });
+      } else if (terminalMode === "PING_EMAIL") {
+        newHistory.push({ type: "input", text: `Email: ${rawCmd}` });
+      } else if (terminalMode === "PING_MSG") {
+        newHistory.push({ type: "input", text: `Message: ${rawCmd}` });
+      }
 
       // --- PING MULTI-STEP LOGIC ---
       if (terminalMode === "PING_EMAIL") {
@@ -1046,34 +1046,36 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
           });
         }
       } else if (terminalMode === "PING_MSG") {
-      newHistory.push({
-        type: "output",
-        text: `[SYSTEM] Encrypting payload from ${pingData.email}...`,
-      });
+        newHistory.push({
+          type: "output",
+          text: `[SYSTEM] Encrypting payload from ${pingData.email}...`,
+        });
 
-      // REAL EMAILJS TRANSMISSION (Using the original CLI template!)
-      emailjs.send(
-        "service_7259ksh",
-        "template_wvnet4e",
-        {
-          from_email: pingData.email,
-          message: rawCmd,
-        },
-        "yWVDlVd10PKZ4Q9l6"
-      ).catch((err) => console.error("CLI Mail Error: ", err));
+        // REAL EMAILJS TRANSMISSION (Using the original CLI template!)
+        emailjs
+          .send(
+            "service_7259ksh",
+            "template_wvnet4e",
+            {
+              from_email: pingData.email,
+              message: rawCmd,
+            },
+            "yWVDlVd10PKZ4Q9l6",
+          )
+          .catch((err) => console.error("CLI Mail Error: ", err));
 
-      newHistory.push({
-        type: "output",
-        text: `[SYSTEM] Routing to server... [OK]`,
-      });
-      newHistory.push({
-        type: "output",
-        text: "TRANSMISSION SUCCESSFUL. I will get back to you shortly.",
-      });
+        newHistory.push({
+          type: "output",
+          text: `[SYSTEM] Routing to server... [OK]`,
+        });
+        newHistory.push({
+          type: "output",
+          text: "TRANSMISSION SUCCESSFUL. I will get back to you shortly.",
+        });
 
-      setTerminalMode("NORMAL");
-      setPingData({ email: "", message: "" });
-    }
+        setTerminalMode("NORMAL");
+        setPingData({ email: "", message: "" });
+      }
 
       // --- NORMAL COMMANDS ---
       else {
@@ -1456,7 +1458,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
       }}
     >
       {/* Fully unmount Custom Cursor on mobile */}
-{!isMobileDevice && <CustomCursor />}
+      {!isMobileDevice && <CustomCursor />}
 
       {/* RENDER TOUCH RIPPLES */}
       {ripples.map((ripple) => (
@@ -1522,39 +1524,58 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#050505_100%)] pointer-events-none z-[3]"></div>
 
           {/* LAYER 3.5: CHAOTIC FULL-WIDTH AUDIO VISUALIZER (z-[4]) */}
-          {isArcadeActive && (
-            <div className="absolute bottom-[40px] left-0 w-full flex items-end justify-center gap-[4px] px-4 h-20 z-[4] pointer-events-none opacity-40 overflow-hidden max-md:hidden">
-              {[...Array(190)].map((_, i) => (
-                <div
-                  key={i}
-                  className={`visualizer-bar bar-${(i % 8) + 1} shrink-0`}
-                ></div>
-              ))}
-            </div>
-          )}
+        <div className="absolute bottom-[40px] left-0 w-full flex items-end justify-center gap-[4px] px-4 h-20 z-[4] pointer-events-none opacity-40 overflow-hidden max-md:hidden">
+          {[...Array(190)].map((_, i) => (
+            <div
+              key={i}
+              className={`visualizer-bar bar-${(i % 8) + 1} shrink-0`}
+            ></div>
+          ))}
+        </div>
+
 
           {/* --- LAYER 4: MAIN OS CONTENT (z-[10]) --- */}
           <div className="relative z-[10] w-full h-full flex flex-col">
             {/* DYNAMIC ISLAND TOAST */}
-<div className={`fixed top-12 left-1/2 -translate-x-1/2 z-[99999] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${audioToast.show ? "translate-y-0 opacity-100 scale-100" : "-translate-y-12 opacity-0 scale-90 pointer-events-none"}`}>
-  <div className="bg-black/90 border border-[#22c55e]/50 shadow-[0_0_20px_rgba(0,0,0,0.8)] backdrop-blur-md rounded-full px-5 py-2 flex items-center gap-3">
-    {audioToast.muted ? (
-      <svg className="w-4 h-4 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-        <line x1="23" y1="9" x2="17" y2="15"></line>
-        <line x1="17" y1="9" x2="23" y2="15"></line>
-      </svg>
-    ) : (
-      <svg className="w-4 h-4 text-[#22c55e]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-      </svg>
-    )}
-    <span className={`text-[10px] font-bold tracking-widest uppercase ${audioToast.muted ? "text-red-500" : "text-[#22c55e]"}`}>
-      {audioToast.muted ? "Silent Mode" : "Ringer Mode"}
-    </span>
-  </div>
-</div>
+            <div
+              className={`fixed top-12 left-1/2 -translate-x-1/2 z-[99999] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${audioToast.show ? "translate-y-0 opacity-100 scale-100" : "-translate-y-12 opacity-0 scale-90 pointer-events-none"}`}
+            >
+              <div className="bg-black/90 border border-[#22c55e]/50 shadow-[0_0_20px_rgba(0,0,0,0.8)] backdrop-blur-md rounded-full px-5 py-2 flex items-center gap-3">
+                {audioToast.muted ? (
+                  <svg
+                    className="w-4 h-4 text-red-500"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <line x1="23" y1="9" x2="17" y2="15"></line>
+                    <line x1="17" y1="9" x2="23" y2="15"></line>
+                  </svg>
+                ) : (
+                  <svg
+                    className="w-4 h-4 text-[#22c55e]"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                  </svg>
+                )}
+                <span
+                  className={`text-[10px] font-bold tracking-widest uppercase ${audioToast.muted ? "text-red-500" : "text-[#22c55e]"}`}
+                >
+                  {audioToast.muted ? "Silent Mode" : "Ringer Mode"}
+                </span>
+              </div>
+            </div>
 
             {/* TOP OS STATUS BAR */}
             <div className="w-full h-8 bg-black/80 backdrop-blur-md border-b border-[#22c55e]/30 flex items-center px-4 relative z-[90]">
@@ -1843,20 +1864,39 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
               {/* Right Side: Network, Clock & Mobile WiFi */}
               <div className="flex items-center gap-3 sm:gap-4 opacity-90 relative z-50">
                 {/* MOBILE AUDIO TOGGLE (Replaces WiFi on Right Side) */}
-<div onClick={toggleMusic} className="cursor-pointer flex sm:hidden items-center justify-center mr-1">
-  {isMusicMuted ? (
-    <svg className="w-[18px] h-[18px] text-red-500 opacity-80 drop-shadow-[0_0_5px_rgba(239,68,68,0.4)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-      <line x1="23" y1="9" x2="17" y2="15"></line>
-      <line x1="17" y1="9" x2="23" y2="15"></line>
-    </svg>
-  ) : (
-    <svg className="w-[18px] h-[18px] text-[#22c55e] animate-pulse drop-shadow-[0_0_5px_rgba(34,197,94,0.6)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-      <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-    </svg>
-  )}
-</div>
+                <div
+                  onClick={toggleMusic}
+                  className="cursor-pointer flex sm:hidden items-center justify-center mr-1"
+                >
+                  {isMusicMuted ? (
+                    <svg
+                      className="w-[18px] h-[18px] text-red-500 opacity-80 drop-shadow-[0_0_5px_rgba(239,68,68,0.4)]"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                      <line x1="23" y1="9" x2="17" y2="15"></line>
+                      <line x1="17" y1="9" x2="23" y2="15"></line>
+                    </svg>
+                  ) : (
+                    <svg
+                      className="w-[18px] h-[18px] text-[#22c55e] animate-pulse drop-shadow-[0_0_5px_rgba(34,197,94,0.6)]"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                      <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    </svg>
+                  )}
+                </div>
 
                 {/* 2. DESKTOP-ONLY NETWORK STATS & DATE */}
                 <div className="hidden sm:flex items-center space-x-4">
@@ -1921,32 +1961,149 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
             </div>
 
             {/* DESKTOP WORKSPACE (Strictly Hidden on Mobile) */}
-            <div className="hidden md:flex flex-grow p-4 relative overflow-hidden">
-              {/* MOBILE WORKSPACE (The Clean Slate) */}
-              <div className="flex md:hidden flex-col h-[calc(100dvh-120px)] w-full px-4 relative z-40">
-                {/* Placeholder so we can verify the boundaries */}
-                <div className="flex-grow flex items-center justify-center border-2 border-dashed border-[#22c55e]/30 rounded-[2rem]">
-                  <div className="text-[#22c55e]/50 text-xs font-mono text-center leading-loose">
-                    [ MOBILE CANVAS LOCKED ]<br />
-                    No scrolling allowed.
-                    <br />
-                    Awaiting Module 1...
-                  </div>
-                </div>
+            <div className="flex flex-grow p-4 max-md:p-0 relative overflow-hidden">
+              {/* MOBILE WORKSPACE (Kinetic Cyber-Cores) */}
+        <div className="absolute inset-0 md:hidden flex flex-col justify-end items-center px-4 pb-[160px] z-40">
+          <div className="w-full max-w-[340px] grid grid-cols-4 gap-y-6 gap-x-4 justify-items-center pointer-events-auto">
+
+            {/* --- 1. IDENTITY.exe (Green) --- */}
+            <div onClick={() => { playAppOpen(); setIsIdentityWindowOpen(true); }} className="relative flex items-center justify-center w-[65px] h-[65px] cursor-pointer active:scale-90 transition-transform duration-200 group">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#22c55e]/50 via-black to-[#22c55e]/30 shadow-[0_0_15px_rgba(34,197,94,0.2)]" style={{ clipPath: 'polygon(30% 0, 100% 0, 100% 70%, 70% 100%, 0 100%, 0 30%)' }}></div>
+              <div className="absolute inset-[1.5px] bg-[#030a05] shadow-[inset_0_0_20px_rgba(34,197,94,0.2)]" style={{ clipPath: 'polygon(30% 0, 100% 0, 100% 70%, 70% 100%, 0 100%, 0 30%)' }}></div>
+              <div className="absolute top-[3px] right-[3px] w-2 h-2 border-t-[1.5px] border-r-[1.5px] border-[#22c55e] opacity-80"></div>
+              <div className="absolute bottom-[3px] left-[3px] w-2 h-2 border-b-[1.5px] border-l-[1.5px] border-[#22c55e] opacity-80"></div>
+              <div className="absolute inset-[6px] rounded-full border-[1px] border-dashed border-[#22c55e]/40 animate-[spin_8s_linear_infinite]"></div>
+              <div className="absolute inset-[11px] rounded-full border-[1.5px] border-transparent border-t-[#22c55e]/80 border-r-[#22c55e]/80 animate-[spin_3s_linear_infinite_reverse]"></div>
+              <div className="absolute inset-[16px] bg-black/60 backdrop-blur-md rounded-full shadow-[0_0_10px_rgba(34,197,94,0.3)] z-10 flex items-center justify-center group-active:bg-[#22c55e]/20 transition-colors">
+                <svg className="w-5 h-5 relative z-20" fill="none" viewBox="0 0 24 24">
+                  <path stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#22c55e]/40" d="M12 11c-1.6 0-3-1.4-3-3s1.4-3 3-3 3 1.4 3 3-1.4 3-3 3zm0 2c-2.2 0-6 1.1-6 3.3V19h12v-2.7c0-2.2-3.8-3.3-6-3.3z" />
+                  <path fill="currentColor" className="text-[#22c55e] drop-shadow-[0_0_6px_rgba(34,197,94,1)] animate-pulse" d="M19 14c-1.1 0-2 .9-2 2v1h-1v4h6v-4h-1v-1c0-1.1-.9-2-2-2zm-1 3v-1c0-.55.45-1 1-1s1 .45 1 1v1h-2z" />
+                </svg>
               </div>
+            </div>
+
+            {/* --- 2. PROJECTS.dir (Cyan) --- */}
+            <div onClick={() => { playAppOpen(); setIsProjectsWindowOpen(true); }} className="relative flex items-center justify-center w-[65px] h-[65px] cursor-pointer active:scale-90 transition-transform duration-200 group">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#06b6d4]/50 via-black to-[#06b6d4]/30 shadow-[0_0_15px_rgba(6,182,212,0.2)]" style={{ clipPath: 'polygon(30% 0, 100% 0, 100% 70%, 70% 100%, 0 100%, 0 30%)' }}></div>
+              <div className="absolute inset-[1.5px] bg-[#01080a] shadow-[inset_0_0_20px_rgba(6,182,212,0.2)]" style={{ clipPath: 'polygon(30% 0, 100% 0, 100% 70%, 70% 100%, 0 100%, 0 30%)' }}></div>
+              <div className="absolute top-[3px] right-[3px] w-2 h-2 border-t-[1.5px] border-r-[1.5px] border-[#06b6d4] opacity-80"></div>
+              <div className="absolute bottom-[3px] left-[3px] w-2 h-2 border-b-[1.5px] border-l-[1.5px] border-[#06b6d4] opacity-80"></div>
+              <div className="absolute inset-[6px] rounded-full border-[1px] border-dashed border-[#06b6d4]/40 animate-[spin_8s_linear_infinite]"></div>
+              <div className="absolute inset-[11px] rounded-full border-[1.5px] border-transparent border-t-[#06b6d4]/80 border-r-[#06b6d4]/80 animate-[spin_3s_linear_infinite_reverse]"></div>
+              <div className="absolute inset-[16px] bg-black/60 backdrop-blur-md rounded-full shadow-[0_0_10px_rgba(6,182,212,0.3)] z-10 flex items-center justify-center group-active:bg-[#06b6d4]/20 transition-colors">
+                <svg className="w-5 h-5 relative z-20" fill="none" viewBox="0 0 24 24">
+                  <path stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#06b6d4]/40" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                  <path fill="currentColor" className="text-[#06b6d4] drop-shadow-[0_0_6px_rgba(6,182,212,1)] animate-pulse" d="M10 11h4v4h-4z" />
+                </svg>
+              </div>
+            </div>
+
+            {/* --- 3. CERTS.dat (Yellow) --- */}
+            <div onClick={() => { playAppOpen(); setIsCertsWindowOpen(true); }} className="relative flex items-center justify-center w-[65px] h-[65px] cursor-pointer active:scale-90 transition-transform duration-200 group">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#eab308]/50 via-black to-[#eab308]/30 shadow-[0_0_15px_rgba(234,179,8,0.2)]" style={{ clipPath: 'polygon(30% 0, 100% 0, 100% 70%, 70% 100%, 0 100%, 0 30%)' }}></div>
+              <div className="absolute inset-[1.5px] bg-[#0a0801] shadow-[inset_0_0_20px_rgba(234,179,8,0.2)]" style={{ clipPath: 'polygon(30% 0, 100% 0, 100% 70%, 70% 100%, 0 100%, 0 30%)' }}></div>
+              <div className="absolute top-[3px] right-[3px] w-2 h-2 border-t-[1.5px] border-r-[1.5px] border-[#eab308] opacity-80"></div>
+              <div className="absolute bottom-[3px] left-[3px] w-2 h-2 border-b-[1.5px] border-l-[1.5px] border-[#eab308] opacity-80"></div>
+              <div className="absolute inset-[6px] rounded-full border-[1px] border-dashed border-[#eab308]/40 animate-[spin_8s_linear_infinite]"></div>
+              <div className="absolute inset-[11px] rounded-full border-[1.5px] border-transparent border-t-[#eab308]/80 border-r-[#eab308]/80 animate-[spin_3s_linear_infinite_reverse]"></div>
+              <div className="absolute inset-[16px] bg-black/60 backdrop-blur-md rounded-full shadow-[0_0_10px_rgba(234,179,8,0.3)] z-10 flex items-center justify-center group-active:bg-[#eab308]/20 transition-colors">
+                <svg className="w-5 h-5 relative z-20" fill="none" viewBox="0 0 24 24">
+                  <path stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#eab308]/40" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  <path stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#eab308] drop-shadow-[0_0_6px_rgba(234,179,8,1)]" d="M9 12l2 2 4-4" />
+                </svg>
+              </div>
+            </div>
+
+            {/* --- 4. RESUME.tex (Blue) --- */}
+            <div onClick={() => { playAppOpen(); setIsResumeWindowOpen(true); }} className="relative flex items-center justify-center w-[65px] h-[65px] cursor-pointer active:scale-90 transition-transform duration-200 group">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#3b82f6]/50 via-black to-[#3b82f6]/30 shadow-[0_0_15px_rgba(59,130,246,0.2)]" style={{ clipPath: 'polygon(30% 0, 100% 0, 100% 70%, 70% 100%, 0 100%, 0 30%)' }}></div>
+              <div className="absolute inset-[1.5px] bg-[#02050a] shadow-[inset_0_0_20px_rgba(59,130,246,0.2)]" style={{ clipPath: 'polygon(30% 0, 100% 0, 100% 70%, 70% 100%, 0 100%, 0 30%)' }}></div>
+              <div className="absolute top-[3px] right-[3px] w-2 h-2 border-t-[1.5px] border-r-[1.5px] border-[#3b82f6] opacity-80"></div>
+              <div className="absolute bottom-[3px] left-[3px] w-2 h-2 border-b-[1.5px] border-l-[1.5px] border-[#3b82f6] opacity-80"></div>
+              <div className="absolute inset-[6px] rounded-full border-[1px] border-dashed border-[#3b82f6]/40 animate-[spin_8s_linear_infinite]"></div>
+              <div className="absolute inset-[11px] rounded-full border-[1.5px] border-transparent border-t-[#3b82f6]/80 border-r-[#3b82f6]/80 animate-[spin_3s_linear_infinite_reverse]"></div>
+              <div className="absolute inset-[16px] bg-black/60 backdrop-blur-md rounded-full shadow-[0_0_10px_rgba(59,130,246,0.3)] z-10 flex items-center justify-center group-active:bg-[#3b82f6]/20 transition-colors">
+                <svg className="w-5 h-5 relative z-20" fill="none" viewBox="0 0 24 24">
+                  <path stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#3b82f6]/40" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#3b82f6] drop-shadow-[0_0_6px_rgba(59,130,246,1)] animate-pulse" d="M14 2v6h6 M9 14l-2 2 2 2 M15 14l2 2-2 2" />
+                </svg>
+              </div>
+            </div>
+
+            {/* --- 5. Mail.conn (Rose) --- */}
+            <div onClick={() => { playAppOpen(); if(isCommsWindowOpen){setIsCommsWindowOpen(false);setGuiPingStatus("IDLE");}else{setIsCommsWindowOpen(true);} }} className="relative flex items-center justify-center w-[65px] h-[65px] cursor-pointer active:scale-90 transition-transform duration-200 group">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#f43f5e]/50 via-black to-[#f43f5e]/30 shadow-[0_0_15px_rgba(244,63,94,0.2)]" style={{ clipPath: 'polygon(30% 0, 100% 0, 100% 70%, 70% 100%, 0 100%, 0 30%)' }}></div>
+              <div className="absolute inset-[1.5px] bg-[#0a0203] shadow-[inset_0_0_20px_rgba(244,63,94,0.2)]" style={{ clipPath: 'polygon(30% 0, 100% 0, 100% 70%, 70% 100%, 0 100%, 0 30%)' }}></div>
+              <div className="absolute top-[3px] right-[3px] w-2 h-2 border-t-[1.5px] border-r-[1.5px] border-[#f43f5e] opacity-80"></div>
+              <div className="absolute bottom-[3px] left-[3px] w-2 h-2 border-b-[1.5px] border-l-[1.5px] border-[#f43f5e] opacity-80"></div>
+              <div className="absolute inset-[6px] rounded-full border-[1px] border-dashed border-[#f43f5e]/40 animate-[spin_8s_linear_infinite]"></div>
+              <div className="absolute inset-[11px] rounded-full border-[1.5px] border-transparent border-t-[#f43f5e]/80 border-r-[#f43f5e]/80 animate-[spin_3s_linear_infinite_reverse]"></div>
+              <div className="absolute inset-[16px] bg-black/60 backdrop-blur-md rounded-full shadow-[0_0_10px_rgba(244,63,94,0.3)] z-10 flex items-center justify-center group-active:bg-[#f43f5e]/20 transition-colors">
+                <svg className="w-5 h-5 relative z-20" fill="none" viewBox="0 0 24 24">
+                  <path stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#f43f5e]/40" d="M4 7.00005L10.2 11.65C11.2667 12.45 12.7333 12.45 13.8 11.65L20 7" />
+                  <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.5" className="text-[#f43f5e]/40" />
+                  <circle cx="19" cy="5" r="3" fill="currentColor" className="text-[#f43f5e] drop-shadow-[0_0_6px_rgba(244,63,94,1)] animate-pulse" />
+                </svg>
+              </div>
+            </div>
+
+            {/* --- 6. Journey.log (Purple) --- */}
+            <div onClick={() => { playAppOpen(); setIsJourneyWindowOpen(true); }} className="relative flex items-center justify-center w-[65px] h-[65px] cursor-pointer active:scale-90 transition-transform duration-200 group">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#a855f7]/50 via-black to-[#a855f7]/30 shadow-[0_0_15px_rgba(168,85,247,0.2)]" style={{ clipPath: 'polygon(30% 0, 100% 0, 100% 70%, 70% 100%, 0 100%, 0 30%)' }}></div>
+              <div className="absolute inset-[1.5px] bg-[#06020a] shadow-[inset_0_0_20px_rgba(168,85,247,0.2)]" style={{ clipPath: 'polygon(30% 0, 100% 0, 100% 70%, 70% 100%, 0 100%, 0 30%)' }}></div>
+              <div className="absolute top-[3px] right-[3px] w-2 h-2 border-t-[1.5px] border-r-[1.5px] border-[#a855f7] opacity-80"></div>
+              <div className="absolute bottom-[3px] left-[3px] w-2 h-2 border-b-[1.5px] border-l-[1.5px] border-[#a855f7] opacity-80"></div>
+              <div className="absolute inset-[6px] rounded-full border-[1px] border-dashed border-[#a855f7]/40 animate-[spin_8s_linear_infinite]"></div>
+              <div className="absolute inset-[11px] rounded-full border-[1.5px] border-transparent border-t-[#a855f7]/80 border-r-[#a855f7]/80 animate-[spin_3s_linear_infinite_reverse]"></div>
+              <div className="absolute inset-[16px] bg-black/60 backdrop-blur-md rounded-full shadow-[0_0_10px_rgba(168,85,247,0.3)] z-10 flex items-center justify-center group-active:bg-[#a855f7]/20 transition-colors">
+                <svg className="w-5 h-5 relative z-20" fill="none" viewBox="0 0 24 24">
+                  <path stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#a855f7]/40" d="M12 20V10 M18 20V14 M6 20v-4" />
+                  <circle cx="12" cy="7" r="3" fill="currentColor" className="text-[#a855f7] drop-shadow-[0_0_6px_rgba(168,85,247,1)]" />
+                  <circle cx="18" cy="11" r="2" fill="currentColor" className="text-[#a855f7] drop-shadow-[0_0_6px_rgba(168,85,247,1)] animate-pulse" />
+                  <circle cx="6" cy="13" r="2" fill="currentColor" className="text-[#a855f7] drop-shadow-[0_0_6px_rgba(168,85,247,1)] animate-pulse" />
+                </svg>
+              </div>
+            </div>
+
+            {/* --- 7. Education.exe (Orange) --- */}
+            <div onClick={() => { playAppOpen(); setIsCampusWindowOpen(true); }} className="relative flex items-center justify-center w-[65px] h-[65px] cursor-pointer active:scale-90 transition-transform duration-200 group">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#f97316]/50 via-black to-[#f97316]/30 shadow-[0_0_15px_rgba(249,115,22,0.2)]" style={{ clipPath: 'polygon(30% 0, 100% 0, 100% 70%, 70% 100%, 0 100%, 0 30%)' }}></div>
+              <div className="absolute inset-[1.5px] bg-[#0a0401] shadow-[inset_0_0_20px_rgba(249,115,22,0.2)]" style={{ clipPath: 'polygon(30% 0, 100% 0, 100% 70%, 70% 100%, 0 100%, 0 30%)' }}></div>
+              <div className="absolute top-[3px] right-[3px] w-2 h-2 border-t-[1.5px] border-r-[1.5px] border-[#f97316] opacity-80"></div>
+              <div className="absolute bottom-[3px] left-[3px] w-2 h-2 border-b-[1.5px] border-l-[1.5px] border-[#f97316] opacity-80"></div>
+              <div className="absolute inset-[6px] rounded-full border-[1px] border-dashed border-[#f97316]/40 animate-[spin_8s_linear_infinite]"></div>
+              <div className="absolute inset-[11px] rounded-full border-[1.5px] border-transparent border-t-[#f97316]/80 border-r-[#f97316]/80 animate-[spin_3s_linear_infinite_reverse]"></div>
+              <div className="absolute inset-[16px] bg-black/60 backdrop-blur-md rounded-full shadow-[0_0_10px_rgba(249,115,22,0.3)] z-10 flex items-center justify-center group-active:bg-[#f97316]/20 transition-colors">
+                <svg className="w-5 h-5 relative z-20" fill="none" viewBox="0 0 24 24">
+                  <path stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#f97316]/40" d="M22 10l-10-4-10 4 10 4 10-4z M6 12v5c0 2 2 3 6 3s6-1 6-3v-5" />
+                  <path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#f97316] drop-shadow-[0_0_6px_rgba(249,115,22,1)] animate-pulse" d="M22 10v6 M21 16h2" />
+                </svg>
+              </div>
+            </div>
+
+            {/* --- 8. Engage.2p (Fuchsia) --- */}
+            <div onClick={() => { playAppOpen(); setIsEngageWindowOpen(!isEngageWindowOpen); }} className="relative flex items-center justify-center w-[65px] h-[65px] cursor-pointer active:scale-90 transition-transform duration-200 group">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#d946ef]/50 via-black to-[#d946ef]/30 shadow-[0_0_15px_rgba(217,70,239,0.2)]" style={{ clipPath: 'polygon(30% 0, 100% 0, 100% 70%, 70% 100%, 0 100%, 0 30%)' }}></div>
+              <div className="absolute inset-[1.5px] bg-[#0a0109] shadow-[inset_0_0_20px_rgba(217,70,239,0.2)]" style={{ clipPath: 'polygon(30% 0, 100% 0, 100% 70%, 70% 100%, 0 100%, 0 30%)' }}></div>
+              <div className="absolute top-[3px] right-[3px] w-2 h-2 border-t-[1.5px] border-r-[1.5px] border-[#d946ef] opacity-80"></div>
+              <div className="absolute bottom-[3px] left-[3px] w-2 h-2 border-b-[1.5px] border-l-[1.5px] border-[#d946ef] opacity-80"></div>
+              <div className="absolute inset-[6px] rounded-full border-[1px] border-dashed border-[#d946ef]/40 animate-[spin_8s_linear_infinite]"></div>
+              <div className="absolute inset-[11px] rounded-full border-[1.5px] border-transparent border-t-[#d946ef]/80 border-r-[#d946ef]/80 animate-[spin_3s_linear_infinite_reverse]"></div>
+              <div className="absolute inset-[16px] bg-black/60 backdrop-blur-md rounded-full shadow-[0_0_10px_rgba(217,70,239,0.3)] z-10 flex items-center justify-center group-active:bg-[#d946ef]/20 transition-colors">
+                <svg className="w-5 h-5 relative z-20" fill="none" viewBox="0 0 24 24">
+                  <rect x="2" y="6" width="20" height="12" rx="4" stroke="currentColor" strokeWidth="1.5" className="text-[#d946ef]/40" />
+                  <path stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-[#d946ef] drop-shadow-[0_0_6px_rgba(217,70,239,1)] animate-pulse" d="M6 12h4 M8 10v4" />
+                  <circle cx="17" cy="12" r="1" fill="currentColor" className="text-[#d946ef] drop-shadow-[0_0_6px_rgba(217,70,239,1)]" />
+                  <circle cx="15" cy="10" r="1" fill="currentColor" className="text-[#d946ef] drop-shadow-[0_0_6px_rgba(217,70,239,1)]" />
+                </svg>
+              </div>
+            </div>
+
+          </div>
+        </div>
 
               {/* --- CENTRAL CHART & MODULES */}
-              <div
-                className="absolute inset-0 flex flex-col items-center justify-center pb-24 pointer-events-none z-0 max-md:relative max-md:inset-auto max-md:pb-0 max-md:transform-none max-md:gap-2 max-md:scale-[0.90] max-md:origin-top max-md:w-full"
-                style={
-                  window.innerWidth < 768
-                    ? {}
-                    : {
-                        transform: `translate(${bgOffset.x * 2.5}px, ${bgOffset.y * 2.5}px)`,
-                        transition: "transform 0.1s ease-out",
-                      }
-                }
-              >
+              <div className="hidden md:flex absolute inset-0 flex-col items-center justify-center pb-24 pointer-events-none z-0">
                 {/* TOP ROW: GitHub & Socials */}
                 <div className="flex items-center gap-4 mb-6 relative z-50">
                   {/* GitHub Node */}
@@ -2106,8 +2263,8 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                 </div>
               </div>
 
-              {/* Desktop Icons (Left Side) -> Mobile iOS Grid Row 1 */}
-              <div className="flex flex-col space-y-6 w-24 mt-4 max-md:grid max-md:grid-cols-4 max-md:w-full max-md:px-4 max-md:gap-x-3 max-md:space-y-0 max-md:mt-0 relative z-40 max-md:[&_span]:hidden max-md:scale-[0.90] max-md:origin-top">
+              {/* Desktop Icons (Left Side) -> STRICTLY HIDDEN ON MOBILE */}
+              <div className="hidden md:flex flex-col space-y-6 w-24 mt-4 relative z-40">
                 {/* --- IDENTITY.exe (PREMIUM PAN, ZOOM & NEON SWEEP EDITION) --- */}
                 <div
                   className="flex flex-col items-center cursor-pointer group w-24"
@@ -2393,8 +2550,8 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                 </div>
               </div>
 
-              {/* RIGHT SIDE ICONS -> Mobile iOS Grid Row 2 */}
-              <div className="absolute top-4 right-4 mt-4 flex flex-col space-y-6 w-24 items-center z-40 max-md:relative max-md:top-auto max-md:right-auto max-md:grid max-md:grid-cols-4 max-md:w-full max-md:px-4 max-md:gap-x-3 max-md:space-y-0 max-md:-mt-4 max-md:[&_span]:hidden max-md:scale-[0.90] max-md:origin-top">
+              {/* RIGHT SIDE ICONS -> STRICTLY HIDDEN ON MOBILE */}
+              <div className="hidden md:flex absolute top-4 right-4 mt-4 flex-col space-y-6 w-24 items-center z-40">
                 {/* Mail.conn Desktop Icon */}
                 <div
                   className="flex flex-col items-center cursor-pointer group w-24"
@@ -3461,7 +3618,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
               <div
                 className={`absolute w-full font-mono text-xs transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden pointer-events-auto flex flex-col justify-end ${
                   isArcadeActive || isArcadeMounting
-            ? "bottom-0 h-[100dvh] bg-[#050505] z-[9999] max-md:fixed max-md:inset-x-0 max-md:top-[32px] max-md:h-[calc(100dvh-32px)]"
+                    ? "bottom-0 h-[100dvh] bg-[#050505] z-[9999] max-md:fixed max-md:inset-x-0 max-md:top-[32px] max-md:h-[calc(100dvh-32px)]"
                     : isTerminalFocused
                       ? "bottom-0 bg-[#050505]/95 backdrop-blur-xl border-t border-[#22c55e]/30 shadow-[0_0_30px_rgba(34,197,94,0.2)] z-[80] max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:top-[32px] max-md:h-[calc(100dvh-32px)] max-md:w-full max-md:m-0 max-md:rounded-none max-md:border-0 max-md:z-[9999] max-md:pb-2"
                       : "bottom-0 bg-[#050505]/60 backdrop-blur-sm border-t border-[#22c55e]/10 shadow-none z-[80] max-md:bottom-[85px] max-md:h-14 max-md:w-[calc(100%-32px)] max-md:mx-4 max-md:rounded-2xl max-md:border max-md:border-[#22c55e]/30 max-md:bg-[#050505]/40"
