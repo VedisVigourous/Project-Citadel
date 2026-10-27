@@ -1524,15 +1524,14 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#050505_100%)] pointer-events-none z-[3]"></div>
 
           {/* LAYER 3.5: CHAOTIC FULL-WIDTH AUDIO VISUALIZER (z-[4]) */}
-        <div className="absolute bottom-[40px] left-0 w-full flex items-end justify-center gap-[4px] px-4 h-20 z-[4] pointer-events-none opacity-40 overflow-hidden max-md:hidden">
-          {[...Array(190)].map((_, i) => (
-            <div
-              key={i}
-              className={`visualizer-bar bar-${(i % 8) + 1} shrink-0`}
-            ></div>
-          ))}
-        </div>
-
+          <div className="absolute bottom-[40px] left-0 w-full flex items-end justify-center gap-[4px] px-4 h-20 z-[4] pointer-events-none opacity-40 overflow-hidden max-md:hidden">
+            {[...Array(190)].map((_, i) => (
+              <div
+                key={i}
+                className={`visualizer-bar bar-${(i % 8) + 1} shrink-0`}
+              ></div>
+            ))}
+          </div>
 
           {/* --- LAYER 4: MAIN OS CONTENT (z-[10]) --- */}
           <div className="relative z-[10] w-full h-full flex flex-col">
@@ -1962,123 +1961,344 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
 
             {/* DESKTOP WORKSPACE (Strictly Hidden on Mobile) */}
             <div className="flex flex-grow p-4 max-md:p-0 relative overflow-hidden">
-              {/* MOBILE WORKSPACE (Balanced Cyber-Tiles) */}
-        <div className="absolute inset-0 md:hidden flex flex-col justify-end items-center px-4 pb-[160px] z-40 pointer-events-none">
-          <div className="w-full max-w-[320px] grid grid-cols-4 gap-y-8 gap-x-5 justify-items-center pointer-events-auto">
+              {/* MOBILE WORKSPACE (Holo-Glass Beast Icons) */}
+              <div className="absolute inset-0 md:hidden flex flex-col justify-end items-center px-4 pb-[160px] z-40 pointer-events-none">
+                <div className="w-full max-w-[340px] grid grid-cols-4 gap-y-8 gap-x-4 justify-items-center pointer-events-auto">
+                  {/* --- 1. IDENTITY.exe --- */}
+                  <div
+                    onClick={() => {
+                      playAppOpen();
+                      setIsIdentityWindowOpen(true);
+                    }}
+                    className="relative flex items-center justify-center w-[66px] h-[66px] rounded-2xl bg-[#050505]/80 border border-[#22c55e]/20 shadow-[0_4px_15px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.05)] active:scale-95 active:border-[#22c55e]/60 active:shadow-[0_0_20px_rgba(34,197,94,0.2)] transition-all duration-200 cursor-pointer overflow-hidden group"
+                  >
+                    <div className="absolute top-0 left-0 w-full h-[40%] bg-gradient-to-b from-white/[0.04] to-transparent pointer-events-none"></div>
+                    {/* Curved Cybernetic Corner Brackets */}
+                    <div className="absolute top-2 left-2 w-2.5 h-2.5 border-t-[1.5px] border-l-[1.5px] rounded-tl-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute top-2 right-2 w-2.5 h-2.5 border-t-[1.5px] border-r-[1.5px] rounded-tr-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute bottom-2 left-2 w-2.5 h-2.5 border-b-[1.5px] border-l-[1.5px] rounded-bl-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute bottom-2 right-2 w-2.5 h-2.5 border-b-[1.5px] border-r-[1.5px] rounded-br-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,197,94,0.15)_0%,transparent_60%)] opacity-0 group-active:opacity-100 transition-opacity duration-300"></div>
+                    <svg
+                      className="w-9 h-9 relative z-10 transition-transform duration-200 group-active:scale-95"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-[#22c55e]/40"
+                        d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"
+                      />
+                      <path
+                        fill="currentColor"
+                        className="text-[#22c55e] drop-shadow-[0_0_8px_rgba(34,197,94,0.9)]"
+                        d="M19 14c-1.1 0-2 .9-2 2v1h-1v4h6v-4h-1v-1c0-1.1-.9-2-2-2zm-1 3v-1c0-.55.45-1 1-1s1 .45 1 1v1h-2z"
+                      />
+                    </svg>
+                  </div>
 
-            {/* --- 1. IDENTITY.exe --- */}
-            <div onClick={() => { playAppOpen(); setIsIdentityWindowOpen(true); }} className="relative flex items-center justify-center w-[64px] h-[64px] rounded-2xl bg-gradient-to-b from-[#050505] to-[#0a0a0a] border border-[#22c55e]/20 shadow-[0_4px_10px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.1)] active:scale-95 active:border-[#22c55e]/60 active:shadow-[0_0_20px_rgba(34,197,94,0.3),inset_0_0_15px_rgba(34,197,94,0.2)] transition-all duration-200 cursor-pointer overflow-hidden group">
-              {/* Corner Brackets */}
-              <div className="absolute top-2 left-2 w-1.5 h-1.5 border-t border-l border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute top-2 right-2 w-1.5 h-1.5 border-t border-r border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute bottom-2 left-2 w-1.5 h-1.5 border-b border-l border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute bottom-2 right-2 w-1.5 h-1.5 border-b border-r border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              {/* Inner Glowing Platform */}
-              <div className="absolute inset-[10px] rounded-xl bg-[#22c55e]/5 shadow-[inset_0_0_10px_rgba(34,197,94,0.1)] group-active:bg-[#22c55e]/10 transition-colors"></div>
-              {/* Dual-Tone SVG Icon */}
-              <svg className="w-7 h-7 relative z-10 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" fill="none" viewBox="0 0 24 24">
-                <path stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#22c55e]/50" d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" />
-                <path fill="currentColor" className="text-[#22c55e] drop-shadow-[0_0_8px_rgba(34,197,94,1)]" d="M19 14c-1.1 0-2 .9-2 2v1h-1v4h6v-4h-1v-1c0-1.1-.9-2-2-2zm-1 3v-1c0-.55.45-1 1-1s1 .45 1 1v1h-2z" />
-              </svg>
-            </div>
+                  {/* --- 2. PROJECTS.dir --- */}
+                  <div
+                    onClick={() => {
+                      playAppOpen();
+                      setIsProjectsWindowOpen(true);
+                    }}
+                    className="relative flex items-center justify-center w-[66px] h-[66px] rounded-2xl bg-[#050505]/80 border border-[#22c55e]/20 shadow-[0_4px_15px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.05)] active:scale-95 active:border-[#22c55e]/60 active:shadow-[0_0_20px_rgba(34,197,94,0.2)] transition-all duration-200 cursor-pointer overflow-hidden group"
+                  >
+                    <div className="absolute top-0 left-0 w-full h-[40%] bg-gradient-to-b from-white/[0.04] to-transparent pointer-events-none"></div>
+                    <div className="absolute top-2 left-2 w-2.5 h-2.5 border-t-[1.5px] border-l-[1.5px] rounded-tl-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute top-2 right-2 w-2.5 h-2.5 border-t-[1.5px] border-r-[1.5px] rounded-tr-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute bottom-2 left-2 w-2.5 h-2.5 border-b-[1.5px] border-l-[1.5px] rounded-bl-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute bottom-2 right-2 w-2.5 h-2.5 border-b-[1.5px] border-r-[1.5px] rounded-br-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,197,94,0.15)_0%,transparent_60%)] opacity-0 group-active:opacity-100 transition-opacity duration-300"></div>
+                    <svg
+                      className="w-9 h-9 relative z-10 transition-transform duration-200 group-active:scale-95"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-[#22c55e]/40"
+                        d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+                      />
+                      <path
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-[#22c55e] drop-shadow-[0_0_8px_rgba(34,197,94,1)]"
+                        d="M10 11l-2 2 2 2m4-4l2 2-2 2"
+                      />
+                    </svg>
+                  </div>
 
-            {/* --- 2. PROJECTS.dir --- */}
-            <div onClick={() => { playAppOpen(); setIsProjectsWindowOpen(true); }} className="relative flex items-center justify-center w-[64px] h-[64px] rounded-2xl bg-gradient-to-b from-[#050505] to-[#0a0a0a] border border-[#22c55e]/20 shadow-[0_4px_10px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.1)] active:scale-95 active:border-[#22c55e]/60 active:shadow-[0_0_20px_rgba(34,197,94,0.3),inset_0_0_15px_rgba(34,197,94,0.2)] transition-all duration-200 cursor-pointer overflow-hidden group">
-              <div className="absolute top-2 left-2 w-1.5 h-1.5 border-t border-l border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute top-2 right-2 w-1.5 h-1.5 border-t border-r border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute bottom-2 left-2 w-1.5 h-1.5 border-b border-l border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute bottom-2 right-2 w-1.5 h-1.5 border-b border-r border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute inset-[10px] rounded-xl bg-[#22c55e]/5 shadow-[inset_0_0_10px_rgba(34,197,94,0.1)] group-active:bg-[#22c55e]/10 transition-colors"></div>
-              <svg className="w-7 h-7 relative z-10 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" fill="none" viewBox="0 0 24 24">
-                <path stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#22c55e]/50" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                <path stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#22c55e] drop-shadow-[0_0_8px_rgba(34,197,94,1)]" d="M10 11l-2 2 2 2m4-4l2 2-2 2" />
-              </svg>
-            </div>
+                  {/* --- 3. CERTS.dat --- */}
+                  <div
+                    onClick={() => {
+                      playAppOpen();
+                      setIsCertsWindowOpen(true);
+                    }}
+                    className="relative flex items-center justify-center w-[66px] h-[66px] rounded-2xl bg-[#050505]/80 border border-[#22c55e]/20 shadow-[0_4px_15px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.05)] active:scale-95 active:border-[#22c55e]/60 active:shadow-[0_0_20px_rgba(34,197,94,0.2)] transition-all duration-200 cursor-pointer overflow-hidden group"
+                  >
+                    <div className="absolute top-0 left-0 w-full h-[40%] bg-gradient-to-b from-white/[0.04] to-transparent pointer-events-none"></div>
+                    <div className="absolute top-2 left-2 w-2.5 h-2.5 border-t-[1.5px] border-l-[1.5px] rounded-tl-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute top-2 right-2 w-2.5 h-2.5 border-t-[1.5px] border-r-[1.5px] rounded-tr-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute bottom-2 left-2 w-2.5 h-2.5 border-b-[1.5px] border-l-[1.5px] rounded-bl-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute bottom-2 right-2 w-2.5 h-2.5 border-b-[1.5px] border-r-[1.5px] rounded-br-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,197,94,0.15)_0%,transparent_60%)] opacity-0 group-active:opacity-100 transition-opacity duration-300"></div>
+                    <svg
+                      className="w-9 h-9 relative z-10 transition-transform duration-200 group-active:scale-95"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-[#22c55e]/40"
+                        d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"
+                      />
+                      <path
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-[#22c55e] drop-shadow-[0_0_8px_rgba(34,197,94,1)]"
+                        d="M9 12l2 2 4-4"
+                      />
+                    </svg>
+                  </div>
 
-            {/* --- 3. CERTS.dat --- */}
-            <div onClick={() => { playAppOpen(); setIsCertsWindowOpen(true); }} className="relative flex items-center justify-center w-[64px] h-[64px] rounded-2xl bg-gradient-to-b from-[#050505] to-[#0a0a0a] border border-[#22c55e]/20 shadow-[0_4px_10px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.1)] active:scale-95 active:border-[#22c55e]/60 active:shadow-[0_0_20px_rgba(34,197,94,0.3),inset_0_0_15px_rgba(34,197,94,0.2)] transition-all duration-200 cursor-pointer overflow-hidden group">
-              <div className="absolute top-2 left-2 w-1.5 h-1.5 border-t border-l border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute top-2 right-2 w-1.5 h-1.5 border-t border-r border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute bottom-2 left-2 w-1.5 h-1.5 border-b border-l border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute bottom-2 right-2 w-1.5 h-1.5 border-b border-r border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute inset-[10px] rounded-xl bg-[#22c55e]/5 shadow-[inset_0_0_10px_rgba(34,197,94,0.1)] group-active:bg-[#22c55e]/10 transition-colors"></div>
-              <svg className="w-7 h-7 relative z-10 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" fill="none" viewBox="0 0 24 24">
-                <path stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#22c55e]/50" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                <path stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#22c55e] drop-shadow-[0_0_8px_rgba(34,197,94,1)]" d="M9 12l2 2 4-4" />
-              </svg>
-            </div>
+                  {/* --- 4. RESUME.tex --- */}
+                  <div
+                    onClick={() => {
+                      playAppOpen();
+                      setIsResumeWindowOpen(true);
+                    }}
+                    className="relative flex items-center justify-center w-[66px] h-[66px] rounded-2xl bg-[#050505]/80 border border-[#22c55e]/20 shadow-[0_4px_15px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.05)] active:scale-95 active:border-[#22c55e]/60 active:shadow-[0_0_20px_rgba(34,197,94,0.2)] transition-all duration-200 cursor-pointer overflow-hidden group"
+                  >
+                    <div className="absolute top-0 left-0 w-full h-[40%] bg-gradient-to-b from-white/[0.04] to-transparent pointer-events-none"></div>
+                    <div className="absolute top-2 left-2 w-2.5 h-2.5 border-t-[1.5px] border-l-[1.5px] rounded-tl-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute top-2 right-2 w-2.5 h-2.5 border-t-[1.5px] border-r-[1.5px] rounded-tr-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute bottom-2 left-2 w-2.5 h-2.5 border-b-[1.5px] border-l-[1.5px] rounded-bl-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute bottom-2 right-2 w-2.5 h-2.5 border-b-[1.5px] border-r-[1.5px] rounded-br-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,197,94,0.15)_0%,transparent_60%)] opacity-0 group-active:opacity-100 transition-opacity duration-300"></div>
+                    <svg
+                      className="w-9 h-9 relative z-10 transition-transform duration-200 group-active:scale-95"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-[#22c55e]/40"
+                        d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                      />
+                      <path
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-[#22c55e] drop-shadow-[0_0_8px_rgba(34,197,94,1)] animate-pulse"
+                        d="M14 2v6h6 M9 14h6 M9 18h6 M9 10h1"
+                      />
+                    </svg>
+                  </div>
 
-            {/* --- 4. RESUME.tex --- */}
-            <div onClick={() => { playAppOpen(); setIsResumeWindowOpen(true); }} className="relative flex items-center justify-center w-[64px] h-[64px] rounded-2xl bg-gradient-to-b from-[#050505] to-[#0a0a0a] border border-[#22c55e]/20 shadow-[0_4px_10px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.1)] active:scale-95 active:border-[#22c55e]/60 active:shadow-[0_0_20px_rgba(34,197,94,0.3),inset_0_0_15px_rgba(34,197,94,0.2)] transition-all duration-200 cursor-pointer overflow-hidden group">
-              <div className="absolute top-2 left-2 w-1.5 h-1.5 border-t border-l border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute top-2 right-2 w-1.5 h-1.5 border-t border-r border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute bottom-2 left-2 w-1.5 h-1.5 border-b border-l border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute bottom-2 right-2 w-1.5 h-1.5 border-b border-r border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute inset-[10px] rounded-xl bg-[#22c55e]/5 shadow-[inset_0_0_10px_rgba(34,197,94,0.1)] group-active:bg-[#22c55e]/10 transition-colors"></div>
-              <svg className="w-7 h-7 relative z-10 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" fill="none" viewBox="0 0 24 24">
-                <path stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#22c55e]/50" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                <path stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#22c55e] drop-shadow-[0_0_8px_rgba(34,197,94,1)] animate-pulse" d="M14 2v6h6 M9 14h6 M9 18h6 M9 10h1" />
-              </svg>
-            </div>
+                  {/* --- 5. Mail.conn --- */}
+                  <div
+                    onClick={() => {
+                      playAppOpen();
+                      if (isCommsWindowOpen) {
+                        setIsCommsWindowOpen(false);
+                        setGuiPingStatus("IDLE");
+                      } else {
+                        setIsCommsWindowOpen(true);
+                      }
+                    }}
+                    className="relative flex items-center justify-center w-[66px] h-[66px] rounded-2xl bg-[#050505]/80 border border-[#22c55e]/20 shadow-[0_4px_15px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.05)] active:scale-95 active:border-[#22c55e]/60 active:shadow-[0_0_20px_rgba(34,197,94,0.2)] transition-all duration-200 cursor-pointer overflow-hidden group"
+                  >
+                    <div className="absolute top-0 left-0 w-full h-[40%] bg-gradient-to-b from-white/[0.04] to-transparent pointer-events-none"></div>
+                    <div className="absolute top-2 left-2 w-2.5 h-2.5 border-t-[1.5px] border-l-[1.5px] rounded-tl-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute top-2 right-2 w-2.5 h-2.5 border-t-[1.5px] border-r-[1.5px] rounded-tr-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute bottom-2 left-2 w-2.5 h-2.5 border-b-[1.5px] border-l-[1.5px] rounded-bl-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute bottom-2 right-2 w-2.5 h-2.5 border-b-[1.5px] border-r-[1.5px] rounded-br-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,197,94,0.15)_0%,transparent_60%)] opacity-0 group-active:opacity-100 transition-opacity duration-300"></div>
+                    <svg
+                      className="w-9 h-9 relative z-10 transition-transform duration-200 group-active:scale-95"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-[#22c55e]/40"
+                        d="M4 7.00005L10.2 11.65C11.2667 12.45 12.7333 12.45 13.8 11.65L20 7 M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7z"
+                      />
+                      <circle
+                        cx="19"
+                        cy="5"
+                        r="3"
+                        fill="currentColor"
+                        className="text-[#22c55e] drop-shadow-[0_0_8px_rgba(34,197,94,0.9)] animate-pulse"
+                      />
+                    </svg>
+                  </div>
 
-            {/* --- 5. Mail.conn --- */}
-            <div onClick={() => { playAppOpen(); if(isCommsWindowOpen){setIsCommsWindowOpen(false);setGuiPingStatus("IDLE");}else{setIsCommsWindowOpen(true);} }} className="relative flex items-center justify-center w-[64px] h-[64px] rounded-2xl bg-gradient-to-b from-[#050505] to-[#0a0a0a] border border-[#22c55e]/20 shadow-[0_4px_10px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.1)] active:scale-95 active:border-[#22c55e]/60 active:shadow-[0_0_20px_rgba(34,197,94,0.3),inset_0_0_15px_rgba(34,197,94,0.2)] transition-all duration-200 cursor-pointer overflow-hidden group">
-              <div className="absolute top-2 left-2 w-1.5 h-1.5 border-t border-l border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute top-2 right-2 w-1.5 h-1.5 border-t border-r border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute bottom-2 left-2 w-1.5 h-1.5 border-b border-l border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute bottom-2 right-2 w-1.5 h-1.5 border-b border-r border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute inset-[10px] rounded-xl bg-[#22c55e]/5 shadow-[inset_0_0_10px_rgba(34,197,94,0.1)] group-active:bg-[#22c55e]/10 transition-colors"></div>
-              <svg className="w-7 h-7 relative z-10 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" fill="none" viewBox="0 0 24 24">
-                <path stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#22c55e]/50" d="M4 7.00005L10.2 11.65C11.2667 12.45 12.7333 12.45 13.8 11.65L20 7 M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7z" />
-                <circle cx="19" cy="5" r="3" fill="currentColor" className="text-[#22c55e] drop-shadow-[0_0_8px_rgba(34,197,94,1)] animate-pulse" />
-              </svg>
-            </div>
+                  {/* --- 6. Journey.log --- */}
+                  <div
+                    onClick={() => {
+                      playAppOpen();
+                      setIsJourneyWindowOpen(true);
+                    }}
+                    className="relative flex items-center justify-center w-[66px] h-[66px] rounded-2xl bg-[#050505]/80 border border-[#22c55e]/20 shadow-[0_4px_15px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.05)] active:scale-95 active:border-[#22c55e]/60 active:shadow-[0_0_20px_rgba(34,197,94,0.2)] transition-all duration-200 cursor-pointer overflow-hidden group"
+                  >
+                    <div className="absolute top-0 left-0 w-full h-[40%] bg-gradient-to-b from-white/[0.04] to-transparent pointer-events-none"></div>
+                    <div className="absolute top-2 left-2 w-2.5 h-2.5 border-t-[1.5px] border-l-[1.5px] rounded-tl-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute top-2 right-2 w-2.5 h-2.5 border-t-[1.5px] border-r-[1.5px] rounded-tr-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute bottom-2 left-2 w-2.5 h-2.5 border-b-[1.5px] border-l-[1.5px] rounded-bl-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute bottom-2 right-2 w-2.5 h-2.5 border-b-[1.5px] border-r-[1.5px] rounded-br-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,197,94,0.15)_0%,transparent_60%)] opacity-0 group-active:opacity-100 transition-opacity duration-300"></div>
+                    <svg
+                      className="w-9 h-9 relative z-10 transition-transform duration-200 group-active:scale-95"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-[#22c55e]/40"
+                        d="M12 20V10 M18 20V14 M6 20v-4"
+                      />
+                      <circle
+                        cx="12"
+                        cy="7"
+                        r="3"
+                        fill="currentColor"
+                        className="text-[#22c55e] drop-shadow-[0_0_8px_rgba(34,197,94,0.9)]"
+                      />
+                      <circle
+                        cx="18"
+                        cy="11"
+                        r="2"
+                        fill="currentColor"
+                        className="text-[#22c55e] drop-shadow-[0_0_8px_rgba(34,197,94,0.9)] animate-pulse"
+                      />
+                      <circle
+                        cx="6"
+                        cy="13"
+                        r="2"
+                        fill="currentColor"
+                        className="text-[#22c55e] drop-shadow-[0_0_8px_rgba(34,197,94,0.9)] animate-pulse"
+                      />
+                    </svg>
+                  </div>
 
-            {/* --- 6. Journey.log --- */}
-            <div onClick={() => { playAppOpen(); setIsJourneyWindowOpen(true); }} className="relative flex items-center justify-center w-[64px] h-[64px] rounded-2xl bg-gradient-to-b from-[#050505] to-[#0a0a0a] border border-[#22c55e]/20 shadow-[0_4px_10px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.1)] active:scale-95 active:border-[#22c55e]/60 active:shadow-[0_0_20px_rgba(34,197,94,0.3),inset_0_0_15px_rgba(34,197,94,0.2)] transition-all duration-200 cursor-pointer overflow-hidden group">
-              <div className="absolute top-2 left-2 w-1.5 h-1.5 border-t border-l border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute top-2 right-2 w-1.5 h-1.5 border-t border-r border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute bottom-2 left-2 w-1.5 h-1.5 border-b border-l border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute bottom-2 right-2 w-1.5 h-1.5 border-b border-r border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute inset-[10px] rounded-xl bg-[#22c55e]/5 shadow-[inset_0_0_10px_rgba(34,197,94,0.1)] group-active:bg-[#22c55e]/10 transition-colors"></div>
-              <svg className="w-7 h-7 relative z-10 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" fill="none" viewBox="0 0 24 24">
-                <path stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#22c55e]/50" d="M12 20V10 M18 20V14 M6 20v-4" />
-                <circle cx="12" cy="7" r="3" fill="currentColor" className="text-[#22c55e] drop-shadow-[0_0_8px_rgba(34,197,94,1)]" />
-                <circle cx="18" cy="11" r="2" fill="currentColor" className="text-[#22c55e] drop-shadow-[0_0_8px_rgba(34,197,94,1)] animate-pulse" />
-                <circle cx="6" cy="13" r="2" fill="currentColor" className="text-[#22c55e] drop-shadow-[0_0_8px_rgba(34,197,94,1)] animate-pulse" />
-              </svg>
-            </div>
+                  {/* --- 7. Education.exe --- */}
+                  <div
+                    onClick={() => {
+                      playAppOpen();
+                      setIsCampusWindowOpen(true);
+                    }}
+                    className="relative flex items-center justify-center w-[66px] h-[66px] rounded-2xl bg-[#050505]/80 border border-[#22c55e]/20 shadow-[0_4px_15px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.05)] active:scale-95 active:border-[#22c55e]/60 active:shadow-[0_0_20px_rgba(34,197,94,0.2)] transition-all duration-200 cursor-pointer overflow-hidden group"
+                  >
+                    <div className="absolute top-0 left-0 w-full h-[40%] bg-gradient-to-b from-white/[0.04] to-transparent pointer-events-none"></div>
+                    <div className="absolute top-2 left-2 w-2.5 h-2.5 border-t-[1.5px] border-l-[1.5px] rounded-tl-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute top-2 right-2 w-2.5 h-2.5 border-t-[1.5px] border-r-[1.5px] rounded-tr-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute bottom-2 left-2 w-2.5 h-2.5 border-b-[1.5px] border-l-[1.5px] rounded-bl-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute bottom-2 right-2 w-2.5 h-2.5 border-b-[1.5px] border-r-[1.5px] rounded-br-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,197,94,0.15)_0%,transparent_60%)] opacity-0 group-active:opacity-100 transition-opacity duration-300"></div>
+                    <svg
+                      className="w-9 h-9 relative z-10 transition-transform duration-200 group-active:scale-95"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-[#22c55e]/40"
+                        d="M22 10l-10-4-10 4 10 4 10-4z M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"
+                      />
+                      <path
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-[#22c55e] drop-shadow-[0_0_8px_rgba(34,197,94,1)] animate-pulse"
+                        d="M22 10v6 M21 16h2"
+                      />
+                    </svg>
+                  </div>
 
-            {/* --- 7. Education.exe --- */}
-            <div onClick={() => { playAppOpen(); setIsCampusWindowOpen(true); }} className="relative flex items-center justify-center w-[64px] h-[64px] rounded-2xl bg-gradient-to-b from-[#050505] to-[#0a0a0a] border border-[#22c55e]/20 shadow-[0_4px_10px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.1)] active:scale-95 active:border-[#22c55e]/60 active:shadow-[0_0_20px_rgba(34,197,94,0.3),inset_0_0_15px_rgba(34,197,94,0.2)] transition-all duration-200 cursor-pointer overflow-hidden group">
-              <div className="absolute top-2 left-2 w-1.5 h-1.5 border-t border-l border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute top-2 right-2 w-1.5 h-1.5 border-t border-r border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute bottom-2 left-2 w-1.5 h-1.5 border-b border-l border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute bottom-2 right-2 w-1.5 h-1.5 border-b border-r border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute inset-[10px] rounded-xl bg-[#22c55e]/5 shadow-[inset_0_0_10px_rgba(34,197,94,0.1)] group-active:bg-[#22c55e]/10 transition-colors"></div>
-              <svg className="w-7 h-7 relative z-10 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" fill="none" viewBox="0 0 24 24">
-                <path stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#22c55e]/50" d="M22 10l-10-4-10 4 10 4 10-4z M6 12v5c0 2 2 3 6 3s6-1 6-3v-5" />
-                <path stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#22c55e] drop-shadow-[0_0_8px_rgba(34,197,94,1)] animate-pulse" d="M22 10v6 M21 16h2" />
-              </svg>
-            </div>
-
-            {/* --- 8. Engage.2p --- */}
-            <div onClick={() => { playAppOpen(); setIsEngageWindowOpen(!isEngageWindowOpen); }} className="relative flex items-center justify-center w-[64px] h-[64px] rounded-2xl bg-gradient-to-b from-[#050505] to-[#0a0a0a] border border-[#22c55e]/20 shadow-[0_4px_10px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.1)] active:scale-95 active:border-[#22c55e]/60 active:shadow-[0_0_20px_rgba(34,197,94,0.3),inset_0_0_15px_rgba(34,197,94,0.2)] transition-all duration-200 cursor-pointer overflow-hidden group">
-              <div className="absolute top-2 left-2 w-1.5 h-1.5 border-t border-l border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute top-2 right-2 w-1.5 h-1.5 border-t border-r border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute bottom-2 left-2 w-1.5 h-1.5 border-b border-l border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute bottom-2 right-2 w-1.5 h-1.5 border-b border-r border-[#22c55e]/40 group-active:border-[#22c55e] transition-colors"></div>
-              <div className="absolute inset-[10px] rounded-xl bg-[#22c55e]/5 shadow-[inset_0_0_10px_rgba(34,197,94,0.1)] group-active:bg-[#22c55e]/10 transition-colors"></div>
-              <svg className="w-7 h-7 relative z-10 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" fill="none" viewBox="0 0 24 24">
-                <rect x="2" y="6" width="20" height="12" rx="4" stroke="currentColor" strokeWidth="1.5" className="text-[#22c55e]/50" />
-                <path stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="text-[#22c55e] drop-shadow-[0_0_8px_rgba(34,197,94,1)] animate-pulse" d="M6 12h4 M8 10v4" />
-                <circle cx="17" cy="12" r="1.5" fill="currentColor" className="text-[#22c55e] drop-shadow-[0_0_8px_rgba(34,197,94,1)]" />
-                <circle cx="15" cy="10" r="1.5" fill="currentColor" className="text-[#22c55e] drop-shadow-[0_0_8px_rgba(34,197,94,1)]" />
-              </svg>
-            </div>
-
-          </div>
-        </div>
+                  {/* --- 8. Engage.2p --- */}
+                  <div
+                    onClick={() => {
+                      playAppOpen();
+                      setIsEngageWindowOpen(!isEngageWindowOpen);
+                    }}
+                    className="relative flex items-center justify-center w-[66px] h-[66px] rounded-2xl bg-[#050505]/80 border border-[#22c55e]/20 shadow-[0_4px_15px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.05)] active:scale-95 active:border-[#22c55e]/60 active:shadow-[0_0_20px_rgba(34,197,94,0.2)] transition-all duration-200 cursor-pointer overflow-hidden group"
+                  >
+                    <div className="absolute top-0 left-0 w-full h-[40%] bg-gradient-to-b from-white/[0.04] to-transparent pointer-events-none"></div>
+                    <div className="absolute top-2 left-2 w-2.5 h-2.5 border-t-[1.5px] border-l-[1.5px] rounded-tl-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute top-2 right-2 w-2.5 h-2.5 border-t-[1.5px] border-r-[1.5px] rounded-tr-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute bottom-2 left-2 w-2.5 h-2.5 border-b-[1.5px] border-l-[1.5px] rounded-bl-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute bottom-2 right-2 w-2.5 h-2.5 border-b-[1.5px] border-r-[1.5px] rounded-br-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,197,94,0.15)_0%,transparent_60%)] opacity-0 group-active:opacity-100 transition-opacity duration-300"></div>
+                    <svg
+                      className="w-9 h-9 relative z-10 transition-transform duration-200 group-active:scale-95"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <rect
+                        x="2"
+                        y="6"
+                        width="20"
+                        height="12"
+                        rx="4"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        className="text-[#22c55e]/40"
+                      />
+                      <path
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        className="text-[#22c55e] drop-shadow-[0_0_8px_rgba(34,197,94,1)] animate-pulse"
+                        d="M6 12h4 M8 10v4"
+                      />
+                      <circle
+                        cx="17"
+                        cy="12"
+                        r="1.5"
+                        fill="currentColor"
+                        className="text-[#22c55e] drop-shadow-[0_0_8px_rgba(34,197,94,1)]"
+                      />
+                      <circle
+                        cx="15"
+                        cy="10"
+                        r="1.5"
+                        fill="currentColor"
+                        className="text-[#22c55e] drop-shadow-[0_0_8px_rgba(34,197,94,1)]"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
 
               {/* --- CENTRAL CHART & MODULES */}
               <div className="hidden md:flex absolute inset-0 flex-col items-center justify-center pb-24 pointer-events-none z-0">
