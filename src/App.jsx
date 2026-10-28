@@ -1964,14 +1964,14 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
               {/* MOBILE WORKSPACE (Holo-Glass Beast Icons) */}
               <div className="absolute inset-0 md:hidden flex flex-col justify-end items-center px-4 pb-[160px] z-40 pointer-events-none">
                 <div className="w-full max-w-[340px] grid grid-cols-4 gap-y-8 gap-x-4 justify-items-center pointer-events-auto">
-                  {/* --- 1. IDENTITY.exe --- */}
-                  <div
-                    onClick={() => {
-                      playAppOpen();
-                      setIsIdentityWindowOpen(true);
-                    }}
-                    className="relative flex items-center justify-center w-[66px] h-[66px] rounded-2xl bg-[#050505]/80 border border-[#22c55e]/20 shadow-[0_4px_15px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.05)] active:scale-95 active:border-[#22c55e]/60 active:shadow-[0_0_20px_rgba(34,197,94,0.2)] transition-all duration-200 cursor-pointer overflow-hidden group"
-                  >
+                  {/* 1. IDENTITY.exe */}
+            <div
+              onClick={() => {
+                playAppOpen();
+                setIsCoreIdentityOpen(true);
+              }}
+              className="relative flex items-center justify-center w-[66px] h-[66px] rounded-2xl bg-gradient-to-b from-[#050505] to-[#0a0a0a] border border-[#22c55e]/20 shadow-[0_4px_10px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.1)] active:scale-95 active:border-[#22c55e]/60 active:shadow-[0_0_20px_rgba(34,197,94,0.3),inset_0_0_15px_rgba(34,197,94,0.2)] transition-all duration-200 cursor-pointer overflow-hidden group"
+            >
                     <div className="absolute top-0 left-0 w-full h-[40%] bg-gradient-to-b from-white/[0.04] to-transparent pointer-events-none"></div>
                     {/* Curved Cybernetic Corner Brackets */}
                     <div className="absolute top-2 left-2 w-2.5 h-2.5 border-t-[1.5px] border-l-[1.5px] rounded-tl-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
@@ -3183,9 +3183,9 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                   minWidth={290}
                   minHeight={385}
                   bounds="parent"
-                  dragHandleClassName="drag-handle"
-                  className="absolute z-40"
-                >
+          dragHandleClassName="drag-handle"
+          className="absolute z-40 max-md:hidden"
+        >
                   <div className="w-full h-full bg-black border border-[#22c55e]/50 shadow-[0_0_30px_rgba(34,197,94,0.15)] flex flex-col">
                     {/* Window Header (The Drag Handle) */}
                     <div className="drag-handle h-8 bg-[#22c55e]/10 border-b border-[#22c55e]/50 flex items-center justify-between px-3 cursor-move hover:bg-[#22c55e]/20 transition-colors">
@@ -4337,101 +4337,88 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
         }
       `}</style>
 
-      {/* CORE IDENTITY DOSSIER MODAL */}
-      {isCoreIdentityOpen && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-[fadeIn_0.3s_ease-out]">
-          <div className="animate-cinematic relative w-full max-w-xl rounded-3xl bg-gradient-to-br from-white/10 via-white/5 to-transparent border border-white/20 shadow-[0_0_50px_rgba(255,255,255,0.1)] p-8 overflow-hidden backdrop-blur-xl group hover:shadow-[0_0_80px_rgba(34,197,94,0.3)] transition-shadow duration-700">
-            {/* Ambient Background Glows */}
-            <div className="absolute -top-20 -right-20 w-64 h-64 bg-purple-500/30 rounded-full blur-3xl group-hover:bg-green-500/20 transition-colors duration-700"></div>
-            <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-blue-500/30 rounded-full blur-3xl group-hover:bg-[#22c55e]/30 transition-colors duration-700"></div>
+      {/* CORE IDENTITY DOSSIER MODAL (Full-Screen Biometric Override) */}
+        {isCoreIdentityOpen && (
+          <div className="fixed inset-0 z-[99999] flex flex-col bg-[#050505]/95 backdrop-blur-3xl overflow-hidden font-mono text-[#22c55e] animate-[fadeIn_0.2s_ease-out]">
+            
+            {/* High-Speed Retina Scan Sweep */}
+            <div className="absolute top-0 left-0 w-full h-[15vh] bg-gradient-to-b from-transparent via-[#22c55e]/10 to-[#22c55e]/40 border-b-2 border-[#22c55e] animate-[scanDrop_1.5s_ease-in-out_forwards] pointer-events-none z-[100] shadow-[0_0_30px_rgba(34,197,94,0.4)]"></div>
 
-            <div className="relative z-10 flex flex-col items-center text-center">
-              {/* Floating Avatar Ring with Real Profile Photo */}
-              <div className="w-32 h-32 rounded-full p-1 bg-gradient-to-tr from-blue-500 via-purple-500 to-[#22c55e] animate-[spin_6s_linear_infinite] mb-6 shadow-2xl relative">
-                <div className="w-full h-full bg-[#050505] rounded-full overflow-hidden flex items-center justify-center animate-[spin_6s_linear_infinite_reverse]">
+            {/* Scrollable Dossier Content */}
+            <div className="relative z-10 w-full flex-1 flex flex-col items-center pt-16 px-6 pb-6 overflow-y-auto no-scrollbar">
+              
+              {/* Holographic Avatar Core */}
+              <div className="relative w-40 h-40 mb-10 flex items-center justify-center shrink-0">
+                <div className="absolute inset-[-10%] rounded-full border border-dashed border-[#22c55e]/50 animate-[spin_10s_linear_infinite]"></div>
+                <div className="absolute inset-[-20%] rounded-full border-t-2 border-l-2 border-transparent border-t-[#22c55e]/40 border-l-[#22c55e]/40 animate-[spin_4s_linear_infinite_reverse]"></div>
+                
+                <div className="w-80 h-80 bg-[#050505] rounded-full border-2 border-[#22c55e] shadow-[0_0_40px_rgba(34,197,94,0.3)] overflow-hidden p-1 relative z-10">
                   <img
-                    src="/profile.png"
+                    src="/Zv9IB.jpg"
                     alt="Vadanta Kumar Chauhaan"
-                    className="w-full h-full object-cover rounded-full"
-                    style={{ filter: `hue-rotate(-${themeHue}deg)` }}
+                    className="w-full h-full object-cover rounded-full grayscale opacity-80 contrast-125 mix-blend-screen"
+                    style={{ filter: `hue-rotate(-${themeHue}deg) sepia(1) hue-rotate(80deg) saturate(3)` }}
                     onError={(e) => {
                       e.target.onerror = null;
-                      e.target.src =
-                        "https://ui-avatars.com/api/?name=Vadanta+Chauhaan&background=0D8ABC&color=fff";
+                      e.target.src = "https://ui-avatars.com/api/?name=Vadanta+Chauhaan&background=0D8ABC&color=fff";
                     }}
                   />
                 </div>
               </div>
 
-              {/* Name & Title */}
-              <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-gray-300 mb-2 tracking-wide">
-                Vadanta Kumar Chauhaan
-              </h2>
-              <div className="px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-white/90 text-[10px] tracking-widest font-bold uppercase mb-8 shadow-inner">
-                Software Engineer // UI Architect
-              </div>
-
-              {/* Stats Grid */}
-              <div className="w-full grid grid-cols-3 gap-4 mb-8">
-                <div className="flex flex-col p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:-translate-y-1 transition-all">
-                  <span className="text-white/50 text-[9px] uppercase tracking-widest mb-1">
-                    Focus
-                  </span>
-                  <span className="text-white font-semibold text-sm">
-                    Frontend & AI
-                  </span>
-                </div>
-                <div className="flex flex-col p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:-translate-y-1 transition-all">
-                  <span className="text-white/50 text-[9px] uppercase tracking-widest mb-1">
-                    Current Op
-                  </span>
-                  <span className="text-white font-semibold text-sm">
-                    SIH 2026
-                  </span>
-                </div>
-                <div className="flex flex-col p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:-translate-y-1 transition-all">
-                  <span className="text-white/50 text-[9px] uppercase tracking-widest mb-1">
-                    Next Target
-                  </span>
-                  <span className="text-white font-semibold text-sm">
-                    GSoC 2027
-                  </span>
+              {/* Identity Matrix Text */}
+              <div className="text-center w-full mb-10 shrink-0">
+                <div className="text-[9px] tracking-[0.4em] opacity-60 mb-3 uppercase animate-pulse">// Biometric_Match_Found</div>
+                <h2 className="text-2xl font-black tracking-widest uppercase mb-3 drop-shadow-[0_0_10px_rgba(34,197,94,0.8)]">Vadanta Kumar Chauhaan</h2>
+                <div className="text-[10px] tracking-widest bg-[#22c55e]/10 border border-[#22c55e]/30 py-2 px-5 inline-block rounded-sm shadow-[inset_0_0_10px_rgba(34,197,94,0.1)]">
+                  SOFTWARE ENGINEER // UI ARCHITECT
                 </div>
               </div>
 
-              {/* Bio */}
-              <p className="text-white/70 text-sm leading-relaxed max-w-md mx-auto mb-8 font-light">
-                I don't just write code; I engineer digital experiences.
-                Blending high-performance web architecture with immersive user
-                interfaces. If it exists in the DOM, I can make it
-                extraordinary.
-              </p>
+              {/* Edge-to-Edge Tactical Data Rows */}
+              <div className="w-full flex flex-col gap-3 mb-10 shrink-0">
+                <div className="flex justify-between items-center bg-[#22c55e]/5 border-l-4 border-[#22c55e] p-4 shadow-sm">
+                  <span className="text-[10px] uppercase tracking-widest opacity-60">Focus</span>
+                  <span className="text-xs font-bold tracking-wider">Frontend & AI</span>
+                </div>
+                <div className="flex justify-between items-center bg-[#22c55e]/5 border-l-4 border-[#22c55e] p-4 shadow-sm">
+                  <span className="text-[10px] uppercase tracking-widest opacity-60">Current Op</span>
+                  <span className="text-xs font-bold tracking-wider">SIH 2026</span>
+                </div>
+                <div className="flex justify-between items-center bg-[#22c55e]/5 border-l-4 border-[#22c55e] p-4 shadow-sm">
+                  <span className="text-[10px] uppercase tracking-widest opacity-60">Next Target</span>
+                  <span className="text-xs font-bold tracking-wider drop-shadow-[0_0_5px_rgba(34,197,94,0.8)]">GSoC 2027</span>
+                </div>
+              </div>
 
-              {/* Action Button */}
+              {/* Terminal Bio Block */}
+              <div className="w-full p-5 border border-dashed border-[#22c55e]/30 bg-black/40 text-[11px] leading-[2] tracking-wider opacity-80 shrink-0 mb-8">
+                &gt; I don't just write code; I engineer digital experiences.<br/>
+                &gt; Blending high-performance web architecture with immersive user interfaces.<br/>
+                &gt; If it exists in the DOM, I can make it extraordinary.
+              </div>
+            </div>
+
+            {/* Massive Hardware Abort Button */}
+            <div className="w-full p-4 shrink-0 bg-gradient-to-t from-black via-black to-transparent relative z-20 pb-8">
               <button
                 onClick={() => setIsCoreIdentityOpen(false)}
-                className="px-10 py-3 rounded-full bg-gradient-to-r from-[#22c55e] to-emerald-400 text-black font-extrabold tracking-widest hover:scale-105 hover:shadow-[0_0_30px_rgba(34,197,94,0.5)] transition-all active:scale-95"
+                className="w-full bg-red-600/10 border-2 border-red-600 text-red-500 py-4 text-xs font-black tracking-[0.3em] uppercase hover:bg-red-600 hover:text-black active:scale-95 transition-all shadow-[0_0_20px_rgba(239,68,68,0.15)]"
               >
-                DISMISS
+                [ ABORT_INSPECTION ]
               </button>
             </div>
-          </div>
-        </div>
-      )}
 
-      {/* TRACE CONNECTION MODAL */}
-      {isTracing && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-red-900/20 backdrop-blur-sm pointer-events-none transition-all duration-500">
-          <div className="animate-cinematic w-[500px] bg-black border-2 border-red-500 shadow-[0_0_50px_rgba(239,68,68,0.4)] p-6 font-mono pointer-events-auto">
-            <div className="text-red-500 font-bold mb-4 animate-pulse">
-              SYSTEM WARNING // UNAUTHORIZED TRACE
-            </div>
-            <pre className="text-red-400 whitespace-pre-wrap text-sm leading-relaxed">
-              {traceText}
-            </pre>
+            <style>{`
+              @keyframes scanDrop {
+                0% { top: -20vh; opacity: 0; }
+                10% { opacity: 1; }
+                90% { opacity: 1; top: 100vh; }
+                100% { opacity: 0; top: 110vh; }
+              }
+            `}</style>
           </div>
-        </div>
-      )}
+        )}
 
       {/* STABLE EMOJI RAIN OVERLAY (Single Troll Fall) */}
       {isRainingEmojis && (
