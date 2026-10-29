@@ -1965,13 +1965,13 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
               <div className="absolute inset-0 md:hidden flex flex-col justify-end items-center px-4 pb-[160px] z-40 pointer-events-none">
                 <div className="w-full max-w-[340px] grid grid-cols-4 gap-y-8 gap-x-4 justify-items-center pointer-events-auto">
                   {/* 1. IDENTITY.exe */}
-            <div
-              onClick={() => {
-                playAppOpen();
-                setIsCoreIdentityOpen(true);
-              }}
-              className="relative flex items-center justify-center w-[66px] h-[66px] rounded-2xl bg-gradient-to-b from-[#050505] to-[#0a0a0a] border border-[#22c55e]/20 shadow-[0_4px_10px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.1)] active:scale-95 active:border-[#22c55e]/60 active:shadow-[0_0_20px_rgba(34,197,94,0.3),inset_0_0_15px_rgba(34,197,94,0.2)] transition-all duration-200 cursor-pointer overflow-hidden group"
-            >
+                  <div
+                    onClick={() => {
+                      playAppOpen();
+                      setIsCoreIdentityOpen(true);
+                    }}
+                    className="relative flex items-center justify-center w-[66px] h-[66px] rounded-2xl bg-gradient-to-b from-[#050505] to-[#0a0a0a] border border-[#22c55e]/20 shadow-[0_4px_10px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.1)] active:scale-95 active:border-[#22c55e]/60 active:shadow-[0_0_20px_rgba(34,197,94,0.3),inset_0_0_15px_rgba(34,197,94,0.2)] transition-all duration-200 cursor-pointer overflow-hidden group"
+                  >
                     <div className="absolute top-0 left-0 w-full h-[40%] bg-gradient-to-b from-white/[0.04] to-transparent pointer-events-none"></div>
                     {/* Curved Cybernetic Corner Brackets */}
                     <div className="absolute top-2 left-2 w-2.5 h-2.5 border-t-[1.5px] border-l-[1.5px] rounded-tl-md border-[#22c55e]/30 group-active:border-[#22c55e] transition-colors"></div>
@@ -3183,9 +3183,9 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                   minWidth={290}
                   minHeight={385}
                   bounds="parent"
-          dragHandleClassName="drag-handle"
-          className="absolute z-40 max-md:hidden"
-        >
+                  dragHandleClassName="drag-handle"
+                  className="absolute z-40 max-md:hidden"
+                >
                   <div className="w-full h-full bg-black border border-[#22c55e]/50 shadow-[0_0_30px_rgba(34,197,94,0.15)] flex flex-col">
                     {/* Window Header (The Drag Handle) */}
                     <div className="drag-handle h-8 bg-[#22c55e]/10 border-b border-[#22c55e]/50 flex items-center justify-between px-3 cursor-move hover:bg-[#22c55e]/20 transition-colors">
@@ -4338,78 +4338,111 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
       `}</style>
 
       {/* CORE IDENTITY DOSSIER MODAL (Full-Screen Biometric Override) */}
-        {isCoreIdentityOpen && (
-          <div className="fixed inset-0 z-[99999] flex flex-col bg-[#050505]/95 backdrop-blur-3xl overflow-hidden font-mono text-[#22c55e] animate-[fadeIn_0.2s_ease-out]">
-            
-            {/* High-Speed Retina Scan Sweep */}
-            <div className="absolute top-0 left-0 w-full h-[15vh] bg-gradient-to-b from-transparent via-[#22c55e]/10 to-[#22c55e]/40 border-b-2 border-[#22c55e] animate-[scanDrop_1.5s_ease-in-out_forwards] pointer-events-none z-[100] shadow-[0_0_30px_rgba(34,197,94,0.4)]"></div>
+      {isCoreIdentityOpen && (
+        <div className="fixed inset-0 z-[99999] flex flex-col bg-[#050505]/95 backdrop-blur-3xl overflow-hidden font-mono text-[#22c55e] animate-[fadeIn_0.2s_ease-out]">
+          {/* High-Speed Retina Scan Sweep */}
+          <div className="absolute top-0 left-0 w-full h-[15vh] bg-gradient-to-b from-transparent via-[#22c55e]/10 to-[#22c55e]/40 border-b-2 border-[#22c55e] animate-[scanDrop_1.5s_ease-in-out_forwards] pointer-events-none z-[100] shadow-[0_0_30px_rgba(34,197,94,0.4)]"></div>
 
-            {/* Scrollable Dossier Content */}
-            <div className="relative z-10 w-full flex-1 flex flex-col items-center pt-16 px-6 pb-6 overflow-y-auto no-scrollbar">
-              
-              {/* Holographic Avatar Core */}
-              <div className="relative w-40 h-40 mb-10 flex items-center justify-center shrink-0">
-                <div className="absolute inset-[-10%] rounded-full border border-dashed border-[#22c55e]/50 animate-[spin_10s_linear_infinite]"></div>
-                <div className="absolute inset-[-20%] rounded-full border-t-2 border-l-2 border-transparent border-t-[#22c55e]/40 border-l-[#22c55e]/40 animate-[spin_4s_linear_infinite_reverse]"></div>
-                
-                <div className="w-80 h-80 bg-[#050505] rounded-full border-2 border-[#22c55e] shadow-[0_0_40px_rgba(34,197,94,0.3)] overflow-hidden p-1 relative z-10">
-                  <img
-                    src="/Zv9IB.jpg"
-                    alt="Vadanta Kumar Chauhaan"
-                    className="w-full h-full object-cover rounded-full grayscale opacity-80 contrast-125 mix-blend-screen"
-                    style={{ filter: `hue-rotate(-${themeHue}deg) sepia(1) hue-rotate(80deg) saturate(3)` }}
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = "https://ui-avatars.com/api/?name=Vadanta+Chauhaan&background=0D8ABC&color=fff";
-                    }}
-                  />
-                </div>
-              </div>
+          {/* Scrollable Dossier Content */}
+          <div className="relative z-10 w-full flex-1 flex flex-col items-center pt-16 px-6 pb-6 overflow-y-auto no-scrollbar">
+            {/* Holographic Avatar Core (Natural Portrait Squircle) */}
+            <div className="relative w-38 h-56 mb-8 shrink-0 group">
+              {/* Cupped Tactical Corner Brackets */}
+              <div className="absolute -top-3 -left-3 w-8 h-8 border-t-2 border-l-2 border-[#22c55e] rounded-tl-[1.5rem] opacity-75 animate-pulse"></div>
+              <div className="absolute -top-3 -right-3 w-8 h-8 border-t-2 border-r-2 border-[#22c55e] rounded-tr-[1.5rem] opacity-75 animate-pulse"></div>
+              <div className="absolute -bottom-3 -left-3 w-8 h-8 border-b-2 border-l-2 border-[#22c55e] rounded-bl-[1.5rem] opacity-75 animate-pulse"></div>
+              <div className="absolute -bottom-3 -right-3 w-8 h-8 border-b-2 border-r-2 border-[#22c55e] rounded-br-[1.5rem] opacity-75 animate-pulse"></div>
 
-              {/* Identity Matrix Text */}
-              <div className="text-center w-full mb-10 shrink-0">
-                <div className="text-[9px] tracking-[0.4em] opacity-60 mb-3 uppercase animate-pulse">// Biometric_Match_Found</div>
-                <h2 className="text-2xl font-black tracking-widest uppercase mb-3 drop-shadow-[0_0_10px_rgba(34,197,94,0.8)]">Vadanta Kumar Chauhaan</h2>
-                <div className="text-[10px] tracking-widest bg-[#22c55e]/10 border border-[#22c55e]/30 py-2 px-5 inline-block rounded-sm shadow-[inset_0_0_10px_rgba(34,197,94,0.1)]">
-                  SOFTWARE ENGINEER // UI ARCHITECT
-                </div>
-              </div>
+              {/* Breathing Cyber-Pulse Outer Frame */}
+              <div className="absolute inset-[-6px] border border-[#22c55e]/30 rounded-[2.2rem] pointer-events-none"></div>
 
-              {/* Edge-to-Edge Tactical Data Rows */}
-              <div className="w-full flex flex-col gap-3 mb-10 shrink-0">
-                <div className="flex justify-between items-center bg-[#22c55e]/5 border-l-4 border-[#22c55e] p-4 shadow-sm">
-                  <span className="text-[10px] uppercase tracking-widest opacity-60">Focus</span>
-                  <span className="text-xs font-bold tracking-wider">Frontend & AI</span>
-                </div>
-                <div className="flex justify-between items-center bg-[#22c55e]/5 border-l-4 border-[#22c55e] p-4 shadow-sm">
-                  <span className="text-[10px] uppercase tracking-widest opacity-60">Current Op</span>
-                  <span className="text-xs font-bold tracking-wider">SIH 2026</span>
-                </div>
-                <div className="flex justify-between items-center bg-[#22c55e]/5 border-l-4 border-[#22c55e] p-4 shadow-sm">
-                  <span className="text-[10px] uppercase tracking-widest opacity-60">Next Target</span>
-                  <span className="text-xs font-bold tracking-wider drop-shadow-[0_0_5px_rgba(34,197,94,0.8)]">GSoC 2027</span>
-                </div>
-              </div>
+              {/* Taller Squircle Container to Prevent Top Crops */}
+              <div className="w-full h-full bg-[#030704] rounded-[2rem] border-2 border-[#22c55e]/80 shadow-[0_0_40px_rgba(34,197,94,0.3)] overflow-hidden relative z-10 p-1">
+                {/* Digital Overlay HUD Scan lines & Glare */}
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.3)_50%)] bg-[length:100%_4px] opacity-25 z-20 pointer-events-none"></div>
+                <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-black/60 z-20 pointer-events-none rounded-[1.8rem]"></div>
 
-              {/* Terminal Bio Block */}
-              <div className="w-full p-5 border border-dashed border-[#22c55e]/30 bg-black/40 text-[11px] leading-[2] tracking-wider opacity-80 shrink-0 mb-8">
-                &gt; I don't just write code; I engineer digital experiences.<br/>
-                &gt; Blending high-performance web architecture with immersive user interfaces.<br/>
-                &gt; If it exists in the DOM, I can make it extraordinary.
+                <img
+                  src="Zv9IB.jpg"
+                  alt="Vadanta Kumar Chauhaan"
+                  className="w-full h-full object-contain object-top rounded-[1.7rem] grayscale opacity-90 contrast-[1.15]"
+                  style={{
+                    filter: `hue-rotate(-${themeHue}deg) sepia(1) hue-rotate(80deg) saturate(3)`,
+                    background:
+                      "radial-gradient(circle at center, #0a170f 0%, #030704 100%)",
+                  }}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src =
+                      "https://ui-avatars.com/api/?name=Vadanta+Chauhaan&background=0D8ABC&color=fff";
+                  }}
+                />
               </div>
             </div>
 
-            {/* Massive Hardware Abort Button */}
-            <div className="w-full p-4 shrink-0 bg-gradient-to-t from-black via-black to-transparent relative z-20 pb-8">
-              <button
-                onClick={() => setIsCoreIdentityOpen(false)}
-                className="w-full bg-red-600/10 border-2 border-red-600 text-red-500 py-4 text-xs font-black tracking-[0.3em] uppercase hover:bg-red-600 hover:text-black active:scale-95 transition-all shadow-[0_0_20px_rgba(239,68,68,0.15)]"
-              >
-                [ ABORT_INSPECTION ]
-              </button>
+            {/* Identity Matrix Text */}
+            <div className="text-center w-full mb-10 shrink-0">
+              <div className="text-[9px] tracking-[0.4em] opacity-60 mb-3 uppercase animate-pulse">
+                // Biometric_Match_Found
+              </div>
+              <h2 className="text-2xl font-black tracking-widest uppercase mb-3 drop-shadow-[0_0_10px_rgba(34,197,94,0.8)]">
+                Vadanta Kumar Chauhaan
+              </h2>
+              <div className="text-[10px] tracking-widest bg-[#22c55e]/10 border border-[#22c55e]/30 py-2 px-5 inline-block rounded-sm shadow-[inset_0_0_10px_rgba(34,197,94,0.1)]">
+                SOFTWARE ENGINEER // UI ARCHITECT
+              </div>
             </div>
 
-            <style>{`
+            {/* Edge-to-Edge Tactical Data Rows */}
+            <div className="w-full flex flex-col gap-3 mb-10 shrink-0">
+              <div className="flex justify-between items-center bg-[#22c55e]/5 border-l-4 border-[#22c55e] p-4 shadow-sm">
+                <span className="text-[10px] uppercase tracking-widest opacity-60">
+                  Focus
+                </span>
+                <span className="text-xs font-bold tracking-wider">
+                  Frontend & AI
+                </span>
+              </div>
+              <div className="flex justify-between items-center bg-[#22c55e]/5 border-l-4 border-[#22c55e] p-4 shadow-sm">
+                <span className="text-[10px] uppercase tracking-widest opacity-60">
+                  Current Op
+                </span>
+                <span className="text-xs font-bold tracking-wider">
+                  SIH 2026
+                </span>
+              </div>
+              <div className="flex justify-between items-center bg-[#22c55e]/5 border-l-4 border-[#22c55e] p-4 shadow-sm">
+                <span className="text-[10px] uppercase tracking-widest opacity-60">
+                  Next Target
+                </span>
+                <span className="text-xs font-bold tracking-wider drop-shadow-[0_0_5px_rgba(34,197,94,0.8)]">
+                  GSoC 2027
+                </span>
+              </div>
+            </div>
+
+            {/* Terminal Bio Block */}
+            <div className="w-full p-5 border border-dashed border-[#22c55e]/30 bg-black/40 text-[11px] leading-[2] tracking-wider opacity-80 shrink-0 mb-8">
+              &gt; I don't just write code; I engineer digital experiences.
+              <br />
+              &gt; Blending high-performance web architecture with immersive
+              user interfaces.
+              <br />
+              &gt; If it exists in the DOM, I can make it extraordinary.
+            </div>
+          </div>
+
+          {/* Massive Hardware Abort Button */}
+          <div className="w-full p-4 shrink-0 bg-gradient-to-t from-black via-black to-transparent relative z-20 pb-8">
+            <button
+              onClick={() => setIsCoreIdentityOpen(false)}
+              className="w-full bg-red-600/10 border-2 border-red-600 text-red-500 py-4 text-xs font-black tracking-[0.3em] uppercase hover:bg-red-600 hover:text-black active:scale-95 transition-all shadow-[0_0_20px_rgba(239,68,68,0.15)]"
+            >
+              [ ABORT_INSPECTION ]
+            </button>
+          </div>
+
+          <style>{`
               @keyframes scanDrop {
                 0% { top: -20vh; opacity: 0; }
                 10% { opacity: 1; }
@@ -4417,8 +4450,8 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                 100% { opacity: 0; top: 110vh; }
               }
             `}</style>
-          </div>
-        )}
+        </div>
+      )}
 
       {/* STABLE EMOJI RAIN OVERLAY (Single Troll Fall) */}
       {isRainingEmojis && (
