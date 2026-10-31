@@ -593,6 +593,49 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
   });
 
   const [selectedMobileProject, setSelectedMobileProject] = useState(null);
+  const [activeDesktopProject, setActiveDesktopProject] = useState(null);
+  const [vaiResponses, setVaiResponses] = useState({});
+  const [isVaiLoading, setIsVaiLoading] = useState(null);
+
+  const fetchVaiAnalysis = async (project) => {
+    if (vaiResponses[project.id]) return; 
+    setIsVaiLoading(project.id);
+    
+    try {
+      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "openai/gpt-oss-20b", // Matched exactly to your AiProxy.jsx
+          messages: [
+            { 
+              role: "system", 
+              content: "You are vAI, a cyberpunk AI analyzing a developer's portfolio. Provide a fast, 2-sentence tactical breakdown. Format strictly as:\n[ MISSION ]: <goal>\n[ EXECUTION ]: <tech implementation>" 
+            },
+            { 
+              role: "user", 
+              content: `Analyze this project: ${project.name}. Tech: ${project.tech}. Desc: ${project.desc}` 
+            }
+          ],
+          temperature: 0.7
+        })
+      });
+
+      const data = await response.json();
+      if (data.error) throw new Error(data.error.message);
+
+      setVaiResponses(prev => ({ ...prev, [project.id]: data.choices[0].message.content }));
+    } catch (error) {
+      setVaiResponses(prev => ({ 
+        ...prev, 
+        [project.id]: `[ ERR: vAI_UPLINK_FAILED ]\n> System details: ${error.message}` 
+      }));
+    }
+    setIsVaiLoading(null);
+  };
 
   const [projectsConfig, setProjectsConfig] = useState({
     x: 150,
@@ -782,12 +825,13 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
   // --- PROJECT VAULT DATA ---
   const projectsData = [
     {
-      id: "01",
-      name: "Project_Resonance.crx",
-      tech: "JS / Gemini 1.5 / Chrome API",
-      desc: "AI-powered accessibility Chrome Extension bridging digital culture gaps. MLH HackDays Top 33.",
-      link: "https://github.com/hobo7676/hackdays-spiker",
-    },
+    id: "01",
+    name: "Project_Resonance.crx",
+    tech: "JS / Gemini 1.5 / Chrome API",
+    desc: "AI-powered accessibility Chrome Extension bridging digital culture gaps. MLH HackDays Top 33.",
+    link: "https://github.com/hobo7676/hackdays-spiker",
+    vai: "[ MISSION ]: Bridge the digital culture gap for the visually impaired at MLH Hackdays.\n[ EXECUTION ]: Engineered a background service worker to intercept DOM elements. Securely routed raw meme data to the Gemini 1.5 Flash API to dynamically synthesize audio context, vibe, and humor.",
+  },
     {
       id: "02",
       name: "Police_Daily_Performa.exe",
@@ -3257,35 +3301,68 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
 
                       <div className="flex flex-col space-y-4">
                         {projectsData.map((project) => (
-                          <div
-                            key={project.id}
-                            className="group flex flex-col p-4 border border-[#22c55e]/20 bg-black/40 hover:bg-[#22c55e]/5 hover:border-[#22c55e]/50 border-l-2 border-l-transparent hover:border-l-[#22c55e] transition-all rounded relative overflow-hidden"
-                          >
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="font-bold text-sm text-[#22c55e] group-hover:text-white transition-colors">
-                                {project.name}
-                              </span>
-                              <span className="text-[10px] uppercase tracking-widest text-[#22c55e] opacity-60 bg-[#22c55e]/10 px-2 py-0.5 rounded border border-[#22c55e]/20">
-                                {project.tech}
-                              </span>
-                            </div>
-                            <span className="text-xs text-[#22c55e] opacity-70 leading-relaxed pr-24">
-                              {project.desc}
-                            </span>
+                <div
+                  key={project.id}
+                  onClick={() => {
+                    const isOpening = activeDesktopProject !== project.id;
+                    setActiveDesktopProject(isOpening ? project.id : null);
+                    if (isOpening) fetchVaiAnalysis(project);
+                  }}
+                  className={`group flex flex-col p-4 border transition-all rounded relative overflow-hidden cursor-pointer ${
+                    activeDesktopProject === project.id
+                      ? "border-[#22c55e] bg-[#22c55e]/5 shadow-[0_0_15px_rgba(34,197,94,0.15)]"
+                      : "border-[#22c55e]/20 bg-black/40 hover:bg-[#22c55e]/5 hover:border-[#22c55e]/50 border-l-2 border-l-transparent hover:border-l-[#22c55e]"
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className={`font-bold text-sm transition-colors ${activeDesktopProject === project.id ? "text-white" : "text-[#22c55e] group-hover:text-white"}`}>
+                      {project.name}
+                    </span>
+                    <span className="text-[10px] uppercase tracking-widest text-[#22c55e] opacity-60 bg-[#22c55e]/10 px-2 py-0.5 rounded border border-[#22c55e]/20">
+                      {project.tech}
+                    </span>
+                  </div>
+                  
+                  <span className="text-xs text-[#22c55e] opacity-70 leading-relaxed pr-24">
+                    {project.desc}
+                  </span>
 
-                            {/* Interactive Open Repo Button */}
-                            {project.link !== "#" && (
-                              <a
-                                href={project.link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="absolute bottom-4 right-4 text-[10px] font-bold tracking-widest text-[#22c55e] border border-[#22c55e]/50 px-2 py-1 rounded hover:bg-[#22c55e] hover:text-black transition-all opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0"
-                              >
-                                [&gt; OPEN_REPO]
-                              </a>
-                            )}
-                          </div>
-                        ))}
+                  {/* Live vAI Action Report */}
+                  {activeDesktopProject === project.id && (
+                    <div className="relative w-full border border-[#22c55e]/40 bg-[#050505] shadow-[0_0_15px_rgba(34,197,94,0.1)] mt-4 mb-2 overflow-hidden animate-[fadeIn_0.3s_ease-out]">
+                      <div className="bg-[#22c55e]/20 px-3 py-2 border-b border-[#22c55e]/40 flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 bg-[#22c55e] rounded-full animate-ping shadow-[0_0_5px_#22c55e]"></div>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">
+                          vAI // Action_Report
+                        </span>
+                      </div>
+                      <div className="absolute top-8 left-0 w-full h-[1px] bg-[#22c55e] shadow-[0_0_8px_#22c55e] animate-[scan_2s_linear_infinite]"></div>
+                      <div className="p-4 text-xs font-mono text-[#22c55e]/90 leading-[1.8] whitespace-pre-wrap">
+                        {isVaiLoading === project.id ? (
+                          <span className="animate-pulse">vAI is analyzing project architecture...</span>
+                        ) : (
+                          vaiResponses[project.id]
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Interactive Open Repo Button */}
+                  {project.link !== "#" && (
+                    <div className="flex justify-end mt-3">
+                      <a
+                        href={project.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className={`text-[10px] font-bold tracking-widest text-[#22c55e] border border-[#22c55e]/50 px-2 py-1 rounded hover:bg-[#22c55e] hover:text-black transition-all ${activeDesktopProject === project.id ? "opacity-100 translate-y-0" : "opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0"}`}
+                      >
+                        {project.link.includes("github.com") ? "[> OPEN_REPO]" : "[> LIVE_LINK]"}
+                      </a>
+                    </div>
+                  )}
+                </div>
+              ))}
                       </div>
                     </div>
                   </div>
@@ -3320,7 +3397,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
               {projectsData.map((project) => (
                 <div 
                   key={project.id}
-                  onClick={() => { playAppOpen(); setSelectedMobileProject(project); }}
+                  onClick={() => { playAppOpen(); setSelectedMobileProject(project); fetchVaiAnalysis(project); }}
                   className="w-full flex flex-col py-4 px-3 border-b border-[#22c55e]/10 active:bg-[#22c55e] active:text-black transition-colors cursor-pointer group"
                 >
                   <div className="flex items-center gap-3">
@@ -3357,11 +3434,38 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                     <div className="text-sm font-bold tracking-wider">{selectedMobileProject.tech}</div>
                   </div>
                   
-                  {/* Description Box */}
-                  <div className="relative p-5 border border-[#22c55e]/20 bg-[#22c55e]/5 text-white/80 text-sm leading-relaxed font-light shadow-[inset_0_0_20px_rgba(34,197,94,0.05)]">
-                    <div className="absolute top-0 left-0 w-2 h-2 border-t-[1.5px] border-l-[1.5px] border-[#22c55e]"></div>
-                    <div className="absolute bottom-0 right-0 w-2 h-2 border-b-[1.5px] border-r-[1.5px] border-[#22c55e]"></div>
-                    {selectedMobileProject.desc}
+                  {/* vAI Action Report (Premium UI) */}
+                  <div className="relative w-full border border-[#22c55e]/40 bg-[#050505] shadow-[0_0_15px_rgba(34,197,94,0.1)] mt-2 overflow-hidden">
+                    
+                    {/* VAI Header */}
+                    <div className="bg-[#22c55e]/20 px-3 py-2 border-b border-[#22c55e]/40 flex items-center justify-between z-10 relative">
+                      <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 bg-[#22c55e] rounded-full animate-ping shadow-[0_0_5px_#22c55e]"></div>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">
+                          vAI // Action_Report
+                        </span>
+                      </div>
+                      {isVaiLoading === selectedMobileProject.id && (
+                        <span className="text-[8px] text-[#22c55e] animate-pulse tracking-widest">PROCESSING...</span>
+                      )}
+                    </div>
+                    
+                    {/* Tactical Ambient Glow & Scanlines (Replaces harsh laser) */}
+                    <div className="absolute inset-0 bg-[linear-gradient(rgba(34,197,94,0.03)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none z-0"></div>
+                    <div className="absolute top-0 left-0 w-[2px] h-full bg-[#22c55e] shadow-[0_0_12px_#22c55e] animate-pulse z-10"></div>
+                    
+                    {/* VAI Decrypted Text & Skeleton Loader */}
+                    <div className="relative z-10 p-4 text-xs font-mono text-[#22c55e]/90 leading-[1.8] whitespace-pre-wrap">
+                      {isVaiLoading === selectedMobileProject.id ? (
+                        <div className="flex flex-col gap-2.5 opacity-70 py-1">
+                           <div className="h-2 w-3/4 bg-[#22c55e]/30 rounded animate-pulse"></div>
+                           <div className="h-2 w-full bg-[#22c55e]/30 rounded animate-pulse" style={{ animationDelay: '150ms' }}></div>
+                           <div className="h-2 w-5/6 bg-[#22c55e]/30 rounded animate-pulse" style={{ animationDelay: '300ms' }}></div>
+                        </div>
+                      ) : (
+                        vaiResponses[selectedMobileProject.id]
+                      )}
+                    </div>
                   </div>
                   
                   <div className="flex-1"></div> {/* Spacer pushes buttons to bottom */}
@@ -3374,7 +3478,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                       rel="noopener noreferrer" 
                       className="w-full block text-center bg-[#22c55e]/10 border-2 border-[#22c55e] py-4 text-[#22c55e] text-xs font-black tracking-[0.2em] uppercase active:bg-[#22c55e] active:text-black transition-all shadow-[0_0_15px_rgba(34,197,94,0.2)]"
                     >
-                      [ DEPLOY_UPLINK ]
+                      {selectedMobileProject.link.includes("github.com") ? "[ OPEN_REPO ]" : "[ LIVE_LINK ]"}
                     </a>
                   ) : (
                     <div className="w-full block text-center border-2 border-red-500/50 py-4 text-red-500 text-xs font-black tracking-[0.2em] uppercase bg-red-500/10">
