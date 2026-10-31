@@ -592,6 +592,8 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
     height: 390,
   });
 
+  const [selectedMobileProject, setSelectedMobileProject] = useState(null);
+
   const [projectsConfig, setProjectsConfig] = useState({
     x: 150,
     y: 120,
@@ -3231,8 +3233,8 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                   minHeight={350}
                   bounds="parent"
                   dragHandleClassName="projects-drag-handle"
-                  className="z-[60]"
-                >
+                  className="z-[60] max-md:hidden"
+                  >
                   <div className="w-full h-full bg-[#050505]/95 border border-[#22c55e]/50 rounded shadow-[0_0_30px_rgba(34,197,94,0.15)] flex flex-col overflow-hidden backdrop-blur-md">
                     {/* Title Bar */}
                     <div className="projects-drag-handle w-full h-8 bg-[#22c55e]/10 border-b border-[#22c55e]/30 flex items-center justify-between px-3 cursor-move">
@@ -3290,6 +3292,100 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                 </Rnd>
               )}
 
+              {/* MOBILE OVERRIDE: PROJECTS.dir (CLI Directory + Decryption Popup) */}
+        {isProjectsWindowOpen && (
+          <div className="hidden max-md:flex fixed inset-0 z-[99999] flex-col bg-[#050505] overflow-hidden font-mono text-[#22c55e] animate-[fadeIn_0.2s_ease-out]">
+            
+            {/* CLI Header Bar */}
+            <div className="w-full h-14 shrink-0 border-b border-[#22c55e]/30 bg-[#0a0a0a] flex items-center justify-between px-4 shadow-[0_4px_15px_rgba(34,197,94,0.1)]">
+              <div className="flex items-center gap-3">
+                <span className="w-2 h-4 bg-[#22c55e] animate-pulse"></span>
+                <span className="font-bold tracking-widest text-sm uppercase">~/projects.dir</span>
+              </div>
+              <button 
+                onClick={() => { setIsProjectsWindowOpen(false); setSelectedMobileProject(null); }}
+                className="text-[#22c55e] hover:bg-red-500/20 hover:text-red-500 px-3 py-2 rounded text-xs font-bold transition-colors"
+              >
+                [X]
+              </button>
+            </div>
+
+            {/* Directory List View (Terminal ls -la Style) */}
+            <div className="flex-1 overflow-y-auto no-scrollbar p-3">
+              <div className="text-[10px] opacity-50 mb-4 px-2 tracking-widest uppercase">
+                TOTAL_FILES: {projectsData.length} <br/>
+                ACCESS_LEVEL: root
+              </div>
+              
+              {projectsData.map((project) => (
+                <div 
+                  key={project.id}
+                  onClick={() => { playAppOpen(); setSelectedMobileProject(project); }}
+                  className="w-full flex flex-col py-4 px-3 border-b border-[#22c55e]/10 active:bg-[#22c55e] active:text-black transition-colors cursor-pointer group"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-[10px] opacity-50 group-active:text-black">./{project.id}</span>
+                    <span className="font-bold text-sm truncate group-active:text-black">{project.name}</span>
+                  </div>
+                  <span className="text-[9px] opacity-70 mt-1 pl-8 group-active:text-black">{project.tech}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* SECURE DECRYPTION POPUP (Overtakes the list when tapped) */}
+            {selectedMobileProject && (
+              <div className="absolute inset-0 z-50 bg-[#050505]/95 backdrop-blur-2xl flex flex-col animate-[cinematicUnfold_0.3s_forwards]">
+                
+                {/* Popup Header */}
+                <div className="w-full h-14 shrink-0 border-b border-[#22c55e]/30 bg-[#22c55e]/10 flex items-center justify-between px-4">
+                  <span className="font-bold text-xs tracking-widest truncate pr-4 text-white uppercase">
+                    FILE: {selectedMobileProject.name}
+                  </span>
+                  <button 
+                    onClick={() => setSelectedMobileProject(null)}
+                    className="text-[#22c55e] border border-[#22c55e]/50 px-3 py-1.5 text-[10px] font-bold active:bg-[#22c55e] active:text-black transition-colors"
+                  >
+                    BACK
+                  </button>
+                </div>
+                
+                {/* Popup Content */}
+                <div className="flex-1 p-6 flex flex-col gap-8 overflow-y-auto">
+                  {/* Tactical Badge */}
+                  <div className="w-full border-l-2 border-[#22c55e] pl-4 py-1">
+                    <div className="text-[9px] uppercase tracking-widest opacity-60 mb-1">Tech Stack Architecture</div>
+                    <div className="text-sm font-bold tracking-wider">{selectedMobileProject.tech}</div>
+                  </div>
+                  
+                  {/* Description Box */}
+                  <div className="relative p-5 border border-[#22c55e]/20 bg-[#22c55e]/5 text-white/80 text-sm leading-relaxed font-light shadow-[inset_0_0_20px_rgba(34,197,94,0.05)]">
+                    <div className="absolute top-0 left-0 w-2 h-2 border-t-[1.5px] border-l-[1.5px] border-[#22c55e]"></div>
+                    <div className="absolute bottom-0 right-0 w-2 h-2 border-b-[1.5px] border-r-[1.5px] border-[#22c55e]"></div>
+                    {selectedMobileProject.desc}
+                  </div>
+                  
+                  <div className="flex-1"></div> {/* Spacer pushes buttons to bottom */}
+
+                  {/* Action Buttons */}
+                  {selectedMobileProject.link !== "#" ? (
+                    <a 
+                      href={selectedMobileProject.link} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="w-full block text-center bg-[#22c55e]/10 border-2 border-[#22c55e] py-4 text-[#22c55e] text-xs font-black tracking-[0.2em] uppercase active:bg-[#22c55e] active:text-black transition-all shadow-[0_0_15px_rgba(34,197,94,0.2)]"
+                    >
+                      [ DEPLOY_UPLINK ]
+                    </a>
+                  ) : (
+                    <div className="w-full block text-center border-2 border-red-500/50 py-4 text-red-500 text-xs font-black tracking-[0.2em] uppercase bg-red-500/10">
+                      [ CLASSIFIED / WIP ]
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
               {/* --- CERTS.dat WINDOW --- */}
               {isCertsWindowOpen && (
                 <Rnd
