@@ -5449,7 +5449,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
           minHeight={350}
           bounds="parent"
           dragHandleClassName="comms-drag-handle"
-          className="z-[999] absolute"
+          className="z-[999] absolute max-md:hidden"
         >
           <div className="w-full h-full bg-[#050505]/95 border border-[#22c55e]/50 shadow-[0_0_30px_rgba(34,197,94,0.15)] flex flex-col font-mono backdrop-blur-md overflow-hidden">
             {/* Window Header (The Drag Handle) */}
@@ -5647,6 +5647,215 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
             </div>
           </div>
         </Rnd>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MOBILE OVERRIDE: Mail.conn (Encrypted Transmission Console) */}
+      {/* ========================================================================= */}
+      {isCommsWindowOpen && (
+        <div className="hidden max-md:flex fixed inset-0 z-[99999] flex-col bg-[#050505] overflow-hidden font-mono text-[#22c55e] animate-[fadeIn_0.2s_ease-out]">
+          {/* Header */}
+          <div className="w-full h-14 shrink-0 border-b border-[#22c55e]/30 bg-[#0a0a0a] flex items-center justify-between px-4 shadow-[0_4px_15px_rgba(34,197,94,0.1)]">
+            <div className="flex items-center gap-3">
+              <span className="w-2 h-4 bg-[#22c55e] animate-pulse"></span>
+              <span className="font-bold tracking-widest text-sm uppercase">
+                ~/mail.conn
+              </span>
+            </div>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsCommsWindowOpen(false);
+                setGuiPingStatus("IDLE");
+              }}
+              className="text-[#22c55e] hover:bg-red-500/20 hover:text-red-500 px-3 py-2 rounded text-xs font-bold transition-colors"
+            >
+              [X]
+            </button>
+          </div>
+
+          {/* Navigation Tabs */}
+          <div className="flex border-b border-[#22c55e]/20 shrink-0">
+            <button
+              onClick={() => {
+                setCommsView("PING");
+                setGuiPingStatus("IDLE");
+              }}
+              className={`flex-1 py-4 text-xs font-bold tracking-widest uppercase transition-colors ${commsView === "PING" ? "bg-[#22c55e]/20 text-white border-b-2 border-[#22c55e]" : "text-[#22c55e]/50 active:bg-[#22c55e]/10"}`}
+            >
+              Direct Ping
+            </button>
+            <button
+              onClick={() => {
+                setCommsView("FEEDBACK");
+                setGuiPingStatus("IDLE");
+              }}
+              className={`flex-1 py-4 text-xs font-bold tracking-widest uppercase transition-colors ${commsView === "FEEDBACK" ? "bg-orange-500/20 text-white border-b-2 border-orange-500" : "text-orange-500/50 active:bg-orange-500/10"}`}
+            >
+              Feedback
+            </button>
+          </div>
+
+          {/* Content Area */}
+          <div className="flex-1 p-5 overflow-y-auto no-scrollbar flex flex-col">
+            {guiPingStatus === "SUCCESS" ? (
+              <div className="flex-1 flex flex-col items-center justify-center space-y-6">
+                <div className="w-16 h-16 border-2 border-[#22c55e] rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(34,197,94,0.2)]">
+                  <svg
+                    className="w-8 h-8 text-[#22c55e]"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </div>
+                <div className="font-bold tracking-widest text-white text-center text-lg drop-shadow-[0_0_8px_rgba(34,197,94,0.8)]">
+                  TRANSMISSION SUCCESSFUL
+                </div>
+                <div className="text-xs text-[#22c55e]/70 text-center px-4 tracking-widest">
+                  Payload securely routed to inbox.
+                </div>
+                <button
+                  onClick={() => setGuiPingStatus("IDLE")}
+                  className="mt-8 border border-[#22c55e] px-6 py-3 bg-[#22c55e]/10 active:bg-[#22c55e] active:text-black transition-colors text-xs font-bold tracking-widest"
+                >
+                  [ INITIALIZE_NEW_LINK ]
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col h-full space-y-5">
+                {/* Dynamic Sub-header */}
+                {commsView === "FEEDBACK" ? (
+                  <div className="flex gap-2 shrink-0 mb-2">
+                    <button
+                      onClick={() => setFeedbackType("BUG")}
+                      className={`flex-1 py-3 text-xs font-bold border transition-colors ${feedbackType === "BUG" ? "bg-red-500/20 border-red-500 text-red-500" : "border-red-500/30 text-red-500/50 active:border-red-500"}`}
+                    >
+                      [ REPORT BUG ]
+                    </button>
+                    <button
+                      onClick={() => setFeedbackType("FEATURE")}
+                      className={`flex-1 py-3 text-xs font-bold border transition-colors ${feedbackType === "FEATURE" ? "bg-blue-500/20 border-blue-500 text-blue-500" : "border-blue-500/30 text-blue-500/50 active:border-blue-500"}`}
+                    >
+                      [ FEATURE ]
+                    </button>
+                  </div>
+                ) : (
+                  <div className="shrink-0 text-center mb-2 pb-4 border-b border-[#22c55e]/20">
+                    <span className="text-[#22c55e]/60 text-[10px] tracking-widest uppercase block mb-2">
+                      Or Route Manually To:
+                    </span>
+                    <span className="text-white text-xs font-mono tracking-widest bg-[#22c55e]/10 px-4 py-2 rounded border border-[#22c55e]/30">
+                      vadanta592007@hotmail.com
+                    </span>
+                  </div>
+                )}
+
+                {/* Email Input */}
+                <div className="shrink-0">
+                  <label className="block text-[10px] uppercase tracking-widest mb-2 text-white/70">
+                    Return Address (Email)
+                  </label>
+                  <input
+                    type="email"
+                    value={guiPingData.email}
+                    onChange={(e) => {
+                      setGuiPingData({ ...guiPingData, email: e.target.value });
+                      setGuiPingStatus("IDLE");
+                    }}
+                    className={`w-full bg-[#0a0a0a] border ${commsView === "FEEDBACK" ? "border-orange-500/50 focus:border-orange-500" : "border-[#22c55e]/50 focus:border-[#22c55e]"} text-white p-4 outline-none transition-colors text-sm`}
+                    placeholder="user@node.com"
+                  />
+                </div>
+
+                {/* Message Input */}
+                <div className="flex-1 flex flex-col min-h-[150px]">
+                  <label className="block text-[10px] uppercase tracking-widest mb-2 text-white/70">
+                    {commsView === "FEEDBACK"
+                      ? feedbackType === "BUG"
+                        ? "Bug Diagnostics"
+                        : "Feature Architecture"
+                      : "Encrypted Payload (Message)"}
+                  </label>
+                  <textarea
+                    value={guiPingData.message}
+                    onChange={(e) =>
+                      setGuiPingData({
+                        ...guiPingData,
+                        message: e.target.value,
+                      })
+                    }
+                    className={`w-full flex-1 bg-[#0a0a0a] border ${commsView === "FEEDBACK" ? "border-orange-500/50 focus:border-orange-500" : "border-[#22c55e]/50 focus:border-[#22c55e]"} text-white p-4 outline-none transition-colors text-sm resize-none custom-scrollbar`}
+                    placeholder={
+                      commsView === "PING"
+                        ? "Enter transmission data here..."
+                        : feedbackType === "BUG"
+                          ? "Describe the system failure, steps to reproduce, or error codes..."
+                          : "Describe the proposed functionality, its use cases..."
+                    }
+                  />
+                </div>
+
+                {/* Errors & Submit */}
+                {guiPingStatus === "INVALID_EMAIL" && (
+                  <div className="shrink-0 text-red-500 text-xs font-bold tracking-widest bg-red-500/10 p-3 border border-red-500/30 text-center">
+                    ERR: INVALID EMAIL
+                  </div>
+                )}
+                {guiPingStatus === "API_ERROR" && (
+                  <div className="shrink-0 text-red-500 text-xs font-bold tracking-widest bg-red-500/10 p-3 border border-red-500/30 text-center">
+                    ERR: TRANSMISSION FAILED
+                  </div>
+                )}
+
+                <button
+                  onClick={() => {
+                    const cleanEmail = guiPingData.email.trim();
+                    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail))
+                      return setGuiPingStatus("INVALID_EMAIL");
+                    setGuiPingStatus("SENDING");
+                    const finalPayload =
+                      commsView === "FEEDBACK"
+                        ? `[SYSTEM_FEEDBACK_TYPE: ${feedbackType}]\n\n${guiPingData.message}`
+                        : guiPingData.message;
+                    const targetTemplate =
+                      commsView === "FEEDBACK"
+                        ? "template_l3izrym"
+                        : "template_wvnet4e";
+
+                    emailjs
+                      .send(
+                        "service_7259ksh",
+                        targetTemplate,
+                        { from_email: cleanEmail, message: finalPayload },
+                        "yWVDlVd10PKZ4Q9l6",
+                      )
+                      .then(() => {
+                        setGuiPingStatus("SUCCESS");
+                        setGuiPingData({ email: "", message: "" });
+                      })
+                      .catch((err) => {
+                        console.error("EmailJS Error: ", err);
+                        setGuiPingStatus("API_ERROR");
+                      });
+                  }}
+                  disabled={guiPingStatus === "SENDING"}
+                  className={`shrink-0 w-full border transition-colors py-4 font-black tracking-[0.2em] text-sm uppercase ${commsView === "FEEDBACK" ? "bg-orange-500/10 border-orange-500 active:bg-orange-500 active:text-black text-orange-500" : "bg-[#22c55e]/10 border-[#22c55e] active:bg-[#22c55e] active:text-black text-[#22c55e]"}`}
+                >
+                  {guiPingStatus === "SENDING"
+                    ? "[ ENCRYPTING... ]"
+                    : "[ EXECUTE_TRANSMISSION ]"}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       )}
 
       {/* EDUCATION.exe TACTICAL WINDOW */}
