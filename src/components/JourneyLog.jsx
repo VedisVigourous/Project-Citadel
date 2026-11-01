@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
 // 1. THE ACTIVE NEURAL DATA
 const journeyNodes = [
   {
@@ -140,6 +142,25 @@ export default function JourneyLog({ onClose, themeHue = 0 }) {
   const [activeNode, setActiveNode] = useState(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
+  // Mobile Tinder Swipe State
+  const [cards, setCards] = useState([...journeyNodes].reverse());
+  const [swipeDirection, setSwipeDirection] = useState("right");
+
+  const handleSwipe = (info, id) => {
+    const swipeThreshold = 100;
+    if (info.offset.x > swipeThreshold) {
+      setSwipeDirection("right");
+      setCards((prev) => prev.filter((c) => c.id !== id));
+    } else if (info.offset.x < -swipeThreshold) {
+      setSwipeDirection("left");
+      setCards((prev) => prev.filter((c) => c.id !== id));
+    }
+  };
+
+  const handleResetLogs = () => {
+    setCards([...journeyNodes].reverse());
+  };
+
   const mainTrace = generatePCBPath(journeyNodes);
 
   /* NEW: Calculates the exact circuit path up to the clicked node */
@@ -164,7 +185,7 @@ export default function JourneyLog({ onClose, themeHue = 0 }) {
       ></div>
 
       {/* Top Bar */}
-      <div className="h-12 border-b border-[#22c55e]/30 flex items-center justify-between px-6 shrink-0 z-50 relative bg-black/60 shadow-lg">
+      <div className="max-md:hidden h-12 border-b border-[#22c55e]/30 flex items-center justify-between px-6 shrink-0 z-50 relative bg-black/60 shadow-lg">
         <span className="font-bold text-sm tracking-[0.2em] text-[#22c55e]">
           Journey.log // HARDWARE_ROUTING_ACTIVE
         </span>
@@ -178,7 +199,7 @@ export default function JourneyLog({ onClose, themeHue = 0 }) {
 
       {/* The Circuit Board Area (LOCKED FLAT) */}
       <div
-        className="flex-1 relative w-full h-full z-10"
+        className="flex-1 relative w-full h-full z-10 max-md:hidden"
         onClick={() => setActiveNode(null)}
       >
         {/* VISIBLE BACKGROUND DUMMY NODES */}
@@ -274,34 +295,38 @@ export default function JourneyLog({ onClose, themeHue = 0 }) {
             >
               {/* THE CRAZE: Massive EMP Sonar Ping when node is active */}
               {activeNode?.id === node.id && (
-                 <div className="absolute w-[300px] h-[300px] border-[2px] border-[#4ade80]/30 rounded-full animate-[ping_2.5s_cubic-bezier(0,0,0.2,1)_infinite] pointer-events-none"></div>
+                <div className="absolute w-[300px] h-[300px] border-[2px] border-[#4ade80]/30 rounded-full animate-[ping_2.5s_cubic-bezier(0,0,0.2,1)_infinite] pointer-events-none"></div>
               )}
 
               {/* INVISIBLE HITBOX (Now perfectly anchored) */}
               <div className="absolute w-24 h-24 bg-transparent z-0"></div>
 
               {/* THE SHAPE */}
-              <div className={`relative z-10 w-5 h-5 flex items-center justify-center border-2 transition-all duration-300 ${
-                node.id === 'origin' ? 'rotate-45' : 'rounded-full'
-              } ${
-                node.id === 'horizon' ? 'border-dashed opacity-60' : '' 
-              } ${
-                activeNode?.id === node.id 
-                  ? 'border-[#4ade80] scale-125 shadow-[0_0_20px_#4ade80] bg-black' 
-                  : 'border-[#22c55e] bg-[#050505] group-hover:border-[#4ade80] group-hover:scale-110 group-hover:shadow-[0_0_15px_rgba(34,197,94,0.6)]'
-              }`}>
-                <div className={`w-1.5 h-1.5 ${node.id === 'origin' ? 'rounded-sm' : 'rounded-full'} ${
-                  activeNode?.id === node.id 
-                    ? 'bg-[#4ade80] animate-pulse' 
-                    : node.id === 'horizon' 
-                      ? 'bg-[#22c55e]/30 animate-[pulse_3s_ease-in-out_infinite]'
-                      : 'bg-[#22c55e] group-hover:bg-[#4ade80]'
-                }`}></div>
+              <div
+                className={`relative z-10 w-5 h-5 flex items-center justify-center border-2 transition-all duration-300 ${
+                  node.id === "origin" ? "rotate-45" : "rounded-full"
+                } ${node.id === "horizon" ? "border-dashed opacity-60" : ""} ${
+                  activeNode?.id === node.id
+                    ? "border-[#4ade80] scale-125 shadow-[0_0_20px_#4ade80] bg-black"
+                    : "border-[#22c55e] bg-[#050505] group-hover:border-[#4ade80] group-hover:scale-110 group-hover:shadow-[0_0_15px_rgba(34,197,94,0.6)]"
+                }`}
+              >
+                <div
+                  className={`w-1.5 h-1.5 ${node.id === "origin" ? "rounded-sm" : "rounded-full"} ${
+                    activeNode?.id === node.id
+                      ? "bg-[#4ade80] animate-pulse"
+                      : node.id === "horizon"
+                        ? "bg-[#22c55e]/30 animate-[pulse_3s_ease-in-out_infinite]"
+                        : "bg-[#22c55e] group-hover:bg-[#4ade80]"
+                  }`}
+                ></div>
               </div>
-              
+
               {/* THE LABEL */}
-              <div className={`absolute top-[160%] whitespace-nowrap tracking-[0.2em] text-[8px] font-bold transition-all duration-300 uppercase px-2 py-0.5 bg-black/90 border pointer-events-none ${activeNode?.id === node.id ? 'text-[#4ade80] border-[#4ade80] shadow-[0_0_10px_rgba(74,222,128,0.3)]' : 'text-[#22c55e]/70 border-[#22c55e]/30 group-hover:border-[#22c55e] group-hover:text-white'}`}>
-                {node.id === 'origin' ? 'SYS.BOOT' : `C${i}::${node.title}`}
+              <div
+                className={`absolute top-[160%] whitespace-nowrap tracking-[0.2em] text-[8px] font-bold transition-all duration-300 uppercase px-2 py-0.5 bg-black/90 border pointer-events-none ${activeNode?.id === node.id ? "text-[#4ade80] border-[#4ade80] shadow-[0_0_10px_rgba(74,222,128,0.3)]" : "text-[#22c55e]/70 border-[#22c55e]/30 group-hover:border-[#22c55e] group-hover:text-white"}`}
+              >
+                {node.id === "origin" ? "SYS.BOOT" : `C${i}::${node.title}`}
               </div>
             </div>
           </div>
@@ -417,7 +442,7 @@ export default function JourneyLog({ onClose, themeHue = 0 }) {
       </div>
 
       {/* PERIPHERAL METRICS HUD (Top-Left Anchor) */}
-      <div className="absolute top-15 left-3 border border-[#22c55e]/30 bg-[#020502]/80 backdrop-blur-md p-3 rounded-sm pointer-events-none z-50 shadow-[0_0_15px_rgba(34,197,94,0.1)] flex flex-col gap-1.5">
+      <div className="max-md:hidden absolute top-15 left-3 border border-[#22c55e]/30 bg-[#020502]/80 backdrop-blur-md p-3 rounded-sm pointer-events-none z-50 shadow-[0_0_15px_rgba(34,197,94,0.1)] flex flex-col gap-1.5">
         <div className="text-[#4ade80] text-[10px] font-bold tracking-widest uppercase mb-1 border-b border-[#22c55e]/30 pb-1">
           SYS.DIAGNOSTICS
         </div>
@@ -472,6 +497,147 @@ export default function JourneyLog({ onClose, themeHue = 0 }) {
             100% { transform: perspective(1200px) rotateX(3deg) rotateY(-3deg); }
           }
         `}</style>
+
+      {/* ========================================================================= */}
+      {/* MOBILE OVERRIDE: 3D Swipeable Dossier Deck */}
+      {/* ========================================================================= */}
+      <div className="hidden max-md:flex flex-1 relative flex-col overflow-hidden bg-[#050505]">
+        {/* MOBILE HEADER (The Escape Hatch!) */}
+        <div className="w-full h-14 shrink-0 border-b border-[#22c55e]/30 bg-[#0a0a0a] flex items-center justify-between px-4 shadow-[0_4px_15px_rgba(34,197,94,0.1)] z-50 relative">
+          <div className="flex items-center gap-3">
+            <span className="w-2 h-4 bg-[#22c55e] animate-pulse"></span>
+            <span className="font-bold tracking-widest text-sm uppercase">
+              ~/journey.log
+            </span>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-[#22c55e] hover:bg-red-500/20 hover:text-red-500 px-3 py-2 rounded text-xs font-bold transition-colors active:bg-[#22c55e]/20"
+          >
+            [X]
+          </button>
+        </div>
+        {/* Tactical Swipe Area */}
+        <div className="flex-1 relative flex flex-col items-center justify-center p-5 overflow-hidden">
+          {/* Ambient Scanning Grid */}
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(34,197,94,0.03)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none"></div>
+
+          {/* EXPLICIT INSTRUCTION */}
+          <div className="text-[10px] text-[#22c55e]/70 uppercase tracking-[0.3em] mb-4 animate-pulse z-10 drop-shadow-[0_0_5px_rgba(34,197,94,0.5)]">
+            [ &lt;&lt; Swipe Cards to Navigate &gt;&gt; ]
+          </div>
+
+          {/* 3D Card Stack Container (Taller for images) */}
+          <div className="relative w-full max-w-[340px] h-[520px]">
+            <AnimatePresence>
+              {cards.map((item, index) => {
+                const isTop = index === cards.length - 1;
+
+                return (
+                  <motion.div
+                    key={item.id}
+                    drag={isTop ? "x" : false}
+                    dragConstraints={{ left: 0, right: 0 }}
+                    onDragEnd={(e, info) => handleSwipe(info, item.id)}
+                    initial={{ scale: 0.8, opacity: 0, y: 50 }}
+                    animate={{
+                      scale: isTop ? 1 : 1 - (cards.length - 1 - index) * 0.05,
+                      y: isTop ? 0 : (cards.length - 1 - index) * 15,
+                      opacity: isTop ? 1 : 1 - (cards.length - 1 - index) * 0.2,
+                      zIndex: index,
+                    }}
+                    exit={{
+                      x: swipeDirection === "left" ? -300 : 300,
+                      opacity: 0,
+                      rotate: swipeDirection === "left" ? -15 : 15,
+                    }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    whileDrag={{ scale: 1.02, cursor: "grabbing" }}
+                    className={`absolute inset-0 bg-[#0a0a0a] border-2 flex flex-col overflow-hidden ${isTop ? "border-[#22c55e] shadow-[0_0_30px_rgba(34,197,94,0.15)] cursor-grab" : "border-[#22c55e]/30"}`}
+                  >
+                    {/* Card Header */}
+                    <div className="border-b border-[#22c55e]/30 p-3 shrink-0 flex items-center justify-between bg-[#22c55e]/5">
+                      <span className="text-[10px] tracking-widest uppercase opacity-70">
+                        Log // {item.date}
+                      </span>
+                      <span className="w-2 h-2 rounded-full bg-[#22c55e] animate-ping"></span>
+                    </div>
+
+                    {/* IMAGE BLOCK (Inherits Desktop Hacker Filter) */}
+                    {item.image && (
+                      <div className="w-full h-36 shrink-0 bg-black border-b border-[#22c55e]/30 p-1 relative overflow-hidden">
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          className={`w-full h-full opacity-80 ${item.id === "arcade_loot" ? "object-contain" : "object-cover object-top"}`}
+                          style={{
+                            filter: `grayscale(100%) sepia(50%) hue-rotate(75deg) contrast(125%) brightness(75%)`,
+                          }}
+                        />
+                      </div>
+                    )}
+
+                    {/* Text Content */}
+                    <div className="p-5 flex-1 flex flex-col justify-start overflow-y-auto custom-scrollbar">
+                      <h3 className="text-lg font-black uppercase tracking-wider mb-2 drop-shadow-[0_0_8px_rgba(34,197,94,0.5)] leading-tight">
+                        {item.title}
+                      </h3>
+                      <div className="text-[10px] font-bold text-white mb-3 uppercase tracking-widest border-l-2 border-[#22c55e] pl-2">
+                        {item.category}
+                      </div>
+                      <p className="text-[11px] text-[#22c55e]/80 leading-relaxed">
+                        {item.desc}
+                      </p>
+                    </div>
+
+                    {/* Swipe Indicators */}
+                    <div className="p-4 shrink-0 border-t border-[#22c55e]/20 flex justify-between items-center text-[10px] uppercase font-black tracking-widest bg-black/40">
+                      <span className="text-red-500/60">&lt;&lt; ARCHIVE</span>
+                      <span className="text-[#22c55e] animate-pulse">
+                        SWIPE
+                      </span>
+                      <span className="text-[#4ade80]/60">VERIFY &gt;&gt;</span>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+
+            {/* Empty State */}
+            {cards.length === 0 && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-center animate-[fadeIn_0.5s_ease-out]">
+                <div className="w-16 h-16 border border-[#22c55e]/50 rounded-full flex items-center justify-center mb-4 shadow-[0_0_15px_rgba(34,197,94,0.2)]">
+                  <svg
+                    className="w-6 h-6 text-[#22c55e]"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </div>
+                <div className="text-sm font-bold tracking-widest uppercase mb-2 text-white">
+                  ALL LOGS VERIFIED
+                </div>
+                <div className="text-[9px] opacity-60 tracking-widest mb-8">
+                  NO PENDING JOURNEY DATA
+                </div>
+                <button
+                  onClick={handleResetLogs}
+                  className="border border-[#22c55e] px-4 py-2 text-[10px] font-bold tracking-widest active:bg-[#22c55e] active:text-black transition-colors"
+                >
+                  [ RELOAD_ARCHIVE ]
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
