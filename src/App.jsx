@@ -1015,6 +1015,62 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
   const [pendingAction, setPendingAction] = useState(null);
   const [terminalMsg, setTerminalMsg] = useState("");
 
+  // Resume vAI Summary Fetcher
+  const fetchResumeSummary = async () => {
+    if (vaiResponses["resume_summary"]) return; // Serve from cache
+    setIsVaiLoading("resume_summary");
+
+    try {
+      const response = await fetch(
+        "https://api.groq.com/openai/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "openai/gpt-oss-20b",
+            messages: [
+              {
+                role: "system",
+                content:
+                  "You are vAI, a cyberpunk AI assistant. Synthesize a 3-4 sentence high-impact executive summary of the developer based on the provided data. Highlight their dual focus on UI/UX architecture and AI integration. Keep the tone tactical, confident, and cyberpunk-themed.",
+              },
+              {
+                role: "user",
+                content:
+                  "Vadanta Kumar Chauhaan. Frontend Architect & AI Engineer. B.Tech CSE. Key tech: React, Tailwind, GenAI, Chrome APIs, Java, DSA. Built Project Resonance (AI Chrome Extension). Top 33 at MLH HackDays. Passionate about performant, immersive web interfaces.",
+              },
+            ],
+            temperature: 0.7,
+          }),
+        },
+      );
+
+      const data = await response.json();
+      if (data.error) throw new Error(data.error.message);
+
+      setVaiResponses((prev) => ({
+        ...prev,
+        ["resume_summary"]: data.choices[0].message.content,
+      }));
+    } catch (error) {
+      setVaiResponses((prev) => ({
+        ...prev,
+        ["resume_summary"]: `[ ERR: vAI_UPLINK_FAILED ]\n> Tactical summary unavailable. Proceed with manual dossier download.`,
+      }));
+    }
+    setIsVaiLoading(null);
+  };
+
+  // Trigger summary exactly when compilation finishes
+  useEffect(() => {
+    if (isResumeWindowOpen && isPdfCompiled) {
+      fetchResumeSummary();
+    }
+  }, [isResumeWindowOpen, isPdfCompiled]);
+
   // --- SYSTEM FUNCTIONS ---
   // --- SYSTEM FUNCTIONS ---
   const handleReboot = () => {
@@ -4251,7 +4307,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                   minWidth={600}
                   bounds="parent"
                   dragHandleClassName="resume-drag-handle"
-                  className="absolute z-50"
+                  className="absolute z-50 max-md:hidden"
                 >
                   <div className="w-full h-full bg-[#0d1117] border border-blue-500/50 shadow-[0_0_30px_rgba(59,130,246,0.15)] flex flex-col">
                     {/* Window Header */}
@@ -4355,6 +4411,138 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                 </Rnd>
               )}
             </div>
+
+            {/* MOBILE OVERRIDE: RESUME.tex (Raw Compilation Terminal) */}
+            {isResumeWindowOpen && (
+              <div className="hidden max-md:flex fixed inset-0 z-[99999] flex-col bg-[#050505] overflow-hidden font-mono text-[#22c55e] animate-[fadeIn_0.2s_ease-out]">
+                {/* Terminal Header */}
+                <div className="w-full h-14 shrink-0 border-b border-[#22c55e]/30 bg-[#0a0a0a] flex items-center justify-between px-4 shadow-[0_4px_15px_rgba(34,197,94,0.1)] z-20">
+                  <div className="flex items-center gap-3">
+                    <span className="w-2 h-4 bg-[#22c55e] animate-pulse"></span>
+                    <span className="font-bold tracking-widest text-sm uppercase">
+                      ~/resume.tex_build
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setIsResumeWindowOpen(false);
+                      setIsPdfCompiled(false);
+                    }}
+                    className="text-[#22c55e] hover:bg-red-500/20 hover:text-red-500 px-3 py-2 rounded text-xs font-bold transition-colors"
+                  >
+                    [X]
+                  </button>
+                </div>
+
+                {/* Dynamic Build Area */}
+                <div className="flex-1 relative flex flex-col justify-end p-5 overflow-hidden bg-[radial-gradient(ellipse_at_center,rgba(34,197,94,0.05)_0%,transparent_70%)]">
+                  {!isPdfCompiled ? (
+                    <>
+                      {/* Scrolling Code Simulation */}
+                      <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-30 pointer-events-none">
+                        <div className="animate-[scrollText_2.5s_linear_forwards] text-[8px] whitespace-pre-wrap leading-tight text-[#22c55e] px-4 font-mono">
+                          {resumeTexCode}
+                        </div>
+                      </div>
+
+                      {/* Overlay Gradient to fade out the top */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/60 to-transparent z-10 pointer-events-none"></div>
+
+                      {/* Progress Bar & Status */}
+                      <div className="relative z-20 w-full flex flex-col gap-3 pb-4">
+                        <div className="text-[10px] font-bold animate-pulse tracking-widest uppercase">
+                          &gt; Compiling LaTeX Source_Code...
+                        </div>
+                        <div className="w-full h-2 border border-[#22c55e]/50 p-[1px]">
+                          <div
+                            className="h-full bg-[#22c55e] animate-[fillProgress_2.5s_ease-out_forwards]"
+                            onAnimationEnd={() => setIsPdfCompiled(true)}
+                          ></div>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    /* Compilation Complete State with vAI Summary */
+                    <div className="w-full h-full flex flex-col items-center justify-center animate-[fadeIn_0.4s_ease-out] px-4">
+                      <div className="text-center mb-6 mt-4">
+                        <h3 className="text-lg font-black tracking-[0.2em] mb-1 drop-shadow-[0_0_8px_rgba(34,197,94,0.8)]">
+                          BUILD COMPLETE
+                        </h3>
+                      </div>
+
+                      {/* vAI Executive Summary */}
+                      <div className="w-full max-w-[340px] relative border border-[#22c55e]/40 bg-[#050505] shadow-[0_0_15px_rgba(34,197,94,0.1)] mb-8 overflow-hidden text-left">
+                        <div className="bg-[#22c55e]/20 px-3 py-2 border-b border-[#22c55e]/40 flex items-center justify-between z-10 relative">
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-[#22c55e] rounded-full animate-ping shadow-[0_0_5px_#22c55e]"></div>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">
+                              vAI // Executive_Summary
+                            </span>
+                          </div>
+                          {isVaiLoading === "resume_summary" && (
+                            <span className="text-[8px] text-[#22c55e] animate-pulse tracking-widest">
+                              SYNTHESIZING...
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="absolute inset-0 bg-[linear-gradient(rgba(34,197,94,0.03)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none z-0"></div>
+                        <div className="absolute top-0 left-0 w-[2px] h-full bg-[#22c55e] shadow-[0_0_12px_#22c55e] animate-pulse z-10"></div>
+
+                        <div className="relative z-10 p-4 text-[10px] font-mono text-[#22c55e]/90 leading-[1.8] whitespace-pre-wrap max-h-[30vh] overflow-y-auto no-scrollbar">
+                          {isVaiLoading === "resume_summary" ? (
+                            <div className="flex flex-col gap-2.5 opacity-70 py-1">
+                              <div className="h-2 w-full bg-[#22c55e]/30 rounded animate-pulse"></div>
+                              <div
+                                className="h-2 w-5/6 bg-[#22c55e]/30 rounded animate-pulse"
+                                style={{ animationDelay: "150ms" }}
+                              ></div>
+                              <div
+                                className="h-2 w-3/4 bg-[#22c55e]/30 rounded animate-pulse"
+                                style={{ animationDelay: "300ms" }}
+                              ></div>
+                              <div
+                                className="h-2 w-4/5 bg-[#22c55e]/30 rounded animate-pulse"
+                                style={{ animationDelay: "450ms" }}
+                              ></div>
+                            </div>
+                          ) : (
+                            vaiResponses["resume_summary"]
+                          )}
+                        </div>
+                      </div>
+
+                      <a
+                        href="public\resume.pdf"
+                        download
+                        className="w-full max-w-[340px] shrink-0 bg-[#22c55e]/10 border-2 border-[#22c55e] py-4 text-center text-[#22c55e] text-xs font-black tracking-[0.3em] uppercase active:bg-[#22c55e] active:text-black transition-all shadow-[0_0_20px_rgba(34,197,94,0.15)]"
+                      >
+                        [ DOWNLOAD_PDF ]
+                      </a>
+
+                      <button
+                        onClick={() => setIsPdfCompiled(false)}
+                        className="mt-6 shrink-0 text-[9px] opacity-50 tracking-widest border-b border-transparent active:border-[#22c55e] transition-all pb-1 uppercase"
+                      >
+                        &gt; RECOMPILE_SOURCE
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Embedded CSS for Keyframes */}
+                <style>{`
+              @keyframes scrollText {
+                0% { transform: translateY(100vh); }
+                100% { transform: translateY(-150vh); }
+              }
+              @keyframes fillProgress {
+                0% { width: 0%; }
+                100% { width: 100%; }
+              }
+            `}</style>
+              </div>
+            )}
 
             {/* --- TERMINAL COMMAND LINE & DUAL HUD ARCHITECTURE --- */}
             <div className="absolute left-0 right-0 bottom-0 z-[70] pointer-events-none">
