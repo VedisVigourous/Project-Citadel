@@ -598,40 +598,47 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
   const [isVaiLoading, setIsVaiLoading] = useState(null);
 
   const fetchVaiAnalysis = async (project) => {
-    if (vaiResponses[project.id]) return; 
+    if (vaiResponses[project.id]) return;
     setIsVaiLoading(project.id);
-    
+
     try {
-      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`,
-          "Content-Type": "application/json"
+      const response = await fetch(
+        "https://api.groq.com/openai/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "openai/gpt-oss-20b", // Matched exactly to your AiProxy.jsx
+            messages: [
+              {
+                role: "system",
+                content:
+                  "You are vAI, a cyberpunk AI analyzing a developer's portfolio. Provide a fast, 2-sentence tactical breakdown. Format strictly as:\n[ MISSION ]: <goal>\n[ EXECUTION ]: <tech implementation>",
+              },
+              {
+                role: "user",
+                content: `Analyze this project: ${project.name}. Tech: ${project.tech}. Desc: ${project.desc}`,
+              },
+            ],
+            temperature: 0.7,
+          }),
         },
-        body: JSON.stringify({
-          model: "openai/gpt-oss-20b", // Matched exactly to your AiProxy.jsx
-          messages: [
-            { 
-              role: "system", 
-              content: "You are vAI, a cyberpunk AI analyzing a developer's portfolio. Provide a fast, 2-sentence tactical breakdown. Format strictly as:\n[ MISSION ]: <goal>\n[ EXECUTION ]: <tech implementation>" 
-            },
-            { 
-              role: "user", 
-              content: `Analyze this project: ${project.name}. Tech: ${project.tech}. Desc: ${project.desc}` 
-            }
-          ],
-          temperature: 0.7
-        })
-      });
+      );
 
       const data = await response.json();
       if (data.error) throw new Error(data.error.message);
 
-      setVaiResponses(prev => ({ ...prev, [project.id]: data.choices[0].message.content }));
+      setVaiResponses((prev) => ({
+        ...prev,
+        [project.id]: data.choices[0].message.content,
+      }));
     } catch (error) {
-      setVaiResponses(prev => ({ 
-        ...prev, 
-        [project.id]: `[ ERR: vAI_UPLINK_FAILED ]\n> System details: ${error.message}` 
+      setVaiResponses((prev) => ({
+        ...prev,
+        [project.id]: `[ ERR: vAI_UPLINK_FAILED ]\n> System details: ${error.message}`,
       }));
     }
     setIsVaiLoading(null);
@@ -639,41 +646,48 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
 
   // Certificate specific vAI Fetcher
   const fetchCertAnalysis = async (certName) => {
-    const certId = certName.replace(/\s+/g, '_');
+    const certId = certName.replace(/\s+/g, "_");
     if (vaiResponses[certId]) return; // Serve from cache
     setIsVaiLoading(certId);
-    
+
     try {
-      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`,
-          "Content-Type": "application/json"
+      const response = await fetch(
+        "https://api.groq.com/openai/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "openai/gpt-oss-20b",
+            messages: [
+              {
+                role: "system",
+                content:
+                  "You are vAI, a cyberpunk AI analyzing a developer's credential. Provide a fast, 2-sentence tactical breakdown of what this certification validates. Format strictly as:\n[ CREDENTIAL ]: <name>\n[ VALIDATES ]: <skills>",
+              },
+              {
+                role: "user",
+                content: `Analyze this certification: ${certName}`,
+              },
+            ],
+            temperature: 0.7,
+          }),
         },
-        body: JSON.stringify({
-          model: "openai/gpt-oss-20b", 
-          messages: [
-            { 
-              role: "system", 
-              content: "You are vAI, a cyberpunk AI analyzing a developer's credential. Provide a fast, 2-sentence tactical breakdown of what this certification validates. Format strictly as:\n[ CREDENTIAL ]: <name>\n[ VALIDATES ]: <skills>" 
-            },
-            { 
-              role: "user", 
-              content: `Analyze this certification: ${certName}` 
-            }
-          ],
-          temperature: 0.7
-        })
-      });
+      );
 
       const data = await response.json();
       if (data.error) throw new Error(data.error.message);
 
-      setVaiResponses(prev => ({ ...prev, [certId]: data.choices[0].message.content }));
+      setVaiResponses((prev) => ({
+        ...prev,
+        [certId]: data.choices[0].message.content,
+      }));
     } catch (error) {
-      setVaiResponses(prev => ({ 
-        ...prev, 
-        [certId]: `[ ERR: vAI_UPLINK_FAILED ]\n> System details: ${error.message}` 
+      setVaiResponses((prev) => ({
+        ...prev,
+        [certId]: `[ ERR: vAI_UPLINK_FAILED ]\n> System details: ${error.message}`,
       }));
     }
     setIsVaiLoading(null);
@@ -874,13 +888,13 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
   // --- PROJECT VAULT DATA ---
   const projectsData = [
     {
-    id: "01",
-    name: "Project_Resonance.crx",
-    tech: "JS / Gemini 1.5 / Chrome API",
-    desc: "AI-powered accessibility Chrome Extension bridging digital culture gaps. MLH HackDays Top 33.",
-    link: "https://github.com/hobo7676/hackdays-spiker",
-    vai: "[ MISSION ]: Bridge the digital culture gap for the visually impaired at MLH Hackdays.\n[ EXECUTION ]: Engineered a background service worker to intercept DOM elements. Securely routed raw meme data to the Gemini 1.5 Flash API to dynamically synthesize audio context, vibe, and humor.",
-  },
+      id: "01",
+      name: "Project_Resonance.crx",
+      tech: "JS / Gemini 1.5 / Chrome API",
+      desc: "AI-powered accessibility Chrome Extension bridging digital culture gaps. MLH HackDays Top 33.",
+      link: "https://github.com/hobo7676/hackdays-spiker",
+      vai: "[ MISSION ]: Bridge the digital culture gap for the visually impaired at MLH Hackdays.\n[ EXECUTION ]: Engineered a background service worker to intercept DOM elements. Securely routed raw meme data to the Gemini 1.5 Flash API to dynamically synthesize audio context, vibe, and humor.",
+    },
     {
       id: "02",
       name: "Police_Daily_Performa.exe",
@@ -2396,13 +2410,13 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
               </div>
 
               {/* --- CENTRAL CHART & MODULES --- */}
-        <div 
-          className="hidden md:flex absolute inset-0 flex-col items-center justify-center pb-24 pointer-events-none z-0"
-          style={{
-            transform: `translate(${bgOffset.x * -0.6}px, ${bgOffset.y * -0.6}px)`,
-            transition: "transform 0.1s ease-out",
-          }}
-        >
+              <div
+                className="hidden md:flex absolute inset-0 flex-col items-center justify-center pb-24 pointer-events-none z-0"
+                style={{
+                  transform: `translate(${bgOffset.x * -0.6}px, ${bgOffset.y * -0.6}px)`,
+                  transition: "transform 0.1s ease-out",
+                }}
+              >
                 {/* TOP ROW: GitHub & Socials */}
                 <div className="flex items-center gap-4 mb-6 relative z-50">
                   {/* GitHub Node */}
@@ -2563,13 +2577,13 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
               </div>
 
               {/* Desktop Icons (Left Side) -> STRICTLY HIDDEN ON MOBILE */}
-        <div 
-          className="hidden md:flex flex-col space-y-6 w-24 mt-4 relative z-40"
-          style={{
-            transform: `translate(${bgOffset.x * 0.4}px, ${bgOffset.y * 0.4}px)`,
-            transition: "transform 0.1s ease-out",
-          }}
-        >
+              <div
+                className="hidden md:flex flex-col space-y-6 w-24 mt-4 relative z-40"
+                style={{
+                  transform: `translate(${bgOffset.x * 0.4}px, ${bgOffset.y * 0.4}px)`,
+                  transition: "transform 0.1s ease-out",
+                }}
+              >
                 {/* --- IDENTITY.exe (PREMIUM PAN, ZOOM & NEON SWEEP EDITION) --- */}
                 <div
                   className="flex flex-col items-center cursor-pointer group w-24"
@@ -2856,13 +2870,13 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
               </div>
 
               {/* RIGHT SIDE ICONS -> STRICTLY HIDDEN ON MOBILE */}
-        <div 
-          className="hidden md:flex absolute top-4 right-4 mt-4 flex-col space-y-6 w-24 items-center z-40"
-          style={{
-            transform: `translate(${bgOffset.x * 0.4}px, ${bgOffset.y * 0.4}px)`,
-            transition: "transform 0.1s ease-out",
-          }}
-        >
+              <div
+                className="hidden md:flex absolute top-4 right-4 mt-4 flex-col space-y-6 w-24 items-center z-40"
+                style={{
+                  transform: `translate(${bgOffset.x * 0.4}px, ${bgOffset.y * 0.4}px)`,
+                  transition: "transform 0.1s ease-out",
+                }}
+              >
                 {/* Mail.conn Desktop Icon */}
                 <div
                   className="flex flex-col items-center cursor-pointer group w-24"
@@ -3345,7 +3359,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                   bounds="parent"
                   dragHandleClassName="projects-drag-handle"
                   className="z-[60] max-md:hidden"
-                  >
+                >
                   <div className="w-full h-full bg-[#050505]/95 border border-[#22c55e]/50 rounded shadow-[0_0_30px_rgba(34,197,94,0.15)] flex flex-col overflow-hidden backdrop-blur-md">
                     {/* Title Bar */}
                     <div className="projects-drag-handle w-full h-8 bg-[#22c55e]/10 border-b border-[#22c55e]/30 flex items-center justify-between px-3 cursor-move">
@@ -3368,68 +3382,77 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
 
                       <div className="flex flex-col space-y-4">
                         {projectsData.map((project) => (
-                <div
-                  key={project.id}
-                  onClick={() => {
-                    const isOpening = activeDesktopProject !== project.id;
-                    setActiveDesktopProject(isOpening ? project.id : null);
-                    if (isOpening) fetchVaiAnalysis(project);
-                  }}
-                  className={`group flex flex-col p-4 border transition-all rounded relative overflow-hidden cursor-pointer ${
-                    activeDesktopProject === project.id
-                      ? "border-[#22c55e] bg-[#22c55e]/5 shadow-[0_0_15px_rgba(34,197,94,0.15)]"
-                      : "border-[#22c55e]/20 bg-black/40 hover:bg-[#22c55e]/5 hover:border-[#22c55e]/50 border-l-2 border-l-transparent hover:border-l-[#22c55e]"
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className={`font-bold text-sm transition-colors ${activeDesktopProject === project.id ? "text-white" : "text-[#22c55e] group-hover:text-white"}`}>
-                      {project.name}
-                    </span>
-                    <span className="text-[10px] uppercase tracking-widest text-[#22c55e] opacity-60 bg-[#22c55e]/10 px-2 py-0.5 rounded border border-[#22c55e]/20">
-                      {project.tech}
-                    </span>
-                  </div>
-                  
-                  <span className="text-xs text-[#22c55e] opacity-70 leading-relaxed pr-24">
-                    {project.desc}
-                  </span>
+                          <div
+                            key={project.id}
+                            onClick={() => {
+                              const isOpening =
+                                activeDesktopProject !== project.id;
+                              setActiveDesktopProject(
+                                isOpening ? project.id : null,
+                              );
+                              if (isOpening) fetchVaiAnalysis(project);
+                            }}
+                            className={`group flex flex-col p-4 border transition-all rounded relative overflow-hidden cursor-pointer ${
+                              activeDesktopProject === project.id
+                                ? "border-[#22c55e] bg-[#22c55e]/5 shadow-[0_0_15px_rgba(34,197,94,0.15)]"
+                                : "border-[#22c55e]/20 bg-black/40 hover:bg-[#22c55e]/5 hover:border-[#22c55e]/50 border-l-2 border-l-transparent hover:border-l-[#22c55e]"
+                            }`}
+                          >
+                            <div className="flex items-center justify-between mb-2">
+                              <span
+                                className={`font-bold text-sm transition-colors ${activeDesktopProject === project.id ? "text-white" : "text-[#22c55e] group-hover:text-white"}`}
+                              >
+                                {project.name}
+                              </span>
+                              <span className="text-[10px] uppercase tracking-widest text-[#22c55e] opacity-60 bg-[#22c55e]/10 px-2 py-0.5 rounded border border-[#22c55e]/20">
+                                {project.tech}
+                              </span>
+                            </div>
 
-                  {/* Live vAI Action Report */}
-                  {activeDesktopProject === project.id && (
-                    <div className="relative w-full border border-[#22c55e]/40 bg-[#050505] shadow-[0_0_15px_rgba(34,197,94,0.1)] mt-4 mb-2 overflow-hidden animate-[fadeIn_0.3s_ease-out]">
-                      <div className="bg-[#22c55e]/20 px-3 py-2 border-b border-[#22c55e]/40 flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 bg-[#22c55e] rounded-full animate-ping shadow-[0_0_5px_#22c55e]"></div>
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">
-                          vAI // Action_Report
-                        </span>
-                      </div>
-                      <div className="absolute top-8 left-0 w-full h-[1px] bg-[#22c55e] shadow-[0_0_8px_#22c55e] animate-[scan_2s_linear_infinite]"></div>
-                      <div className="p-4 text-xs font-mono text-[#22c55e]/90 leading-[1.8] whitespace-pre-wrap">
-                        {isVaiLoading === project.id ? (
-                          <span className="animate-pulse">vAI is analyzing project architecture...</span>
-                        ) : (
-                          vaiResponses[project.id]
-                        )}
-                      </div>
-                    </div>
-                  )}
+                            <span className="text-xs text-[#22c55e] opacity-70 leading-relaxed pr-24">
+                              {project.desc}
+                            </span>
 
-                  {/* Interactive Open Repo Button */}
-                  {project.link !== "#" && (
-                    <div className="flex justify-end mt-3">
-                      <a
-                        href={project.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className={`text-[10px] font-bold tracking-widest text-[#22c55e] border border-[#22c55e]/50 px-2 py-1 rounded hover:bg-[#22c55e] hover:text-black transition-all ${activeDesktopProject === project.id ? "opacity-100 translate-y-0" : "opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0"}`}
-                      >
-                        {project.link.includes("github.com") ? "[> OPEN_REPO]" : "[> LIVE_LINK]"}
-                      </a>
-                    </div>
-                  )}
-                </div>
-              ))}
+                            {/* Live vAI Action Report */}
+                            {activeDesktopProject === project.id && (
+                              <div className="relative w-full border border-[#22c55e]/40 bg-[#050505] shadow-[0_0_15px_rgba(34,197,94,0.1)] mt-4 mb-2 overflow-hidden animate-[fadeIn_0.3s_ease-out]">
+                                <div className="bg-[#22c55e]/20 px-3 py-2 border-b border-[#22c55e]/40 flex items-center gap-2">
+                                  <div className="w-1.5 h-1.5 bg-[#22c55e] rounded-full animate-ping shadow-[0_0_5px_#22c55e]"></div>
+                                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">
+                                    vAI // Action_Report
+                                  </span>
+                                </div>
+                                <div className="absolute top-8 left-0 w-full h-[1px] bg-[#22c55e] shadow-[0_0_8px_#22c55e] animate-[scan_2s_linear_infinite]"></div>
+                                <div className="p-4 text-xs font-mono text-[#22c55e]/90 leading-[1.8] whitespace-pre-wrap">
+                                  {isVaiLoading === project.id ? (
+                                    <span className="animate-pulse">
+                                      vAI is analyzing project architecture...
+                                    </span>
+                                  ) : (
+                                    vaiResponses[project.id]
+                                  )}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Interactive Open Repo Button */}
+                            {project.link !== "#" && (
+                              <div className="flex justify-end mt-3">
+                                <a
+                                  href={project.link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                  className={`text-[10px] font-bold tracking-widest text-[#22c55e] border border-[#22c55e]/50 px-2 py-1 rounded hover:bg-[#22c55e] hover:text-black transition-all ${activeDesktopProject === project.id ? "opacity-100 translate-y-0" : "opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0"}`}
+                                >
+                                  {project.link.includes("github.com")
+                                    ? "[> OPEN_REPO]"
+                                    : "[> LIVE_LINK]"}
+                                </a>
+                              </div>
+                            )}
+                          </div>
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -3437,484 +3460,786 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
               )}
 
               {/* MOBILE OVERRIDE: PROJECTS.dir (CLI Directory + Decryption Popup) */}
-        {isProjectsWindowOpen && (
-          <div className="hidden max-md:flex fixed inset-0 z-[99999] flex-col bg-[#050505] overflow-hidden font-mono text-[#22c55e] animate-[fadeIn_0.2s_ease-out]">
-            
-            {/* CLI Header Bar */}
-            <div className="w-full h-14 shrink-0 border-b border-[#22c55e]/30 bg-[#0a0a0a] flex items-center justify-between px-4 shadow-[0_4px_15px_rgba(34,197,94,0.1)]">
-              <div className="flex items-center gap-3">
-                <span className="w-2 h-4 bg-[#22c55e] animate-pulse"></span>
-                <span className="font-bold tracking-widest text-sm uppercase">~/projects.dir</span>
-              </div>
-              <button 
-                onClick={() => { setIsProjectsWindowOpen(false); setSelectedMobileProject(null); }}
-                className="text-[#22c55e] hover:bg-red-500/20 hover:text-red-500 px-3 py-2 rounded text-xs font-bold transition-colors"
-              >
-                [X]
-              </button>
-            </div>
-
-            {/* Directory List View (Terminal ls -la Style) */}
-            <div className="flex-1 overflow-y-auto no-scrollbar p-3">
-              <div className="text-[10px] opacity-50 mb-4 px-2 tracking-widest uppercase">
-                TOTAL_FILES: {projectsData.length} <br/>
-                ACCESS_LEVEL: root
-              </div>
-              
-              {projectsData.map((project) => (
-                <div 
-                  key={project.id}
-                  onClick={() => { playAppOpen(); setSelectedMobileProject(project); fetchVaiAnalysis(project); }}
-                  className="w-full flex flex-col py-4 px-3 border-b border-[#22c55e]/10 active:bg-[#22c55e] active:text-black transition-colors cursor-pointer group"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-[10px] opacity-50 group-active:text-black">./{project.id}</span>
-                    <span className="font-bold text-sm truncate group-active:text-black">{project.name}</span>
-                  </div>
-                  <span className="text-[9px] opacity-70 mt-1 pl-8 group-active:text-black">{project.tech}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* SECURE DECRYPTION POPUP (Overtakes the list when tapped) */}
-            {selectedMobileProject && (
-              <div className="absolute inset-0 z-50 bg-[#050505]/95 backdrop-blur-2xl flex flex-col animate-[cinematicUnfold_0.3s_forwards]">
-                
-                {/* Popup Header */}
-                <div className="w-full h-14 shrink-0 border-b border-[#22c55e]/30 bg-[#22c55e]/10 flex items-center justify-between px-4">
-                  <span className="font-bold text-xs tracking-widest truncate pr-4 text-white uppercase">
-                    FILE: {selectedMobileProject.name}
-                  </span>
-                  <button 
-                    onClick={() => setSelectedMobileProject(null)}
-                    className="text-[#22c55e] border border-[#22c55e]/50 px-3 py-1.5 text-[10px] font-bold active:bg-[#22c55e] active:text-black transition-colors"
-                  >
-                    BACK
-                  </button>
-                </div>
-                
-                {/* Popup Content */}
-                <div className="flex-1 p-6 flex flex-col gap-8 overflow-y-auto">
-                  {/* Tactical Badge */}
-                  <div className="w-full border-l-2 border-[#22c55e] pl-4 py-1">
-                    <div className="text-[9px] uppercase tracking-widest opacity-60 mb-1">Tech Stack Architecture</div>
-                    <div className="text-sm font-bold tracking-wider">{selectedMobileProject.tech}</div>
-                  </div>
-                  
-                  {/* vAI Action Report (Premium UI) */}
-                  <div className="relative w-full border border-[#22c55e]/40 bg-[#050505] shadow-[0_0_15px_rgba(34,197,94,0.1)] mt-2 overflow-hidden">
-                    
-                    {/* VAI Header */}
-                    <div className="bg-[#22c55e]/20 px-3 py-2 border-b border-[#22c55e]/40 flex items-center justify-between z-10 relative">
-                      <div className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 bg-[#22c55e] rounded-full animate-ping shadow-[0_0_5px_#22c55e]"></div>
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">
-                          vAI // Action_Report
-                        </span>
-                      </div>
-                      {isVaiLoading === selectedMobileProject.id && (
-                        <span className="text-[8px] text-[#22c55e] animate-pulse tracking-widest">PROCESSING...</span>
-                      )}
+              {isProjectsWindowOpen && (
+                <div className="hidden max-md:flex fixed inset-0 z-[99999] flex-col bg-[#050505] overflow-hidden font-mono text-[#22c55e] animate-[fadeIn_0.2s_ease-out]">
+                  {/* CLI Header Bar */}
+                  <div className="w-full h-14 shrink-0 border-b border-[#22c55e]/30 bg-[#0a0a0a] flex items-center justify-between px-4 shadow-[0_4px_15px_rgba(34,197,94,0.1)]">
+                    <div className="flex items-center gap-3">
+                      <span className="w-2 h-4 bg-[#22c55e] animate-pulse"></span>
+                      <span className="font-bold tracking-widest text-sm uppercase">
+                        ~/projects.dir
+                      </span>
                     </div>
-                    
-                    {/* Tactical Ambient Glow & Scanlines (Replaces harsh laser) */}
-                    <div className="absolute inset-0 bg-[linear-gradient(rgba(34,197,94,0.03)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none z-0"></div>
-                    <div className="absolute top-0 left-0 w-[2px] h-full bg-[#22c55e] shadow-[0_0_12px_#22c55e] animate-pulse z-10"></div>
-                    
-                    {/* VAI Decrypted Text & Skeleton Loader */}
-                    <div className="relative z-10 p-4 text-xs font-mono text-[#22c55e]/90 leading-[1.8] whitespace-pre-wrap">
-                      {isVaiLoading === selectedMobileProject.id ? (
-                        <div className="flex flex-col gap-2.5 opacity-70 py-1">
-                           <div className="h-2 w-3/4 bg-[#22c55e]/30 rounded animate-pulse"></div>
-                           <div className="h-2 w-full bg-[#22c55e]/30 rounded animate-pulse" style={{ animationDelay: '150ms' }}></div>
-                           <div className="h-2 w-5/6 bg-[#22c55e]/30 rounded animate-pulse" style={{ animationDelay: '300ms' }}></div>
-                        </div>
-                      ) : (
-                        vaiResponses[selectedMobileProject.id]
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="flex-1"></div> {/* Spacer pushes buttons to bottom */}
-
-                  {/* Action Buttons */}
-                  {selectedMobileProject.link !== "#" ? (
-                    <a 
-                      href={selectedMobileProject.link} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className="w-full block text-center bg-[#22c55e]/10 border-2 border-[#22c55e] py-4 text-[#22c55e] text-xs font-black tracking-[0.2em] uppercase active:bg-[#22c55e] active:text-black transition-all shadow-[0_0_15px_rgba(34,197,94,0.2)]"
+                    <button
+                      onClick={() => {
+                        setIsProjectsWindowOpen(false);
+                        setSelectedMobileProject(null);
+                      }}
+                      className="text-[#22c55e] hover:bg-red-500/20 hover:text-red-500 px-3 py-2 rounded text-xs font-bold transition-colors"
                     >
-                      {selectedMobileProject.link.includes("github.com") ? "[ OPEN_REPO ]" : "[ LIVE_LINK ]"}
-                    </a>
-                  ) : (
-                    <div className="w-full block text-center border-2 border-red-500/50 py-4 text-red-500 text-xs font-black tracking-[0.2em] uppercase bg-red-500/10">
-                      [ CLASSIFIED / WIP ]
+                      [X]
+                    </button>
+                  </div>
+
+                  {/* Directory List View (Terminal ls -la Style) */}
+                  <div className="flex-1 overflow-y-auto no-scrollbar p-3">
+                    <div className="text-[10px] opacity-50 mb-4 px-2 tracking-widest uppercase">
+                      TOTAL_FILES: {projectsData.length} <br />
+                      ACCESS_LEVEL: root
                     </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-              {/* ========================================================================= */}
-    {/* CERTS.dat DESKTOP WINDOW */}
-    {/* ========================================================================= */}
-    {isCertsWindowOpen && (
-      <Rnd
-        size={{ width: certsConfig.width, height: certsConfig.height }}
-        position={{ x: certsConfig.x, y: certsConfig.y }}
-        onDragStop={(e, d) => setCertsConfig((prev) => ({ ...prev, x: d.x, y: d.y }))}
-        onResizeStop={(e, direction, ref, delta, position) => {
-          setCertsConfig({
-            width: parseInt(ref.style.width, 10),
-            height: parseInt(ref.style.height, 10),
-            x: position.x,
-            y: position.y,
-          });
-        }}
-        minWidth={750}
-        minHeight={500}
-        bounds="parent"
-        dragHandleClassName="certs-drag-handle"
-        className="z-[60] max-md:hidden"
-      >
-        <div className="w-full h-full bg-[#050505]/95 border border-[#22c55e]/50 rounded shadow-[0_0_30px_rgba(34,197,94,0.15)] flex flex-col overflow-hidden backdrop-blur-md">
-          {/* Title Bar */}
-          <div className="certs-drag-handle w-full h-8 bg-[#22c55e]/10 border-b border-[#22c55e]/30 flex items-center justify-between px-3 cursor-move">
-            <span className="text-[#22c55e] font-bold text-xs tracking-widest">
-              /sys/users/vadanta/CERTS.dat
-            </span>
-            <button
-              onClick={() => setIsCertsWindowOpen(false)}
-              className="text-[#22c55e] hover:text-[#ff3333] hover:bg-[#ff3333]/10 px-2 py-0.5 rounded transition-all duration-200 text-xs font-bold"
-            >
-              [X]
-            </button>
-          </div>
 
-          {/* Vault Content Area */}
-          <div className="flex-1 p-5 overflow-y-auto custom-scrollbar">
-            <div className="text-xs opacity-70 mb-5 tracking-widest border-b border-[#22c55e]/20 pb-2 text-[#22c55e]">
-              SECURE_VAULT // DECRYPTED_RECORDS
-            </div>
-
-            <div className="flex flex-col gap-6">
-              {/* CATEGORY 1: FEATURED */}
-              <div>
-                <div className="text-[10px] text-[#22c55e]/60 tracking-widest mb-3 uppercase">
-                  [{">"}] Level 1: Featured_Credentials
-                </div>
-                <div className="grid grid-cols-1 gap-2">
-                  {[
-                    { name: "Generative AI Professional", issuer: "Oracle", path: "/milestones/Oracle_GenAI.png" },
-                    { name: "Technology Job Simulation", issuer: "Deloitte", path: "/milestones/Deloitte_TechnologyJobSimulation.png" },
-                    { name: "Hackdays Hackathon", issuer: "Hackdays", path: "/milestones/Hackathon_01_Hackdays.png" },
-                    { name: "Student Ambassador Program", issuer: "Google", path: "/milestones/Google_StudentAmbassador.png" },
-                  ].map((cert, idx) => (
-                    <div key={idx} className="group flex justify-between items-center border border-[#22c55e]/20 bg-black/40 p-3 rounded hover:border-[#22c55e]/60 hover:bg-[#22c55e]/5 transition-all">
-                      <div className="flex flex-col">
-                        <span className="text-[#22c55e] font-bold text-sm group-hover:text-white transition-colors">{cert.name}</span>
-                        <span className="text-[#22c55e]/60 text-[10px] tracking-widest uppercase mt-1">ISSUER: {cert.issuer}</span>
-                      </div>
-                      <button
+                    {projectsData.map((project) => (
+                      <div
+                        key={project.id}
                         onClick={() => {
                           playAppOpen();
-                          playScanner();
-                          setActiveCert({ name: cert.name, path: cert.path });
-                          setIsDecrypting(true);
-                          setTimeout(() => { setIsDecrypting(false); stopScanner(); }, 2000);
+                          setSelectedMobileProject(project);
+                          fetchVaiAnalysis(project);
                         }}
-                        className="text-[9px] border border-[#22c55e]/40 px-2 py-1 rounded text-[#22c55e] hover:bg-[#22c55e] hover:text-black font-bold tracking-widest transition-all"
+                        className="w-full flex flex-col py-4 px-3 border-b border-[#22c55e]/10 active:bg-[#22c55e] active:text-black transition-colors cursor-pointer group"
                       >
-                        [ DECRYPT ]
+                        <div className="flex items-center gap-3">
+                          <span className="text-[10px] opacity-50 group-active:text-black">
+                            ./{project.id}
+                          </span>
+                          <span className="font-bold text-sm truncate group-active:text-black">
+                            {project.name}
+                          </span>
+                        </div>
+                        <span className="text-[9px] opacity-70 mt-1 pl-8 group-active:text-black">
+                          {project.tech}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* SECURE DECRYPTION POPUP (Overtakes the list when tapped) */}
+                  {selectedMobileProject && (
+                    <div className="absolute inset-0 z-50 bg-[#050505]/95 backdrop-blur-2xl flex flex-col animate-[cinematicUnfold_0.3s_forwards]">
+                      {/* Popup Header */}
+                      <div className="w-full h-14 shrink-0 border-b border-[#22c55e]/30 bg-[#22c55e]/10 flex items-center justify-between px-4">
+                        <span className="font-bold text-xs tracking-widest truncate pr-4 text-white uppercase">
+                          FILE: {selectedMobileProject.name}
+                        </span>
+                        <button
+                          onClick={() => setSelectedMobileProject(null)}
+                          className="text-[#22c55e] border border-[#22c55e]/50 px-3 py-1.5 text-[10px] font-bold active:bg-[#22c55e] active:text-black transition-colors"
+                        >
+                          BACK
+                        </button>
+                      </div>
+
+                      {/* Popup Content */}
+                      <div className="flex-1 p-6 flex flex-col gap-8 overflow-y-auto">
+                        {/* Tactical Badge */}
+                        <div className="w-full border-l-2 border-[#22c55e] pl-4 py-1">
+                          <div className="text-[9px] uppercase tracking-widest opacity-60 mb-1">
+                            Tech Stack Architecture
+                          </div>
+                          <div className="text-sm font-bold tracking-wider">
+                            {selectedMobileProject.tech}
+                          </div>
+                        </div>
+                        {/* vAI Action Report (Premium UI) */}
+                        <div className="relative w-full border border-[#22c55e]/40 bg-[#050505] shadow-[0_0_15px_rgba(34,197,94,0.1)] mt-2 overflow-hidden">
+                          {/* VAI Header */}
+                          <div className="bg-[#22c55e]/20 px-3 py-2 border-b border-[#22c55e]/40 flex items-center justify-between z-10 relative">
+                            <div className="flex items-center gap-2">
+                              <div className="w-1.5 h-1.5 bg-[#22c55e] rounded-full animate-ping shadow-[0_0_5px_#22c55e]"></div>
+                              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">
+                                vAI // Action_Report
+                              </span>
+                            </div>
+                            {isVaiLoading === selectedMobileProject.id && (
+                              <span className="text-[8px] text-[#22c55e] animate-pulse tracking-widest">
+                                PROCESSING...
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Tactical Ambient Glow & Scanlines (Replaces harsh laser) */}
+                          <div className="absolute inset-0 bg-[linear-gradient(rgba(34,197,94,0.03)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none z-0"></div>
+                          <div className="absolute top-0 left-0 w-[2px] h-full bg-[#22c55e] shadow-[0_0_12px_#22c55e] animate-pulse z-10"></div>
+
+                          {/* VAI Decrypted Text & Skeleton Loader */}
+                          <div className="relative z-10 p-4 text-xs font-mono text-[#22c55e]/90 leading-[1.8] whitespace-pre-wrap">
+                            {isVaiLoading === selectedMobileProject.id ? (
+                              <div className="flex flex-col gap-2.5 opacity-70 py-1">
+                                <div className="h-2 w-3/4 bg-[#22c55e]/30 rounded animate-pulse"></div>
+                                <div
+                                  className="h-2 w-full bg-[#22c55e]/30 rounded animate-pulse"
+                                  style={{ animationDelay: "150ms" }}
+                                ></div>
+                                <div
+                                  className="h-2 w-5/6 bg-[#22c55e]/30 rounded animate-pulse"
+                                  style={{ animationDelay: "300ms" }}
+                                ></div>
+                              </div>
+                            ) : (
+                              vaiResponses[selectedMobileProject.id]
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex-1"></div>{" "}
+                        {/* Spacer pushes buttons to bottom */}
+                        {/* Action Buttons */}
+                        {selectedMobileProject.link !== "#" ? (
+                          <a
+                            href={selectedMobileProject.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full block text-center bg-[#22c55e]/10 border-2 border-[#22c55e] py-4 text-[#22c55e] text-xs font-black tracking-[0.2em] uppercase active:bg-[#22c55e] active:text-black transition-all shadow-[0_0_15px_rgba(34,197,94,0.2)]"
+                          >
+                            {selectedMobileProject.link.includes("github.com")
+                              ? "[ OPEN_REPO ]"
+                              : "[ LIVE_LINK ]"}
+                          </a>
+                        ) : (
+                          <div className="w-full block text-center border-2 border-red-500/50 py-4 text-red-500 text-xs font-black tracking-[0.2em] uppercase bg-red-500/10">
+                            [ CLASSIFIED / WIP ]
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+              {/* ========================================================================= */}
+              {/* CERTS.dat DESKTOP WINDOW */}
+              {/* ========================================================================= */}
+              {isCertsWindowOpen && (
+                <Rnd
+                  size={{
+                    width: certsConfig.width,
+                    height: certsConfig.height,
+                  }}
+                  position={{ x: certsConfig.x, y: certsConfig.y }}
+                  onDragStop={(e, d) =>
+                    setCertsConfig((prev) => ({ ...prev, x: d.x, y: d.y }))
+                  }
+                  onResizeStop={(e, direction, ref, delta, position) => {
+                    setCertsConfig({
+                      width: parseInt(ref.style.width, 10),
+                      height: parseInt(ref.style.height, 10),
+                      x: position.x,
+                      y: position.y,
+                    });
+                  }}
+                  minWidth={750}
+                  minHeight={500}
+                  bounds="parent"
+                  dragHandleClassName="certs-drag-handle"
+                  className="z-[60] max-md:hidden"
+                >
+                  <div className="w-full h-full bg-[#050505]/95 border border-[#22c55e]/50 rounded shadow-[0_0_30px_rgba(34,197,94,0.15)] flex flex-col overflow-hidden backdrop-blur-md">
+                    {/* Title Bar */}
+                    <div className="certs-drag-handle w-full h-8 bg-[#22c55e]/10 border-b border-[#22c55e]/30 flex items-center justify-between px-3 cursor-move">
+                      <span className="text-[#22c55e] font-bold text-xs tracking-widest">
+                        /sys/users/vadanta/CERTS.dat
+                      </span>
+                      <button
+                        onClick={() => setIsCertsWindowOpen(false)}
+                        className="text-[#22c55e] hover:text-[#ff3333] hover:bg-[#ff3333]/10 px-2 py-0.5 rounded transition-all duration-200 text-xs font-bold"
+                      >
+                        [X]
                       </button>
                     </div>
-                  ))}
-                </div>
-              </div>
 
-              {/* CATEGORY 2: AI & CORE TECH */}
-              <div>
-                <div className="text-[10px] text-[#22c55e]/60 tracking-widest mb-3 uppercase">
-                  [{">"}] Level 2: AI & Core_Technical
-                </div>
-                <div className="flex flex-col gap-3 border-l-2 border-[#22c55e]/30 pl-3">
-                  <div className="group">
-                    <div className="text-[#22c55e] font-bold text-xs mb-2 group-hover:text-white transition-colors">AI & Modern Developer Workflows (Wilco)</div>
-                    <div className="flex gap-2 flex-wrap">
-                      {[
-                        { name: "Prompt Engineering", path: "/milestones/WilcoLabs/prompt_engineering.png" },
-                        { name: "Copilot Integration", path: "/milestones/WilcoLabs/copilot_integration.png" },
-                        { name: "Magic Quest", path: "/milestones/WilcoLabs/magic_quest.png" },
-                        { name: "Code Smarter", path: "/milestones/WilcoLabs/code-smarter.png" },
-                      ].map((cert, i) => (
-                        <button key={i} onClick={() => { playAppOpen(); playScanner(); setActiveCert({ name: cert.name, path: cert.path }); setIsDecrypting(true); setTimeout(() => { setIsDecrypting(false); stopScanner(); }, 2000); }} className="text-[9px] text-[#22c55e]/70 bg-[#22c55e]/10 border border-[#22c55e]/20 px-1.5 py-0.5 rounded uppercase tracking-wider cursor-pointer hover:bg-[#22c55e] hover:text-black hover:font-bold transition-all">{cert.name}</button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="group">
-                    <div className="text-[#22c55e] font-bold text-xs mb-2 group-hover:text-white transition-colors">HackerRank & freeCodeCamp</div>
-                    <div className="flex gap-2 flex-wrap">
-                      {[
-                        { name: "Basic Problem Solving", path: "/milestones/HackerRank_PS_Basic.png" },
-                        { name: "JavaScript Basic", path: "/milestones/HackerRank_Js_Basic.png" },
-                        { name: "Legacy Responsive Web Design", path: "/milestones/FreeCodeCamp_WebDesignV8.png" },
-                      ].map((cert, i) => (
-                        <button key={i} onClick={() => { playAppOpen(); playScanner(); setActiveCert({ name: cert.name, path: cert.path }); setIsDecrypting(true); setTimeout(() => { setIsDecrypting(false); stopScanner(); }, 2000); }} className="text-[9px] text-[#22c55e]/70 bg-[#22c55e]/10 border border-[#22c55e]/20 px-1.5 py-0.5 rounded uppercase tracking-wider cursor-pointer hover:bg-[#22c55e] hover:text-black hover:font-bold transition-all">{cert.name}</button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="group">
-                    <div className="text-[#22c55e] font-bold text-xs mb-2 group-hover:text-white transition-colors">Frontend Foundations (Simplilearn)</div>
-                    <div className="flex gap-2 flex-wrap">
-                      {[
-                        { name: "HTML", path: "/milestones/Simplilearn_HTML.png" },
-                        { name: "CSS", path: "/milestones/Simplilearn_CSS.png" },
-                        { name: "React", path: "/milestones/Simplilearn_React.png" },
-                      ].map((cert, i) => (
-                        <button key={i} onClick={() => { playAppOpen(); playScanner(); setActiveCert({ name: cert.name, path: cert.path }); setIsDecrypting(true); setTimeout(() => { setIsDecrypting(false); stopScanner(); }, 2000); }} className="text-[9px] text-[#22c55e]/70 bg-[#22c55e]/10 border border-[#22c55e]/20 px-1.5 py-0.5 rounded uppercase tracking-wider cursor-pointer hover:bg-[#22c55e] hover:text-black hover:font-bold transition-all">{cert.name}</button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
+                    {/* Vault Content Area */}
+                    <div className="flex-1 p-5 overflow-y-auto custom-scrollbar">
+                      <div className="text-xs opacity-70 mb-5 tracking-widest border-b border-[#22c55e]/20 pb-2 text-[#22c55e]">
+                        SECURE_VAULT // DECRYPTED_RECORDS
+                      </div>
 
-              {/* CATEGORY 3: COMPETITIONS */}
-              <div>
-                <div className="text-[10px] text-[#22c55e]/60 tracking-widest mb-3 uppercase">
-                  [{">"}] Level 3: Hackathons & Community
-                </div>
-                <div className="flex flex-col gap-2">
-                  {[
-                    { name: "CodeChef: Clash of Coders", path: "/milestones/Codechef_ClashOfCoders.jpg" },
-                    { name: "IIT Roorkee E-Cell: Participation", path: "/milestones/IITRoorkie_Ecell.png" },
-                    { name: "HackerRank Events: CodeWizard", path: "/milestones/Hackerran_CodeWizard.png" },
-                  ].map((event, idx) => (
-                    <button key={idx} onClick={() => { playAppOpen(); playScanner(); setActiveCert({ name: event.name, path: event.path }); setIsDecrypting(true); setTimeout(() => { setIsDecrypting(false); stopScanner(); }, 2000); }} className="flex items-center gap-3 text-xs text-[#22c55e]/80 hover:text-black hover:bg-[#22c55e] hover:font-bold transition-all bg-black/30 p-2 rounded border border-transparent hover:border-[#22c55e]">
-                      <span className="opacity-50">&gt;&gt;</span>
-                      <span>{event.name}</span>
+                      <div className="flex flex-col gap-6">
+                        {/* CATEGORY 1: FEATURED */}
+                        <div>
+                          <div className="text-[10px] text-[#22c55e]/60 tracking-widest mb-3 uppercase">
+                            [{">"}] Level 1: Featured_Credentials
+                          </div>
+                          <div className="grid grid-cols-1 gap-2">
+                            {[
+                              {
+                                name: "Generative AI Professional",
+                                issuer: "Oracle",
+                                path: "/milestones/Oracle_GenAI.png",
+                              },
+                              {
+                                name: "Technology Job Simulation",
+                                issuer: "Deloitte",
+                                path: "/milestones/Deloitte_TechnologyJobSimulation.png",
+                              },
+                              {
+                                name: "Hackdays Hackathon",
+                                issuer: "Hackdays",
+                                path: "/milestones/Hackathon_01_Hackdays.png",
+                              },
+                              {
+                                name: "Student Ambassador Program",
+                                issuer: "Google",
+                                path: "/milestones/Google_StudentAmbassador.png",
+                              },
+                            ].map((cert, idx) => (
+                              <div
+                                key={idx}
+                                className="group flex justify-between items-center border border-[#22c55e]/20 bg-black/40 p-3 rounded hover:border-[#22c55e]/60 hover:bg-[#22c55e]/5 transition-all"
+                              >
+                                <div className="flex flex-col">
+                                  <span className="text-[#22c55e] font-bold text-sm group-hover:text-white transition-colors">
+                                    {cert.name}
+                                  </span>
+                                  <span className="text-[#22c55e]/60 text-[10px] tracking-widest uppercase mt-1">
+                                    ISSUER: {cert.issuer}
+                                  </span>
+                                </div>
+                                <button
+                                  onClick={() => {
+                                    playAppOpen();
+                                    playScanner();
+                                    setActiveCert({
+                                      name: cert.name,
+                                      path: cert.path,
+                                    });
+                                    setIsDecrypting(true);
+                                    setTimeout(() => {
+                                      setIsDecrypting(false);
+                                      stopScanner();
+                                    }, 2000);
+                                  }}
+                                  className="text-[9px] border border-[#22c55e]/40 px-2 py-1 rounded text-[#22c55e] hover:bg-[#22c55e] hover:text-black font-bold tracking-widest transition-all"
+                                >
+                                  [ DECRYPT ]
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* CATEGORY 2: AI & CORE TECH */}
+                        <div>
+                          <div className="text-[10px] text-[#22c55e]/60 tracking-widest mb-3 uppercase">
+                            [{">"}] Level 2: AI & Core_Technical
+                          </div>
+                          <div className="flex flex-col gap-3 border-l-2 border-[#22c55e]/30 pl-3">
+                            <div className="group">
+                              <div className="text-[#22c55e] font-bold text-xs mb-2 group-hover:text-white transition-colors">
+                                AI & Modern Developer Workflows (Wilco)
+                              </div>
+                              <div className="flex gap-2 flex-wrap">
+                                {[
+                                  {
+                                    name: "Prompt Engineering",
+                                    path: "/milestones/WilcoLabs/prompt_engineering.png",
+                                  },
+                                  {
+                                    name: "Copilot Integration",
+                                    path: "/milestones/WilcoLabs/copilot_integration.png",
+                                  },
+                                  {
+                                    name: "Magic Quest",
+                                    path: "/milestones/WilcoLabs/magic_quest.png",
+                                  },
+                                  {
+                                    name: "Code Smarter",
+                                    path: "/milestones/WilcoLabs/code-smarter.png",
+                                  },
+                                ].map((cert, i) => (
+                                  <button
+                                    key={i}
+                                    onClick={() => {
+                                      playAppOpen();
+                                      playScanner();
+                                      setActiveCert({
+                                        name: cert.name,
+                                        path: cert.path,
+                                      });
+                                      setIsDecrypting(true);
+                                      setTimeout(() => {
+                                        setIsDecrypting(false);
+                                        stopScanner();
+                                      }, 2000);
+                                    }}
+                                    className="text-[9px] text-[#22c55e]/70 bg-[#22c55e]/10 border border-[#22c55e]/20 px-1.5 py-0.5 rounded uppercase tracking-wider cursor-pointer hover:bg-[#22c55e] hover:text-black hover:font-bold transition-all"
+                                  >
+                                    {cert.name}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                            <div className="group">
+                              <div className="text-[#22c55e] font-bold text-xs mb-2 group-hover:text-white transition-colors">
+                                HackerRank & freeCodeCamp
+                              </div>
+                              <div className="flex gap-2 flex-wrap">
+                                {[
+                                  {
+                                    name: "Basic Problem Solving",
+                                    path: "/milestones/HackerRank_PS_Basic.png",
+                                  },
+                                  {
+                                    name: "JavaScript Basic",
+                                    path: "/milestones/HackerRank_Js_Basic.png",
+                                  },
+                                  {
+                                    name: "Legacy Responsive Web Design",
+                                    path: "/milestones/FreeCodeCamp_WebDesignV8.png",
+                                  },
+                                ].map((cert, i) => (
+                                  <button
+                                    key={i}
+                                    onClick={() => {
+                                      playAppOpen();
+                                      playScanner();
+                                      setActiveCert({
+                                        name: cert.name,
+                                        path: cert.path,
+                                      });
+                                      setIsDecrypting(true);
+                                      setTimeout(() => {
+                                        setIsDecrypting(false);
+                                        stopScanner();
+                                      }, 2000);
+                                    }}
+                                    className="text-[9px] text-[#22c55e]/70 bg-[#22c55e]/10 border border-[#22c55e]/20 px-1.5 py-0.5 rounded uppercase tracking-wider cursor-pointer hover:bg-[#22c55e] hover:text-black hover:font-bold transition-all"
+                                  >
+                                    {cert.name}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                            <div className="group">
+                              <div className="text-[#22c55e] font-bold text-xs mb-2 group-hover:text-white transition-colors">
+                                Frontend Foundations (Simplilearn)
+                              </div>
+                              <div className="flex gap-2 flex-wrap">
+                                {[
+                                  {
+                                    name: "HTML",
+                                    path: "/milestones/Simplilearn_HTML.png",
+                                  },
+                                  {
+                                    name: "CSS",
+                                    path: "/milestones/Simplilearn_CSS.png",
+                                  },
+                                  {
+                                    name: "React",
+                                    path: "/milestones/Simplilearn_React.png",
+                                  },
+                                ].map((cert, i) => (
+                                  <button
+                                    key={i}
+                                    onClick={() => {
+                                      playAppOpen();
+                                      playScanner();
+                                      setActiveCert({
+                                        name: cert.name,
+                                        path: cert.path,
+                                      });
+                                      setIsDecrypting(true);
+                                      setTimeout(() => {
+                                        setIsDecrypting(false);
+                                        stopScanner();
+                                      }, 2000);
+                                    }}
+                                    className="text-[9px] text-[#22c55e]/70 bg-[#22c55e]/10 border border-[#22c55e]/20 px-1.5 py-0.5 rounded uppercase tracking-wider cursor-pointer hover:bg-[#22c55e] hover:text-black hover:font-bold transition-all"
+                                  >
+                                    {cert.name}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* CATEGORY 3: COMPETITIONS */}
+                        <div>
+                          <div className="text-[10px] text-[#22c55e]/60 tracking-widest mb-3 uppercase">
+                            [{">"}] Level 3: Hackathons & Community
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            {[
+                              {
+                                name: "CodeChef: Clash of Coders",
+                                path: "/milestones/Codechef_ClashOfCoders.jpg",
+                              },
+                              {
+                                name: "IIT Roorkee E-Cell: Participation",
+                                path: "/milestones/IITRoorkie_Ecell.png",
+                              },
+                              {
+                                name: "HackerRank Events: CodeWizard",
+                                path: "/milestones/Hackerran_CodeWizard.png",
+                              },
+                            ].map((event, idx) => (
+                              <button
+                                key={idx}
+                                onClick={() => {
+                                  playAppOpen();
+                                  playScanner();
+                                  setActiveCert({
+                                    name: event.name,
+                                    path: event.path,
+                                  });
+                                  setIsDecrypting(true);
+                                  setTimeout(() => {
+                                    setIsDecrypting(false);
+                                    stopScanner();
+                                  }, 2000);
+                                }}
+                                className="flex items-center gap-3 text-xs text-[#22c55e]/80 hover:text-black hover:bg-[#22c55e] hover:font-bold transition-all bg-black/30 p-2 rounded border border-transparent hover:border-[#22c55e]"
+                              >
+                                <span className="opacity-50">&gt;&gt;</span>
+                                <span>{event.name}</span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Rnd>
+              )}
+
+              {/* ========================================================================= */}
+              {/* MOBILE OVERRIDE: CERTS.dat (Classified Credential Ledger) */}
+              {/* ========================================================================= */}
+              {isCertsWindowOpen && (
+                <div className="hidden max-md:flex fixed inset-0 z-[99999] flex-col bg-[#050505] overflow-hidden font-mono text-[#22c55e] animate-[fadeIn_0.2s_ease-out]">
+                  {/* Ledger Header */}
+                  <div className="w-full h-14 shrink-0 border-b border-[#22c55e]/30 bg-[#0a0a0a] flex items-center justify-between px-4 shadow-[0_4px_15px_rgba(34,197,94,0.1)]">
+                    <div className="flex items-center gap-3">
+                      <span className="w-2 h-4 bg-[#22c55e] animate-pulse"></span>
+                      <span className="font-bold tracking-widest text-sm uppercase">
+                        ~/certs.dat
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => setIsCertsWindowOpen(false)}
+                      className="text-[#22c55e] hover:bg-red-500/20 hover:text-red-500 px-3 py-2 rounded text-xs font-bold transition-colors"
+                    >
+                      [X]
                     </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Rnd>
-    )}
-
-    {/* ========================================================================= */}
-    {/* MOBILE OVERRIDE: CERTS.dat (Classified Credential Ledger) */}
-    {/* ========================================================================= */}
-    {isCertsWindowOpen && (
-      <div className="hidden max-md:flex fixed inset-0 z-[99999] flex-col bg-[#050505] overflow-hidden font-mono text-[#22c55e] animate-[fadeIn_0.2s_ease-out]">
-        {/* Ledger Header */}
-        <div className="w-full h-14 shrink-0 border-b border-[#22c55e]/30 bg-[#0a0a0a] flex items-center justify-between px-4 shadow-[0_4px_15px_rgba(34,197,94,0.1)]">
-          <div className="flex items-center gap-3">
-            <span className="w-2 h-4 bg-[#22c55e] animate-pulse"></span>
-            <span className="font-bold tracking-widest text-sm uppercase">~/certs.dat</span>
-          </div>
-          <button 
-            onClick={() => setIsCertsWindowOpen(false)}
-            className="text-[#22c55e] hover:bg-red-500/20 hover:text-red-500 px-3 py-2 rounded text-xs font-bold transition-colors"
-          >
-            [X]
-          </button>
-        </div>
-
-        {/* Scrollable Ledger */}
-        <div className="flex-1 overflow-y-auto no-scrollbar p-4 flex flex-col gap-6">
-          {/* Level 1: Featured */}
-          <div>
-            <div className="text-[10px] opacity-50 tracking-widest border-b border-[#22c55e]/20 pb-1 mb-3 uppercase">
-              &gt; LEVEL_1 // FEATURED_CREDENTIALS
-            </div>
-            <div className="flex flex-col gap-2">
-              {[
-                { name: "Generative AI Professional", issuer: "Oracle", path: "/milestones/Oracle_GenAI.png" },
-                { name: "Technology Job Simulation", issuer: "Deloitte", path: "/milestones/Deloitte_TechnologyJobSimulation.png" },
-                { name: "Hackdays Hackathon", issuer: "Hackdays", path: "/milestones/Hackathon_01_Hackdays.png" },
-                { name: "Student Ambassador", issuer: "Google", path: "/milestones/Google_StudentAmbassador.png" },
-              ].map((cert, idx) => (
-                <div key={idx} className="flex justify-between items-center bg-[#22c55e]/5 border border-[#22c55e]/20 p-3 relative overflow-hidden">
-                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#22c55e]/50"></div>
-                  <div className="flex flex-col pl-2">
-                    <span className="font-bold text-xs truncate max-w-[180px]">{cert.name}</span>
-                    <span className="text-[9px] opacity-60 tracking-widest uppercase mt-1">ISSUER: {cert.issuer}</span>
                   </div>
-                  <button
-                    onClick={() => {
-                      playAppOpen(); playScanner();
-                      setActiveCert({ name: cert.name, path: cert.path });
-                      setIsDecrypting(true);
-                      setTimeout(() => { setIsDecrypting(false); stopScanner(); }, 2000);
-                    }}
-                    className="text-[9px] font-black tracking-widest bg-[#22c55e]/10 border border-[#22c55e]/50 px-2 py-1.5 active:bg-[#22c55e] active:text-black transition-colors shrink-0"
-                  >
-                    [ DECRYPT ]
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
 
-          {/* Level 2: AI & Core Technical */}
-          <div>
-            <div className="text-[10px] opacity-50 tracking-widest border-b border-[#22c55e]/20 pb-1 mb-3 uppercase">
-              &gt; LEVEL_2 // AI_&_CORE_TECHNICAL
-            </div>
-            <div className="flex flex-col gap-4">
-              {/* Wilco */}
-              <div>
-                <div className="text-[10px] font-bold mb-2 opacity-80">WILCO LABS</div>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    { name: "Prompt Engineering", path: "/milestones/WilcoLabs/prompt_engineering.png" },
-                    { name: "Copilot Integration", path: "/milestones/WilcoLabs/copilot_integration.png" },
-                    { name: "Magic Quest", path: "/milestones/WilcoLabs/magic_quest.png" },
-                    { name: "Code Smarter", path: "/milestones/WilcoLabs/code-smarter.png" },
-                  ].map((cert, idx) => (
-                    <button key={idx} onClick={() => { playAppOpen(); playScanner(); setActiveCert({ name: cert.name, path: cert.path }); setIsDecrypting(true); setTimeout(() => { setIsDecrypting(false); stopScanner(); }, 2000); }} className="text-[9px] border border-[#22c55e]/30 px-2 py-1 bg-black/40 active:bg-[#22c55e] active:text-black">
-                      {cert.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              {/* HackerRank */}
-              <div>
-                <div className="text-[10px] font-bold mb-2 opacity-80">HACKERRANK & FCC</div>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    { name: "Basic Problem Solving", path: "/milestones/HackerRank_PS_Basic.png" },
-                    { name: "JavaScript Basic", path: "/milestones/HackerRank_Js_Basic.png" },
-                    { name: "Responsive Web Design", path: "/milestones/FreeCodeCamp_WebDesignV8.png" },
-                  ].map((cert, idx) => (
-                    <button key={idx} onClick={() => { playAppOpen(); playScanner(); setActiveCert({ name: cert.name, path: cert.path }); setIsDecrypting(true); setTimeout(() => { setIsDecrypting(false); stopScanner(); }, 2000); }} className="text-[9px] border border-[#22c55e]/30 px-2 py-1 bg-black/40 active:bg-[#22c55e] active:text-black">
-                      {cert.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Level 3: Competitions */}
-          <div>
-            <div className="text-[10px] opacity-50 tracking-widest border-b border-[#22c55e]/20 pb-1 mb-3 uppercase">
-              &gt; LEVEL_3 // HACKATHONS
-            </div>
-            <div className="flex flex-col gap-2">
-              {[
-                { name: "CodeChef: Clash of Coders", path: "/milestones/Codechef_ClashOfCoders.jpg" },
-                { name: "IIT Roorkee E-Cell", path: "/milestones/IITRoorkie_Ecell.png" },
-                { name: "HackerRank CodeWizard", path: "/milestones/Hackerran_CodeWizard.png" },
-              ].map((cert, idx) => (
-                <button key={idx} onClick={() => { playAppOpen(); playScanner(); setActiveCert({ name: cert.name, path: cert.path }); setIsDecrypting(true); setTimeout(() => { setIsDecrypting(false); stopScanner(); }, 2000); }} className="flex justify-between items-center text-[10px] font-bold border border-[#22c55e]/30 px-3 py-2 bg-black/40 active:bg-[#22c55e] active:text-black text-left">
-                  <span>{cert.name}</span>
-                  <span className="opacity-50">&gt;&gt;</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    )}
-
-    {/* ========================================================================= */}
-    {/* DECRYPTION INSPECTOR (TACTICAL HUD) */}
-    {/* ========================================================================= */}
-    {activeCert && (
-      <div className="fixed inset-0 z-[100000] flex items-center justify-center p-8 bg-black/80 backdrop-blur-md">
-        <div className="relative w-full max-w-4xl h-full max-h-[80vh] flex flex-col">
-          {/* HUD Corners (Sniper Scope Aesthetics) */}
-          <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-[#22c55e] z-10"></div>
-          <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-[#22c55e] z-10"></div>
-          <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-[#22c55e] z-10"></div>
-          <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-[#22c55e] z-10"></div>
-
-          {/* Close Button Override */}
-          <button
-            onClick={() => setActiveCert(null)}
-            className="absolute -top-10 right-0 text-[#22c55e] border border-[#22c55e]/50 px-4 py-1 hover:bg-red-600/80 hover:text-white hover:border-red-500 transition-colors font-mono text-xs tracking-widest z-20"
-          >
-            [ ABORT_INSPECTION ]
-          </button>
-
-          {/* The Sequence */}
-          {isDecrypting ? (
-            <div className="flex-1 bg-[#050505]/95 border border-[#22c55e]/30 shadow-[0_0_50px_rgba(34,197,94,0.2)] flex flex-col items-center justify-center relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1 bg-[#22c55e] opacity-50 shadow-[0_0_20px_#22c55e] animate-[scan_2s_ease-in-out_infinite]"></div>
-
-              <div className="font-mono text-center px-4 w-full">
-                {/* Fixed Overflow: Added break-all for mobile, normal for desktop */}
-                <div className="text-red-500 text-lg sm:text-xl font-bold tracking-widest mb-4 animate-pulse break-all sm:break-normal">
-                  &gt;&gt; BRUTE_FORCING_ENCRYPTION_KEY...
-                </div>
-                <div className="text-[#22c55e]/70 text-xs text-left w-full max-w-[250px] mx-auto space-y-1">
-                  <div className="truncate"> [SYS] TARGET: {activeCert.name}</div>
-                  <div>
-                    [SYS] INJECTING PAYLOAD... <span className="text-white">OK</span>
-                  </div>
-                  <div>
-                    [SYS] BYPASSING FIREWALL... <span className="text-white animate-ping inline-block">█</span>
-                  </div>
-                  <div className="w-full h-1 bg-gray-800 mt-4 rounded overflow-hidden">
-                    <div className="h-full bg-red-500 w-full animate-[shrink_2s_linear_forwards]"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden bg-black/90 border border-[#22c55e] shadow-[0_0_60px_rgba(34,197,94,0.3)] p-4 animate-[fadeIn_0.3s_ease-out] flex flex-col sm:justify-center">
-              
-              {/* Pure Image Renderer (Forced to top on mobile) */}
-              <div className="w-full shrink-0 flex items-center justify-center sm:h-full max-h-[40vh] sm:max-h-full">
-                <img
-                  src={activeCert.path}
-                  alt={activeCert.name}
-                  className="w-full h-full max-w-full max-h-full object-contain opacity-90 hover:opacity-100 transition-opacity"
-                  style={{ filter: `hue-rotate(-${themeHue}deg)` }}
-                />
-              </div>
-
-              {/* MOBILE ONLY: vAI Certificate Analysis */}
-              <div className="sm:hidden relative w-full border border-[#22c55e]/40 bg-[#050505] shadow-[0_0_15px_rgba(34,197,94,0.1)] mt-6 overflow-hidden shrink-0">
-                <div className="bg-[#22c55e]/20 px-3 py-2 border-b border-[#22c55e]/40 flex items-center justify-between z-10 relative">
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-[#22c55e] rounded-full animate-ping shadow-[0_0_5px_#22c55e]"></div>
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">
-                      vAI // Credential_Analysis
-                    </span>
-                  </div>
-                  {isVaiLoading === activeCert.name.replace(/\s+/g, '_') && (
-                    <span className="text-[8px] text-[#22c55e] animate-pulse tracking-widest">DECRYPTING...</span>
-                  )}
-                </div>
-                
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(34,197,94,0.03)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none z-0"></div>
-                <div className="absolute top-0 left-0 w-[2px] h-full bg-[#22c55e] shadow-[0_0_12px_#22c55e] animate-pulse z-10"></div>
-                
-                <div className="relative z-10 p-4 text-xs font-mono text-[#22c55e]/90 leading-[1.8] whitespace-pre-wrap">
-                  {isVaiLoading === activeCert.name.replace(/\s+/g, '_') ? (
-                    <div className="flex flex-col gap-2.5 opacity-70 py-1">
-                       <div className="h-2 w-3/4 bg-[#22c55e]/30 rounded animate-pulse"></div>
-                       <div className="h-2 w-full bg-[#22c55e]/30 rounded animate-pulse" style={{ animationDelay: '150ms' }}></div>
-                       <div className="h-2 w-5/6 bg-[#22c55e]/30 rounded animate-pulse" style={{ animationDelay: '300ms' }}></div>
+                  {/* Scrollable Ledger */}
+                  <div className="flex-1 overflow-y-auto no-scrollbar p-4 flex flex-col gap-6">
+                    {/* Level 1: Featured */}
+                    <div>
+                      <div className="text-[10px] opacity-50 tracking-widest border-b border-[#22c55e]/20 pb-1 mb-3 uppercase">
+                        &gt; LEVEL_1 // FEATURED_CREDENTIALS
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        {[
+                          {
+                            name: "Generative AI Professional",
+                            issuer: "Oracle",
+                            path: "/milestones/Oracle_GenAI.png",
+                          },
+                          {
+                            name: "Technology Job Simulation",
+                            issuer: "Deloitte",
+                            path: "/milestones/Deloitte_TechnologyJobSimulation.png",
+                          },
+                          {
+                            name: "Hackdays Hackathon",
+                            issuer: "Hackdays",
+                            path: "/milestones/Hackathon_01_Hackdays.png",
+                          },
+                          {
+                            name: "Student Ambassador",
+                            issuer: "Google",
+                            path: "/milestones/Google_StudentAmbassador.png",
+                          },
+                        ].map((cert, idx) => (
+                          <div
+                            key={idx}
+                            className="flex justify-between items-center bg-[#22c55e]/5 border border-[#22c55e]/20 p-3 relative overflow-hidden"
+                          >
+                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#22c55e]/50"></div>
+                            <div className="flex flex-col pl-2">
+                              <span className="font-bold text-xs truncate max-w-[180px]">
+                                {cert.name}
+                              </span>
+                              <span className="text-[9px] opacity-60 tracking-widest uppercase mt-1">
+                                ISSUER: {cert.issuer}
+                              </span>
+                            </div>
+                            <button
+                              onClick={() => {
+                                playAppOpen();
+                                playScanner();
+                                setActiveCert({
+                                  name: cert.name,
+                                  path: cert.path,
+                                });
+                                setIsDecrypting(true);
+                                setTimeout(() => {
+                                  setIsDecrypting(false);
+                                  stopScanner();
+                                }, 2000);
+                              }}
+                              className="text-[9px] font-black tracking-widest bg-[#22c55e]/10 border border-[#22c55e]/50 px-2 py-1.5 active:bg-[#22c55e] active:text-black transition-colors shrink-0"
+                            >
+                              [ DECRYPT ]
+                            </button>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  ) : (
-                    vaiResponses[activeCert.name.replace(/\s+/g, '_')]
-                  )}
-                </div>
-              </div>
 
-            </div>
-          )}
-        </div>
-      </div>
-    )}
-    
-          {/* RESUME.tex EDITOR WINDOW */}
+                    {/* Level 2: AI & Core Technical */}
+                    <div>
+                      <div className="text-[10px] opacity-50 tracking-widest border-b border-[#22c55e]/20 pb-1 mb-3 uppercase">
+                        &gt; LEVEL_2 // AI_&_CORE_TECHNICAL
+                      </div>
+                      <div className="flex flex-col gap-4">
+                        {/* Wilco */}
+                        <div>
+                          <div className="text-[10px] font-bold mb-2 opacity-80">
+                            WILCO LABS
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {[
+                              {
+                                name: "Prompt Engineering",
+                                path: "/milestones/WilcoLabs/prompt_engineering.png",
+                              },
+                              {
+                                name: "Copilot Integration",
+                                path: "/milestones/WilcoLabs/copilot_integration.png",
+                              },
+                              {
+                                name: "Magic Quest",
+                                path: "/milestones/WilcoLabs/magic_quest.png",
+                              },
+                              {
+                                name: "Code Smarter",
+                                path: "/milestones/WilcoLabs/code-smarter.png",
+                              },
+                            ].map((cert, idx) => (
+                              <button
+                                key={idx}
+                                onClick={() => {
+                                  playAppOpen();
+                                  playScanner();
+                                  setActiveCert({
+                                    name: cert.name,
+                                    path: cert.path,
+                                  });
+                                  setIsDecrypting(true);
+                                  setTimeout(() => {
+                                    setIsDecrypting(false);
+                                    stopScanner();
+                                  }, 2000);
+                                }}
+                                className="text-[9px] border border-[#22c55e]/30 px-2 py-1 bg-black/40 active:bg-[#22c55e] active:text-black"
+                              >
+                                {cert.name}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        {/* HackerRank */}
+                        <div>
+                          <div className="text-[10px] font-bold mb-2 opacity-80">
+                            HACKERRANK & FCC
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {[
+                              {
+                                name: "Basic Problem Solving",
+                                path: "/milestones/HackerRank_PS_Basic.png",
+                              },
+                              {
+                                name: "JavaScript Basic",
+                                path: "/milestones/HackerRank_Js_Basic.png",
+                              },
+                              {
+                                name: "Responsive Web Design",
+                                path: "/milestones/FreeCodeCamp_WebDesignV8.png",
+                              },
+                            ].map((cert, idx) => (
+                              <button
+                                key={idx}
+                                onClick={() => {
+                                  playAppOpen();
+                                  playScanner();
+                                  setActiveCert({
+                                    name: cert.name,
+                                    path: cert.path,
+                                  });
+                                  setIsDecrypting(true);
+                                  setTimeout(() => {
+                                    setIsDecrypting(false);
+                                    stopScanner();
+                                  }, 2000);
+                                }}
+                                className="text-[9px] border border-[#22c55e]/30 px-2 py-1 bg-black/40 active:bg-[#22c55e] active:text-black"
+                              >
+                                {cert.name}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Level 3: Competitions */}
+                    <div>
+                      <div className="text-[10px] opacity-50 tracking-widest border-b border-[#22c55e]/20 pb-1 mb-3 uppercase">
+                        &gt; LEVEL_3 // HACKATHONS
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        {[
+                          {
+                            name: "CodeChef: Clash of Coders",
+                            path: "/milestones/Codechef_ClashOfCoders.jpg",
+                          },
+                          {
+                            name: "IIT Roorkee E-Cell",
+                            path: "/milestones/IITRoorkie_Ecell.png",
+                          },
+                          {
+                            name: "HackerRank CodeWizard",
+                            path: "/milestones/Hackerran_CodeWizard.png",
+                          },
+                        ].map((cert, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => {
+                              playAppOpen();
+                              playScanner();
+                              setActiveCert({
+                                name: cert.name,
+                                path: cert.path,
+                              });
+                              setIsDecrypting(true);
+                              setTimeout(() => {
+                                setIsDecrypting(false);
+                                stopScanner();
+                              }, 2000);
+                            }}
+                            className="flex justify-between items-center text-[10px] font-bold border border-[#22c55e]/30 px-3 py-2 bg-black/40 active:bg-[#22c55e] active:text-black text-left"
+                          >
+                            <span>{cert.name}</span>
+                            <span className="opacity-50">&gt;&gt;</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ========================================================================= */}
+              {/* DECRYPTION INSPECTOR (TACTICAL HUD) */}
+              {/* ========================================================================= */}
+              {activeCert && (
+                <div className="fixed inset-0 z-[100000] flex items-center justify-center p-8 bg-black/80 backdrop-blur-md">
+                  <div className="relative w-full max-w-4xl h-full max-h-[80vh] flex flex-col">
+                    {/* HUD Corners (Sniper Scope Aesthetics) */}
+                    <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-[#22c55e] z-10"></div>
+                    <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-[#22c55e] z-10"></div>
+                    <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-[#22c55e] z-10"></div>
+                    <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-[#22c55e] z-10"></div>
+
+                    {/* Close Button Override */}
+                    <button
+                      onClick={() => setActiveCert(null)}
+                      className="absolute -top-10 right-0 text-[#22c55e] border border-[#22c55e]/50 px-4 py-1 hover:bg-red-600/80 hover:text-white hover:border-red-500 transition-colors font-mono text-xs tracking-widest z-20"
+                    >
+                      [ ABORT_INSPECTION ]
+                    </button>
+
+                    {/* The Sequence */}
+                    {isDecrypting ? (
+                      <div className="flex-1 bg-[#050505]/95 border border-[#22c55e]/30 shadow-[0_0_50px_rgba(34,197,94,0.2)] flex flex-col items-center justify-center relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-[#22c55e] opacity-50 shadow-[0_0_20px_#22c55e] animate-[scan_2s_ease-in-out_infinite]"></div>
+
+                        <div className="font-mono text-center px-4 w-full">
+                          {/* Fixed Overflow: Added break-all for mobile, normal for desktop */}
+                          <div className="text-red-500 text-lg sm:text-xl font-bold tracking-widest mb-4 animate-pulse break-all sm:break-normal">
+                            &gt;&gt; BRUTE_FORCING_ENCRYPTION_KEY...
+                          </div>
+                          <div className="text-[#22c55e]/70 text-xs text-left w-full max-w-[250px] mx-auto space-y-1">
+                            <div className="truncate">
+                              {" "}
+                              [SYS] TARGET: {activeCert.name}
+                            </div>
+                            <div>
+                              [SYS] INJECTING PAYLOAD...{" "}
+                              <span className="text-white">OK</span>
+                            </div>
+                            <div>
+                              [SYS] BYPASSING FIREWALL...{" "}
+                              <span className="text-white animate-ping inline-block">
+                                █
+                              </span>
+                            </div>
+                            <div className="w-full h-1 bg-gray-800 mt-4 rounded overflow-hidden">
+                              <div className="h-full bg-red-500 w-full animate-[shrink_2s_linear_forwards]"></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden bg-black/90 border border-[#22c55e] shadow-[0_0_60px_rgba(34,197,94,0.3)] p-4 animate-[fadeIn_0.3s_ease-out] flex flex-col sm:justify-center">
+                        {/* Pure Image Renderer (Forced to top on mobile) */}
+                        <div className="w-full shrink-0 flex items-center justify-center sm:h-full max-h-[40vh] sm:max-h-full">
+                          <img
+                            src={activeCert.path}
+                            alt={activeCert.name}
+                            className="w-full h-full max-w-full max-h-full object-contain opacity-90 hover:opacity-100 transition-opacity"
+                            style={{ filter: `hue-rotate(-${themeHue}deg)` }}
+                          />
+                        </div>
+
+                        {/* MOBILE ONLY: vAI Certificate Analysis */}
+                        <div className="sm:hidden relative w-full border border-[#22c55e]/40 bg-[#050505] shadow-[0_0_15px_rgba(34,197,94,0.1)] mt-6 overflow-hidden shrink-0">
+                          <div className="bg-[#22c55e]/20 px-3 py-2 border-b border-[#22c55e]/40 flex items-center justify-between z-10 relative">
+                            <div className="flex items-center gap-2">
+                              <div className="w-1.5 h-1.5 bg-[#22c55e] rounded-full animate-ping shadow-[0_0_5px_#22c55e]"></div>
+                              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">
+                                vAI // Credential_Analysis
+                              </span>
+                            </div>
+                            {isVaiLoading ===
+                              activeCert.name.replace(/\s+/g, "_") && (
+                              <span className="text-[8px] text-[#22c55e] animate-pulse tracking-widest">
+                                DECRYPTING...
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="absolute inset-0 bg-[linear-gradient(rgba(34,197,94,0.03)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none z-0"></div>
+                          <div className="absolute top-0 left-0 w-[2px] h-full bg-[#22c55e] shadow-[0_0_12px_#22c55e] animate-pulse z-10"></div>
+
+                          <div className="relative z-10 p-4 text-xs font-mono text-[#22c55e]/90 leading-[1.8] whitespace-pre-wrap">
+                            {isVaiLoading ===
+                            activeCert.name.replace(/\s+/g, "_") ? (
+                              <div className="flex flex-col gap-2.5 opacity-70 py-1">
+                                <div className="h-2 w-3/4 bg-[#22c55e]/30 rounded animate-pulse"></div>
+                                <div
+                                  className="h-2 w-full bg-[#22c55e]/30 rounded animate-pulse"
+                                  style={{ animationDelay: "150ms" }}
+                                ></div>
+                                <div
+                                  className="h-2 w-5/6 bg-[#22c55e]/30 rounded animate-pulse"
+                                  style={{ animationDelay: "300ms" }}
+                                ></div>
+                              </div>
+                            ) : (
+                              vaiResponses[activeCert.name.replace(/\s+/g, "_")]
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* RESUME.tex EDITOR WINDOW */}
               {isResumeWindowOpen && (
                 <Rnd
                   default={{
