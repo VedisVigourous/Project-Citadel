@@ -2346,8 +2346,14 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                 </div>
               </div>
 
-              {/* --- CENTRAL CHART & MODULES */}
-              <div className="hidden md:flex absolute inset-0 flex-col items-center justify-center pb-24 pointer-events-none z-0">
+              {/* --- CENTRAL CHART & MODULES --- */}
+        <div 
+          className="hidden md:flex absolute inset-0 flex-col items-center justify-center pb-24 pointer-events-none z-0"
+          style={{
+            transform: `translate(${bgOffset.x * -0.6}px, ${bgOffset.y * -0.6}px)`,
+            transition: "transform 0.1s ease-out",
+          }}
+        >
                 {/* TOP ROW: GitHub & Socials */}
                 <div className="flex items-center gap-4 mb-6 relative z-50">
                   {/* GitHub Node */}
@@ -2508,7 +2514,13 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
               </div>
 
               {/* Desktop Icons (Left Side) -> STRICTLY HIDDEN ON MOBILE */}
-              <div className="hidden md:flex flex-col space-y-6 w-24 mt-4 relative z-40">
+        <div 
+          className="hidden md:flex flex-col space-y-6 w-24 mt-4 relative z-40"
+          style={{
+            transform: `translate(${bgOffset.x * 0.4}px, ${bgOffset.y * 0.4}px)`,
+            transition: "transform 0.1s ease-out",
+          }}
+        >
                 {/* --- IDENTITY.exe (PREMIUM PAN, ZOOM & NEON SWEEP EDITION) --- */}
                 <div
                   className="flex flex-col items-center cursor-pointer group w-24"
@@ -2795,7 +2807,13 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
               </div>
 
               {/* RIGHT SIDE ICONS -> STRICTLY HIDDEN ON MOBILE */}
-              <div className="hidden md:flex absolute top-4 right-4 mt-4 flex-col space-y-6 w-24 items-center z-40">
+        <div 
+          className="hidden md:flex absolute top-4 right-4 mt-4 flex-col space-y-6 w-24 items-center z-40"
+          style={{
+            transform: `translate(${bgOffset.x * 0.4}px, ${bgOffset.y * 0.4}px)`,
+            transition: "transform 0.1s ease-out",
+          }}
+        >
                 {/* Mail.conn Desktop Icon */}
                 <div
                   className="flex flex-col items-center cursor-pointer group w-24"
