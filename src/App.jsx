@@ -5877,9 +5877,9 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
           minWidth={750}
           minHeight={450}
           bounds="parent"
-          dragHandleClassName="campus-drag-handle"
-          className="z-[70]"
-        >
+        dragHandleClassName="campus-drag-handle"
+        className="z-[70] max-md:hidden"
+      >
           <div className="w-full h-full bg-[#050505]/95 border border-[#22c55e]/50 rounded shadow-[0_0_40px_rgba(34,197,94,0.15)] flex flex-col overflow-hidden backdrop-blur-md">
             {/* Title Bar */}
             <div className="campus-drag-handle w-full h-8 bg-[#22c55e]/10 border-b border-[#22c55e]/30 flex items-center justify-between px-3 cursor-move">
@@ -5991,6 +5991,113 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
         </Rnd>
       )}
 
+      {/* ========================================================================= */}
+      {/* MOBILE OVERRIDE: EDUCATION.exe (Classified Academic Dossier) */}
+      {/* ========================================================================= */}
+      {isCampusWindowOpen && (
+        <div className="hidden max-md:flex fixed inset-0 z-[99999] flex-col bg-[#050505] overflow-hidden font-mono text-[#22c55e] animate-[fadeIn_0.2s_ease-out]">
+          
+          {/* Header */}
+          <div className="w-full h-14 shrink-0 border-b border-[#22c55e]/30 bg-[#0a0a0a] flex items-center justify-between px-4 shadow-[0_4px_15px_rgba(34,197,94,0.1)] z-30">
+            <div className="flex items-center gap-3">
+              <span className="w-2 h-4 bg-[#22c55e] animate-pulse"></span>
+              <span className="font-bold tracking-widest text-sm uppercase">~/education.exe</span>
+            </div>
+            <button 
+              onClick={() => setIsCampusWindowOpen(false)}
+              className="text-[#22c55e] bg-[#22c55e]/10 border border-[#22c55e]/50 active:bg-red-500/20 active:text-red-500 active:border-red-500 px-3 py-1.5 rounded text-[10px] font-black tracking-widest transition-all"
+            >
+              [X] CLOSE
+            </button>
+          </div>
+
+          {/* TOP 40%: Hologram Scanning Bay */}
+          <div className="relative w-full h-[45vh] shrink-0 border-b-2 border-[#22c55e]/40 bg-[#020502] overflow-hidden flex items-center justify-center">
+            {/* Tactical Grid Background */}
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(34,197,94,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(34,197,94,0.1)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none"></div>
+            
+            {/* Corner Crosshairs */}
+            <div className="absolute top-3 left-3 w-4 h-4 border-t-2 border-l-2 border-[#22c55e]/70"></div>
+            <div className="absolute top-3 right-3 w-4 h-4 border-t-2 border-r-2 border-[#22c55e]/70"></div>
+            <div className="absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-[#22c55e]/70"></div>
+            <div className="absolute bottom-3 right-3 w-4 h-4 border-b-2 border-r-2 border-[#22c55e]/70"></div>
+            
+            {/* Scanning Laser */}
+            <div className="absolute top-0 left-0 w-full h-1 bg-[#22c55e] opacity-50 shadow-[0_0_20px_#22c55e] animate-[scan_3s_ease-in-out_infinite] pointer-events-none z-10"></div>
+            
+            {/* The 3D Component */}
+            <div className="w-full h-full relative z-20 scale-[0.85] pointer-events-auto">
+               <Hologram />
+            </div>
+            
+            <div className="absolute bottom-2 right-4 z-30 text-[8px] tracking-[0.2em] font-bold text-[#22c55e]/60 animate-pulse">
+              SYS.RENDER_ACTIVE
+            </div>
+          </div>
+
+          {/* BOTTOM 60%: Tactical Data Stack */}
+          <div className="flex-1 overflow-y-auto custom-scrollbar p-5 flex flex-col gap-5 bg-[#050505] relative z-20">
+             {/* Internal Glow */}
+             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(34,197,94,0.05)_0%,transparent_80%)] pointer-events-none"></div>
+
+             {/* Card 1: Academic Record */}
+             <div className="relative bg-[#0a0a0a] border border-[#22c55e]/30 p-5 shadow-[0_0_15px_rgba(34,197,94,0.05)]">
+               <div className="border-b border-[#22c55e]/20 pb-3 mb-4 flex justify-between items-center">
+                 <h3 className="text-[#22c55e] font-bold text-[11px] tracking-widest uppercase drop-shadow-[0_0_5px_rgba(34,197,94,0.5)]">Academic_Record</h3>
+                 <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-ping"></span>
+               </div>
+               <div className="space-y-4 text-xs text-[#22c55e]/80 font-mono">
+                 <div className="flex flex-col gap-1">
+                   <span className="text-white/50 text-[9px] tracking-widest uppercase">NODE:</span>
+                   <span className="text-red-400 font-bold uppercase tracking-wider">ABES Engineering College</span>
+                 </div>
+                 <div className="flex flex-col gap-1">
+                   <span className="text-white/50 text-[9px] tracking-widest uppercase">PROGRAM:</span>
+                   <span className="font-bold">B.Tech CSE</span>
+                 </div>
+                 <div className="flex flex-col gap-1">
+                   <span className="text-white/50 text-[9px] tracking-widest uppercase">CORE:</span>
+                   <span>DSA (<span className="text-red-400 font-bold">JAVA</span>) & Web Architecture</span>
+                 </div>
+               </div>
+             </div>
+
+             {/* Card 2: Milestones */}
+             <div className="relative bg-[#0a0a0a] border border-[#22c55e]/30 p-5 shadow-[0_0_15px_rgba(34,197,94,0.05)] mb-6">
+               <div className="border-b border-[#22c55e]/20 pb-3 mb-4 flex justify-between items-center">
+                 <h3 className="text-[#22c55e] font-bold text-[11px] tracking-widest uppercase drop-shadow-[0_0_5px_rgba(34,197,94,0.5)]">Key_Milestones</h3>
+                 <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-ping"></span>
+               </div>
+               <ul className="space-y-5 text-xs text-[#22c55e]/80 list-none font-mono">
+                 <li className="flex gap-3 items-start">
+                   <span className="text-white/50 mt-0.5">&gt;</span>
+                   <div>
+                     <span className="block text-white/50 text-[9px] tracking-widest uppercase mb-1">First-Year Performance:</span>
+                     <span className="text-red-400 font-bold tracking-wider text-sm">9.13 CGPA</span>
+                   </div>
+                 </li>
+                 <li className="flex gap-3 items-start">
+                   <span className="text-white/50 mt-0.5">&gt;</span>
+                   <div>
+                     <span className="block text-white/50 text-[9px] tracking-widest uppercase mb-1">Extracurricular:</span>
+                     <span className="text-red-400 font-bold tracking-wider uppercase">Technovation Club</span> <br/>
+                     <span className="text-[10px] opacity-70 block mt-1">(Technical Member)</span>
+                   </div>
+                 </li>
+                 <li className="flex gap-3 items-start">
+                   <span className="text-white/50 mt-0.5">&gt;</span>
+                   <div>
+                     <span className="block text-white/50 text-[9px] tracking-widest uppercase mb-1">Targets Locked:</span>
+                     <span className="text-red-400 animate-pulse font-bold tracking-[0.2em] text-sm">GSoC / GSSoC</span>
+                   </div>
+                 </li>
+               </ul>
+             </div>
+
+          </div>
+        </div>
+      )}
+
       {/* ENGAGE.2P ARCADE WINDOW */}
       {isEngageWindowOpen && (
         <Rnd
@@ -6020,9 +6127,9 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
           minWidth={700}
           minHeight={500}
           bounds="parent"
-          dragHandleClassName="engage-drag-handle"
-          className={`z-[80] ${isEngageMaximized ? "!transition-all !duration-300" : ""}`}
-        >
+        dragHandleClassName="engage-drag-handle"
+        className={`z-[80] max-md:hidden ${isEngageMaximized ? "!transition-all !duration-300" : ""}`}
+      >
           <div className="w-full h-full bg-[#050505]/95 border border-[#d946ef]/50 rounded shadow-[0_0_40px_rgba(217,70,239,0.15)] flex flex-col overflow-hidden backdrop-blur-md">
             {/* Title Bar */}
             <div
@@ -6059,6 +6166,38 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
             </div>
           </div>
         </Rnd>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MOBILE OVERRIDE: ENGAGE.2p (Tabletop Battle Deck) */}
+      {/* ========================================================================= */}
+      {isEngageWindowOpen && (
+        <div className="hidden max-md:flex fixed inset-0 z-[99999] flex-col bg-black overflow-hidden font-mono animate-[fadeIn_0.2s_ease-out]">
+          
+          {/* Minimalist Battle Header (Kept small for max game space) */}
+          <div className="w-full h-10 shrink-0 border-b-2 border-[#d946ef]/40 bg-[#0a0a0a] flex items-center justify-between px-3 shadow-[0_0_15px_rgba(217,70,239,0.2)] z-30">
+            <span className="text-[#d946ef] font-black tracking-[0.3em] text-[9px] uppercase drop-shadow-[0_0_5px_rgba(217,70,239,0.8)] animate-pulse">
+              [ LOCAL_VERSUS_MODE ]
+            </span>
+            <button 
+              onClick={() => {
+                setIsEngageWindowOpen(false);
+                setIsEngageMaximized(false);
+              }}
+              className="text-[#d946ef] bg-[#d946ef]/10 border border-[#d946ef]/50 active:bg-red-500/20 active:text-red-500 active:border-red-500 px-3 py-1 rounded text-[9px] font-black tracking-widest transition-all"
+            >
+              ABORT
+            </button>
+          </div>
+
+          {/* The Game Hub Canvas */}
+          <div className="flex-1 w-full relative">
+             <Engage2P />
+          </div>
+          
+          {/* Subtle Center Divider for the "Tabletop" feel */}
+          <div className="absolute top-1/2 left-0 w-full h-[2px] bg-[#d946ef]/20 -translate-y-1/2 pointer-events-none z-0 border-y border-black"></div>
+        </div>
       )}
 
       {isAiProxyOpen && (

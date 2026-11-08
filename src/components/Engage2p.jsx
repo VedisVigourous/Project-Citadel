@@ -398,57 +398,128 @@ const CyberVolley = () => {
 };
 
 // --- MAIN HUB ARCHITECTURE ---
+
+// 1. Mobile Touch Engine (Converts screen taps into physical keyboard events)
+const TouchBtn = ({ label, targetKey, colorClass }) => {
+  const trigger = (type) => window.dispatchEvent(new KeyboardEvent(type, { key: targetKey, bubbles: true }));
+  return (
+    <button
+      onTouchStart={(e) => { e.preventDefault(); trigger('keydown'); }}
+      onTouchEnd={(e) => { e.preventDefault(); trigger('keyup'); }}
+      className={`w-12 h-12 flex items-center justify-center rounded-lg border-2 ${colorClass} font-black text-lg select-none touch-none shadow-[inset_0_0_10px_rgba(0,0,0,0.5)] transition-colors`}
+    >
+      {label}
+    </button>
+  );
+};
+
+// 2. The Universal D-Pad
+const DPad = ({ up, down, left, right, colorClass }) => (
+  <div className="relative w-[136px] h-[136px] z-50">
+    <div className="absolute top-0 left-1/2 -translate-x-1/2"><TouchBtn label="▲" targetKey={up} colorClass={colorClass} /></div>
+    <div className="absolute bottom-0 left-1/2 -translate-x-1/2"><TouchBtn label="▼" targetKey={down} colorClass={colorClass} /></div>
+    <div className="absolute left-0 top-1/2 -translate-y-1/2"><TouchBtn label="◄" targetKey={left} colorClass={colorClass} /></div>
+    <div className="absolute right-0 top-1/2 -translate-y-1/2"><TouchBtn label="►" targetKey={right} colorClass={colorClass} /></div>
+    {/* Decorative Center Core */}
+    <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-2 ${colorClass} opacity-40`}></div>
+  </div>
+);
+
 export default function Engage2P() {
   const [activeGame, setActiveGame] = useState('pong'); 
 
   return (
-    <div className="w-full h-full bg-black flex flex-col p-4">
-      <div className="w-full border border-[#22c55e]/50 py-2 mb-4 bg-[#22c55e]/5 text-center">
+    <div className="w-full h-full bg-black flex flex-col max-md:p-0 p-4 relative overflow-hidden">
+      
+      {/* ========================================================= */}
+      {/* PLAYER 2 MOBILE CONTROLLER (TOP - ROTATED 180 DEGREES)    */}
+      {/* ========================================================= */}
+      <div className="hidden max-md:flex w-full h-[200px] shrink-0 items-center justify-between px-4 sm:px-8 bg-[#080808] border-b-2 border-white/10 rotate-180 z-20 shadow-[0_4px_30px_rgba(0,0,0,0.8)]">
+         <div className="text-[#d946ef] font-mono tracking-widest flex flex-col items-center">
+           <span className="font-black text-3xl drop-shadow-[0_0_10px_rgba(217,70,239,0.8)]">P2</span>
+           <span className="text-[9px] opacity-70 mt-1 uppercase text-center">Challenger</span>
+         </div>
+         
+         {/* Middle Decal to balance the layout */}
+         <div className="flex flex-col items-center justify-center opacity-20 border-2 border-dashed border-[#d946ef] p-2 rounded-full w-12 h-12">
+            <span className="text-[10px] font-black tracking-widest text-[#d946ef]">VS</span>
+         </div>
+
+         <DPad up="ArrowUp" down="ArrowDown" left="ArrowLeft" right="ArrowRight" colorClass="text-[#d946ef] border-[#d946ef]/40 active:bg-[#d946ef] active:text-black" />
+      </div>
+
+      {/* ========================================================= */}
+      {/* DESKTOP HEADER & NAV (Strictly Hidden on Mobile)          */}
+      {/* ========================================================= */}
+      <div className="max-md:hidden w-full border border-[#22c55e]/50 py-2 mb-4 bg-[#22c55e]/5 text-center shrink-0">
         <span className="text-[#22c55e] font-mono text-sm tracking-[0.3em] uppercase drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]">
           Life is all about engaging!
         </span>
       </div>
 
-      {/* Capsule Navigation (4 Games) */}
-      <div className="flex flex-wrap justify-center gap-4 mb-4">
-        <button 
-          onClick={() => setActiveGame('pong')}
-          className={`px-6 py-1.5 rounded-full font-mono text-[11px] tracking-widest uppercase transition-all duration-300 border ${
-            activeGame === 'pong' ? 'bg-[#22c55e] text-black border-[#22c55e] shadow-[0_0_15px_rgba(34,197,94,0.4)] font-bold' : 'bg-black text-[#22c55e] border-[#22c55e]/40 hover:border-[#22c55e]'
-          }`}
-        >Cyber-Pong</button>
-        <button 
-          onClick={() => setActiveGame('tron')}
-          className={`px-6 py-1.5 rounded-full font-mono text-[11px] tracking-widest uppercase transition-all duration-300 border ${
-            activeGame === 'tron' ? 'bg-[#d946ef] text-black border-[#d946ef] shadow-[0_0_15px_rgba(217,70,239,0.4)] font-bold' : 'bg-black text-[#d946ef] border-[#d946ef]/40 hover:border-[#d946ef]'
-          }`}
-        >Grid-Cycle</button>
-        <button 
-          onClick={() => setActiveGame('brawl')}
-          className={`px-6 py-1.5 rounded-full font-mono text-[11px] tracking-widest uppercase transition-all duration-300 border ${
-            activeGame === 'brawl' ? 'bg-[#3b82f6] text-black border-[#3b82f6] shadow-[0_0_15px_rgba(59,130,246,0.4)] font-bold' : 'bg-black text-[#3b82f6] border-[#3b82f6]/40 hover:border-[#3b82f6]'
-          }`}
-        >Gravity Brawl</button>
-        <button 
-          onClick={() => setActiveGame('volley')}
-          className={`px-6 py-1.5 rounded-full font-mono text-[11px] tracking-widest uppercase transition-all duration-300 border ${
-            activeGame === 'volley' ? 'bg-[#10b981] text-black border-[#10b981] shadow-[0_0_15px_rgba(16,185,129,0.4)] font-bold' : 'bg-black text-[#10b981] border-[#10b981]/40 hover:border-[#10b981]'
-          }`}
-        >Cyber-Volley</button>
+      <div className="max-md:hidden flex flex-wrap justify-center gap-4 mb-4 shrink-0">
+        <button onClick={() => setActiveGame('pong')} className={`px-6 py-1.5 rounded-full font-mono text-[11px] tracking-widest uppercase transition-all duration-300 border ${activeGame === 'pong' ? 'bg-[#22c55e] text-black border-[#22c55e] shadow-[0_0_15px_rgba(34,197,94,0.4)] font-bold' : 'bg-black text-[#22c55e] border-[#22c55e]/40 hover:border-[#22c55e]'}`}>Cyber-Pong</button>
+        <button onClick={() => setActiveGame('tron')} className={`px-6 py-1.5 rounded-full font-mono text-[11px] tracking-widest uppercase transition-all duration-300 border ${activeGame === 'tron' ? 'bg-[#d946ef] text-black border-[#d946ef] shadow-[0_0_15px_rgba(217,70,239,0.4)] font-bold' : 'bg-black text-[#d946ef] border-[#d946ef]/40 hover:border-[#d946ef]'}`}>Grid-Cycle</button>
+        <button onClick={() => setActiveGame('brawl')} className={`px-6 py-1.5 rounded-full font-mono text-[11px] tracking-widest uppercase transition-all duration-300 border ${activeGame === 'brawl' ? 'bg-[#3b82f6] text-black border-[#3b82f6] shadow-[0_0_15px_rgba(59,130,246,0.4)] font-bold' : 'bg-black text-[#3b82f6] border-[#3b82f6]/40 hover:border-[#3b82f6]'}`}>Gravity Brawl</button>
+        <button onClick={() => setActiveGame('volley')} className={`px-6 py-1.5 rounded-full font-mono text-[11px] tracking-widest uppercase transition-all duration-300 border ${activeGame === 'volley' ? 'bg-[#10b981] text-black border-[#10b981] shadow-[0_0_15px_rgba(16,185,129,0.4)] font-bold' : 'bg-black text-[#10b981] border-[#10b981]/40 hover:border-[#10b981]'}`}>Cyber-Volley</button>
       </div>
 
-      <div className="flex-1 w-full border border-[#22c55e]/30 bg-black/60 relative overflow-hidden flex items-center justify-center p-2">
+      {/* ========================================================= */}
+      {/* THE GAME CANVAS AREA (100% Clean)                         */}
+      {/* ========================================================= */}
+      <div className="flex-1 w-full border border-[#22c55e]/30 bg-[#020202] relative overflow-hidden flex items-center justify-center p-2 max-md:border-y-0 max-md:border-x-0 z-10 shadow-[inset_0_0_50px_rgba(0,0,0,0.9)]">
+        {/* The Native Engines */}
         {activeGame === 'pong' && <CyberPong />}
         {activeGame === 'tron' && <GridCycle />}
         {activeGame === 'brawl' && <GravityBrawl />}
         {activeGame === 'volley' && <CyberVolley />}
       </div>
       
-      <div className="mt-2 text-center font-mono text-[10px] tracking-widest flex justify-center gap-8">
+      {/* ========================================================= */}
+      {/* DESKTOP FOOTER (Strictly Hidden on Mobile)                */}
+      {/* ========================================================= */}
+      <div className="max-md:hidden mt-2 text-center font-mono text-[10px] tracking-widest flex justify-center gap-8 shrink-0">
         <span className="text-[#22c55e]/80">PLAYER 1: [ W S A D ]</span>
         <span className="text-white/30">|</span>
         <span className="text-[#d946ef]/80">PLAYER 2: [ ARROWS ]</span>
       </div>
+
+      {/* ========================================================= */}
+      {/* PLAYER 1 MOBILE CONTROLLER (BOTTOM)                       */}
+      {/* ========================================================= */}
+      <div className="hidden max-md:flex w-full h-[200px] shrink-0 items-center justify-between px-4 sm:px-8 bg-[#080808] border-t-2 border-white/10 z-20 shadow-[0_-4px_30px_rgba(0,0,0,0.8)] relative">
+         
+         {/* Left: Player 1 Identity */}
+         <div className="text-[#22c55e] font-mono tracking-widest flex flex-col items-center">
+           <span className="font-black text-3xl drop-shadow-[0_0_10px_rgba(34,197,94,0.8)]">P1</span>
+           <span className="text-[9px] opacity-70 mt-1 uppercase text-center">System<br/>Host</span>
+         </div>
+         
+         {/* Middle: Tactical 2x2 Game Selector */}
+         <div className="flex flex-col items-center gap-1.5 shrink-0">
+           <div className="text-[7px] tracking-widest text-white/40 uppercase font-mono">SYS.ARCADE</div>
+           <div className="grid grid-cols-2 gap-2">
+             {[
+               { id: 'pong', label: 'P', color: 'text-[#22c55e] border-[#22c55e]', shadow: 'shadow-[0_0_10px_rgba(34,197,94,0.5)]' },
+               { id: 'tron', label: 'G', color: 'text-[#d946ef] border-[#d946ef]', shadow: 'shadow-[0_0_10px_rgba(217,70,239,0.5)]' },
+               { id: 'brawl', label: 'B', color: 'text-[#3b82f6] border-[#3b82f6]', shadow: 'shadow-[0_0_10px_rgba(59,130,246,0.5)]' },
+               { id: 'volley', label: 'V', color: 'text-[#10b981] border-[#10b981]', shadow: 'shadow-[0_0_10px_rgba(16,185,129,0.5)]' }
+             ].map(g => (
+               <button 
+                 key={g.id} 
+                 onClick={() => setActiveGame(g.id)}
+                 className={`w-9 h-9 rounded flex items-center justify-center border-2 transition-all font-black text-sm ${activeGame === g.id ? `${g.color} bg-white/10 ${g.shadow} scale-110` : 'border-white/10 text-white/30'}`}
+               >
+                 {g.label}
+               </button>
+             ))}
+           </div>
+         </div>
+
+         {/* Right: D-Pad */}
+         <DPad up="w" down="s" left="a" right="d" colorClass="text-[#22c55e] border-[#22c55e]/40 active:bg-[#22c55e] active:text-black" />
+      </div>
+
     </div>
   );
 }
