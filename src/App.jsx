@@ -208,28 +208,6 @@ function App() {
   const [isSocialsWindowOpen, setIsSocialsWindowOpen] = useState(false);
   const [isRecruiterModeOpen, setIsRecruiterModeOpen] = useState(false);
   const [isGraphLoading, setIsGraphLoading] = useState(true);
-  const [graphData, setGraphData] = useState([]);
-
-  useEffect(() => {
-    const fetchGraphData = async () => {
-      setIsGraphLoading(true);
-      try {
-        // Replace this with your actual GitHub stats or graph API endpoint
-        const response = await fetch(
-          "https://api.github.com/users/yourusername/events",
-        );
-        const data = await response.json();
-        setGraphData(data);
-      } catch (error) {
-        console.error("Failed to fetch graph data:", error);
-      } finally {
-        // Whether it succeeds or fails, turn off the loading skeleton
-        setIsGraphLoading(false);
-      }
-    };
-
-    fetchGraphData();
-  }, []);
 
   // --- AI Assistant Proxy States ---
   const [isAiProxyOpen, setIsAiProxyOpen] = useState(false);
@@ -359,26 +337,29 @@ function App() {
     };
 
     const recordVisit = async () => {
-      // 1. Initial fast local baseline
-      const localVisits =
-        parseInt(localStorage.getItem("vadanta_os_visits") || "153", 10) + 1;
+      // 1. Reset and initialize baseline
+      let localVisits = parseInt(localStorage.getItem("vadanta_os_visits") || "0", 10);
+      if (localVisits > 50) {
+        // Clear old legacy visitor numbers and start fresh
+        localVisits = 0;
+      }
+      localVisits += 1;
       localStorage.setItem("vadanta_os_visits", localVisits.toString());
       setVisitorCount(localVisits);
       updateLogs(localVisits);
 
-      // 2. Cross-device Global Counter API (increments on every device/browser load)
+      // 2. Cross-device Global Counter API (fresh counter starting at real live visits)
       try {
         const res = await fetch(
-          "https://countapi.mileshilliard.com/api/v1/hit/vedisvigourous_citadel_portfolio_counter",
+          "https://countapi.mileshilliard.com/api/v1/hit/vedisvigourous_citadel_live_v1",
         );
         if (res.ok) {
           const data = await res.json();
           const liveVal = typeof data.value === "number" ? data.value : parseInt(data.value, 10);
           if (!isNaN(liveVal) && liveVal > 0) {
-            const displayCount = 150 + liveVal;
-            setVisitorCount(displayCount);
-            localStorage.setItem("vadanta_os_visits", displayCount.toString());
-            updateLogs(displayCount);
+            setVisitorCount(liveVal);
+            localStorage.setItem("vadanta_os_visits", liveVal.toString());
+            updateLogs(liveVal);
           }
         }
       } catch (err) {
@@ -2963,42 +2944,36 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                   </a>
                 </div>
 
-                {/* Desktop Graph Container - Adjust positioning classes as needed */}
-                {isGraphLoading ? (
-                  /* The Skeleton State */
-                  <div className="relative p-4 rounded-xl border border-[#22c55e]/20 bg-[#050505]/40 backdrop-blur-sm shadow-[0_0_20px_rgba(0,0,0,0.5)] flex gap-1 w-max">
-                    {[...Array(50)].map(
-                      (
-                        _,
-                        colIndex, // Expanded to 50 columns to better match the width of your ghchart
-                      ) => (
-                        <div key={colIndex} className="flex flex-col gap-1">
+                {/* Desktop Graph Container with Cyber Skeleton Loading */}
+                <div className="relative p-4 rounded-xl border border-[#22c55e]/25 bg-[#050505]/60 backdrop-blur-md shadow-[0_0_25px_rgba(0,0,0,0.6)] min-h-[140px] flex items-center justify-center overflow-hidden">
+                  {/* Cyber Matrix Skeleton (Pulsing while image downloads) */}
+                  {isGraphLoading && (
+                    <div className="flex gap-1.5 w-[75vw] max-w-5xl justify-center items-center py-2 animate-pulse">
+                      {[...Array(44)].map((_, colIndex) => (
+                        <div key={colIndex} className="flex flex-col gap-1.5">
                           {[...Array(7)].map((_, rowIndex) => (
                             <div
                               key={`${colIndex}-${rowIndex}`}
-                              className="w-3 h-3 bg-gray-600/40 rounded-sm animate-pulse"
-                              style={{ animationDelay: `${colIndex * 75}ms` }}
+                              className="w-2.5 h-2.5 bg-[#22c55e]/15 border border-[#22c55e]/30 rounded-sm"
+                              style={{ animationDelay: `${(colIndex * 35) % 700}ms` }}
                             ></div>
                           ))}
                         </div>
-                      ),
-                    )}
-                  </div>
-                ) : (
-                  /* CENTER: The Chart (Your actual image) */
-                  <div className="relative p-4 rounded-xl border border-[#22c55e]/20 bg-[#050505]/40 backdrop-blur-sm shadow-[0_0_20px_rgba(0,0,0,0.5)]">
-                    <img
-                      src="https://ghchart.rshah.org/22c55e/vedisvigourous"
-                      alt="VedisVigourous Live Commits"
-                      className="w-[75vw] max-w-5xl opacity-70"
-                      style={{
-                        filter: "invert(0.85) hue-rotate(180deg) contrast(1.8)",
-                      }}
-                      // Optional: Automatically turn off the skeleton when the image finishes downloading
-                      onLoad={() => setIsGraphLoading(false)}
-                    />
-                  </div>
-                )}
+                      ))}
+                    </div>
+                  )}
+
+                  {/* CENTER: The Live GitHub Contribution Chart */}
+                  <img
+                    src="https://ghchart.rshah.org/22c55e/vedisvigourous"
+                    alt="VedisVigourous Live Commits"
+                    className={`w-[75vw] max-w-5xl transition-opacity duration-500 ${isGraphLoading ? "opacity-0 absolute pointer-events-none" : "opacity-80 hover:opacity-100"}`}
+                    style={{
+                      filter: "invert(0.85) hue-rotate(180deg) contrast(1.8)",
+                    }}
+                    onLoad={() => setIsGraphLoading(false)}
+                  />
+                </div>
 
                 {/* BOTTOM ROW: AI Agent & Traffic Tracker */}
                 <div className="flex items-center justify-between w-[75vw] max-w-5xl mt-6">
