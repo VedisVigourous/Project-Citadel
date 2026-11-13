@@ -1,0 +1,24 @@
+{
+  "name": "Vadanta OS // Citadel",
+  "short_name": "VadantaOS",
+  "description": "Next-gen Cyberpunk Operating System Portfolio of Vadanta Kumar Chauhaan",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#050505",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/profile.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

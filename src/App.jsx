@@ -14,6 +14,7 @@ import Hologram from "./components/Hologram";
 import Engage2P from "./components/Engage2p";
 import AiProxy from "./components/AiProxy";
 import useSound from "use-sound";
+import RecruiterMode from "./components/RecruiterMode";
 
 const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 
@@ -205,6 +206,7 @@ const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 
 function App() {
   const [isSocialsWindowOpen, setIsSocialsWindowOpen] = useState(false);
+  const [isRecruiterModeOpen, setIsRecruiterModeOpen] = useState(false);
   const [isGraphLoading, setIsGraphLoading] = useState(true);
   const [graphData, setGraphData] = useState([]);
 
@@ -367,14 +369,16 @@ function App() {
       // 2. Cross-device Global Counter API (increments on every device/browser load)
       try {
         const res = await fetch(
-          "https://api.counterapi.dev/v1/vedisvigourous_citadel/visits/up",
+          "https://countapi.mileshilliard.com/api/v1/hit/vedisvigourous_citadel_portfolio_counter",
         );
         if (res.ok) {
           const data = await res.json();
-          if (data && typeof data.count === "number") {
-            setVisitorCount(data.count);
-            localStorage.setItem("vadanta_os_visits", data.count.toString());
-            updateLogs(data.count);
+          const liveVal = typeof data.value === "number" ? data.value : parseInt(data.value, 10);
+          if (!isNaN(liveVal) && liveVal > 0) {
+            const displayCount = 150 + liveVal;
+            setVisitorCount(displayCount);
+            localStorage.setItem("vadanta_os_visits", displayCount.toString());
+            updateLogs(displayCount);
           }
         }
       } catch (err) {
@@ -1155,6 +1159,41 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
     }
   };
 
+  // --- DEEP LINKING & BROWSER URL HASH ROUTING ---
+  useEffect(() => {
+    const handleHashRouting = () => {
+      const hash = window.location.hash.toLowerCase().replace("#", "").trim();
+      if (!hash) return;
+
+      if (hash === "projects") {
+        setIsProjectsWindowOpen(true);
+      } else if (hash === "identity" || hash === "about") {
+        setIsIdentityWindowOpen(true);
+        setIsCoreIdentityOpen(true);
+      } else if (hash === "certs" || hash === "certifications") {
+        setIsCertsWindowOpen(true);
+      } else if (hash === "resume") {
+        setIsResumeWindowOpen(true);
+      } else if (hash === "mail" || hash === "contact") {
+        setIsCommsWindowOpen(true);
+      } else if (hash === "journey") {
+        setIsJourneyWindowOpen(true);
+      } else if (hash === "arcade" || hash === "games") {
+        setIsArcadeActive(true);
+      } else if (hash === "socials") {
+        setIsSocialsWindowOpen(true);
+      } else if (hash === "ai" || hash === "vai") {
+        setIsAiProxyOpen(true);
+      } else if (hash === "recruiter" || hash === "fast") {
+        setIsRecruiterModeOpen(true);
+      }
+    };
+
+    handleHashRouting();
+    window.addEventListener("hashchange", handleHashRouting);
+    return () => window.removeEventListener("hashchange", handleHashRouting);
+  }, []);
+
   const handleShutdown = () => {
     setIsSystemMenuOpen(false);
     setPendingAction("shutdown");
@@ -1303,57 +1342,31 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
                 <br />
                 <span className="text-white/60">-- SYSTEM & POWER --</span>
                 <span> • help : Displays this system manual</span>
+                <span> • neofetch / sysinfo : Outputs ASCII logo & system hardware telemetry</span>
                 <span> • clear / cls : Clears the terminal screen</span>
+                <span> • theme &lt;green|cyan|amber|purple|red|matrix&gt; : Shifts phosphor color scheme</span>
+                <span> • recruiter / fast : Switches to Executive Candidate Dossier</span>
                 <span> • ls : Lists available system files</span>
                 <span> • close : Closes all active windows</span>
                 <span> • music / mute : Toggles background audio engine</span>
-                <span>
-                  {" "}
-                  • clear cache : Flushes UI state and resets window memory
-                </span>
+                <span> • clear cache : Flushes UI state and resets window memory</span>
                 <span> • reboot : Restarts the VADANTA_OS kernel</span>
-                <span>
-                  {" "}
-                  • shutdown : Terminates all processes and powers down
-                </span>
+                <span> • shutdown : Terminates all processes and powers down</span>
                 <span> • date : Displays system date and time</span>
-                <span>
-                  {" "}
-                  • timeformat : Toggles the flip clock between 12H/24H mode
-                </span>
-                <span>
-                  {" "}
-                  • theme &lt;deg&gt; : Shifts global UI hue (e.g., 'theme 180')
-                </span>
-                <span>
-                  {" "}
-                  • netstat : Displays active secure network connections
-                </span>
+                <span> • timeformat : Toggles the flip clock between 12H/24H mode</span>
+                <span> • netstat : Displays active secure network connections</span>
                 <span> • traceroute : Pings server node location</span>
                 <br />
                 <span className="text-white/60">-- PORTFOLIO & APPS --</span>
                 <span> • whoami : Outputs current user identity</span>
-                <span>
-                  {" "}
-                  • skills : Displays technical proficiencies & stack
-                </span>
-                <span>
-                  {" "}
-                  • cat experience: Outputs professional experience logs
-                </span>
+                <span> • ai &lt;query&gt; : Direct terminal conversation with vAI intelligence</span>
+                <span> • skills : Displays technical proficiencies & stack</span>
+                <span> • curl vadanta.dev : Fetches live machine-readable JSON candidate profile</span>
+                <span> • cat experience : Outputs professional experience logs</span>
                 <span> • roadmap : Displays active development pipeline</span>
-                <span>
-                  {" "}
-                  • open projects : Mounts the PROJECTS.dir executable
-                </span>
-                <span>
-                  {" "}
-                  • open journey : Initializes the Journey.log timeline
-                </span>
-                <span>
-                  {" "}
-                  • mount github : Initializes external GitHub API uplink
-                </span>
+                <span> • open projects : Mounts the PROJECTS.dir executable</span>
+                <span> • open journey : Initializes the Journey.log timeline</span>
+                <span> • mount github : Initializes external GitHub API uplink</span>
                 <span> • hologram : Project the ABES_Node 3D hologram</span>
                 <span> • ping : Opens a direct comms link to my inbox</span>
                 <br />
@@ -1532,19 +1545,134 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
             type: "output",
             text: "INITIALIZING SECURE COMMS LINK...\n[!] Direct manual routing available at: vadanta592007@hotmail.com\nPlease enter your contact email:",
           });
-        } else if (baseCmd === "theme") {
-          const hue = parseInt(cmdParts[1]);
-          if (!isNaN(hue)) {
-            setThemeHue(hue);
+        } else if (lowerCmd === "neofetch" || lowerCmd === "sysinfo") {
+          const uptimeSec = Math.floor(performance.now() / 1000);
+          const mins = Math.floor(uptimeSec / 60);
+          const secs = uptimeSec % 60;
+          newHistory.push({
+            type: "output",
+            isManual: true,
+            text: (
+              <div className="flex flex-col sm:flex-row gap-4 my-2 font-mono text-xs text-[#22c55e]">
+                <div className="hidden sm:block leading-tight text-[#22c55e] font-black select-none">
+                  <pre>{`
+    .---.      
+   /     \\     
+  | () () |    
+   \\  _  /     
+    \`---\`      
+   CITADEL     
+                  `}</pre>
+                </div>
+                <div className="flex flex-col gap-0.5 text-xs">
+                  <span className="font-bold text-white text-sm">root@vadanta_os</span>
+                  <span className="text-[#22c55e]/60">-----------------------------</span>
+                  <span><strong className="text-white">OS:</strong> Vadanta_OS v2.4 (Citadel Architecture)</span>
+                  <span><strong className="text-white">Host:</strong> ABES_Node // CSE Division</span>
+                  <span><strong className="text-white">Kernel:</strong> React 19.2 // Vite 8.2 // Tailwind v4</span>
+                  <span><strong className="text-white">Uptime:</strong> {mins}m {secs}s (Live Session)</span>
+                  <span><strong className="text-white">Shell:</strong> vadanta-zsh 4.2.0-cyber</span>
+                  <span><strong className="text-white">Display:</strong> {window.innerWidth}x{window.innerHeight} @ 60-144Hz</span>
+                  <span><strong className="text-white">Memory:</strong> 64MB / 128MB (Virtual Heap)</span>
+                  <span><strong className="text-white">Terminal:</strong> CITADEL_DOCK_TTY1</span>
+                  <div className="flex gap-1.5 mt-2">
+                    <span className="w-3.5 h-3.5 rounded bg-black border border-white/20"></span>
+                    <span className="w-3.5 h-3.5 rounded bg-[#22c55e]"></span>
+                    <span className="w-3.5 h-3.5 rounded bg-[#06b6d4]"></span>
+                    <span className="w-3.5 h-3.5 rounded bg-[#eab308]"></span>
+                    <span className="w-3.5 h-3.5 rounded bg-[#ef4444]"></span>
+                    <span className="w-3.5 h-3.5 rounded bg-[#a855f7]"></span>
+                  </div>
+                </div>
+              </div>
+            ),
+          });
+        } else if (baseCmd === "ai" || baseCmd === "ask") {
+          const query = rawCmd.slice(baseCmd.length).trim();
+          if (!query) {
             newHistory.push({
               type: "output",
-              text: `[SYSTEM] Global Phosphor Shift applied: ${hue}°`,
+              text: "Usage: ai <your question>\nExample: ai who is vadanta?",
             });
           } else {
             newHistory.push({
               type: "output",
-              text: "Usage: theme <number 0-360>",
+              text: `[vAI] Processing neural query: "${query}"...`,
             });
+            const q = query.toLowerCase();
+            let response = "I am vAI, Vadanta's neural interface. Vadanta is a second-year CSE undergraduate at ABESEC with a 9.13 GPA, skilled in Java (DSA), React, and Google Cloud GenAI technologies.";
+            if (q.includes("gpa") || q.includes("grade") || q.includes("college") || q.includes("education")) {
+              response = "Vadanta studies Computer Science & Engineering at ABES Engineering College, maintaining a 9.13/10.00 GPA (1st Year). He is actively focusing on Java DSA, OOP, and Web Architecture.";
+            } else if (q.includes("project") || q.includes("build") || q.includes("work")) {
+              response = "Vadanta's flagship project is Citadel OS (this interactive cyberpunk web operating system), alongside Chrome extensions, AI tools, and full-stack applications. Type 'open projects' to inspect them.";
+            } else if (q.includes("skill") || q.includes("stack") || q.includes("tech")) {
+              response = "Primary stack: Java, C++, JavaScript (ES6+), React 19, Tailwind CSS, Vite, GCP Vertex AI, Gemini API, and Git/GitHub Actions.";
+            } else if (q.includes("contact") || q.includes("email") || q.includes("hire")) {
+              response = "You can reach Vadanta directly at vadanta592007@hotmail.com or through LinkedIn at linkedin.com/in/vadanta. Type 'ping' to send an email right from this terminal!";
+            } else if (q.includes("resume") || q.includes("cv")) {
+              response = "Type 'open resume' or check the top menu to download Vadanta's latest technical resume.";
+            }
+            setTimeout(() => {
+              setTerminalHistory((prev) => [
+                ...prev,
+                { type: "output", text: `[vAI] > ${response}` }
+              ]);
+            }, 300);
+          }
+        } else if (lowerCmd === "recruiter" || lowerCmd === "fast") {
+          setIsRecruiterModeOpen(true);
+          window.history.replaceState(null, "", "#recruiter");
+          newHistory.push({
+            type: "output",
+            text: "[SYSTEM] Switching to Executive Dossier view...",
+          });
+        } else if (lowerCmd.startsWith("curl")) {
+          newHistory.push({
+            type: "output",
+            text: JSON.stringify(
+              {
+                candidate: "Vadanta Kumar Chauhaan",
+                status: "Open for Software Engineering Internships",
+                academics: { college: "ABES Engineering College", gpa: "9.13 / 10.00" },
+                core_stack: ["Java", "React 19", "JavaScript", "C++", "Vertex AI", "Gemini API"],
+                contact: { email: "vadanta592007@hotmail.com", github: "VedisVigourous" }
+              },
+              null,
+              2
+            ),
+          });
+        } else if (baseCmd === "theme") {
+          const themeName = cmdParts[1]?.toLowerCase();
+          const presets = {
+            green: 0,
+            emerald: 0,
+            cyan: 150,
+            blue: 180,
+            purple: 250,
+            amber: 45,
+            red: 320,
+            matrix: 0
+          };
+          if (presets[themeName] !== undefined) {
+            setThemeHue(presets[themeName]);
+            newHistory.push({
+              type: "output",
+              text: `[SYSTEM] Theme applied: ${themeName.toUpperCase()} (${presets[themeName]}°)`,
+            });
+          } else {
+            const hue = parseInt(cmdParts[1]);
+            if (!isNaN(hue)) {
+              setThemeHue(hue);
+              newHistory.push({
+                type: "output",
+                text: `[SYSTEM] Global Phosphor Shift applied: ${hue}°`,
+              });
+            } else {
+              newHistory.push({
+                type: "output",
+                text: "Usage: theme <green | cyan | blue | purple | amber | red> or theme <0-360>",
+              });
+            }
           }
         } else if (lowerCmd === "traceroute") {
           newHistory.push({
@@ -2050,6 +2178,21 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                     </span>
                   </div>
                 </div>
+
+                {/* 4. RECRUITER FAST MODE SWITCH */}
+                <div className="hidden sm:flex items-center ml-4">
+                  <button
+                    onClick={() => {
+                      playAppOpen();
+                      setIsRecruiterModeOpen(true);
+                      window.history.replaceState(null, "", "#recruiter");
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-[#22c55e]/50 bg-[#22c55e]/10 hover:bg-[#22c55e] hover:text-black transition-all cursor-pointer text-[10px] font-bold text-[#22c55e] tracking-wider active:scale-95 shadow-[0_0_12px_rgba(34,197,94,0.2)] group"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] group-hover:bg-black animate-pulse"></span>
+                    <span>⚡ RECRUITER MODE</span>
+                  </button>
+                </div>
               </div>
               {/* End of Left Side Menus */}
 
@@ -2060,6 +2203,18 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
 
               {/* Right Side: Network, Clock & Mobile WiFi */}
               <div className="flex items-center gap-3 sm:gap-4 opacity-90 relative z-50">
+                {/* MOBILE RECRUITER FAST MODE BADGE */}
+                <button
+                  onClick={() => {
+                    playAppOpen();
+                    setIsRecruiterModeOpen(true);
+                    window.history.replaceState(null, "", "#recruiter");
+                  }}
+                  className="sm:hidden flex items-center gap-1 px-2.5 py-0.5 rounded-full border border-[#22c55e]/50 bg-[#22c55e]/15 text-[9px] font-bold text-[#22c55e] tracking-wider active:scale-95 mr-1 shadow-[0_0_8px_rgba(34,197,94,0.3)]"
+                >
+                  <span>⚡ FAST VIEW</span>
+                </button>
+
                 {/* MOBILE AUDIO TOGGLE (Replaces WiFi on Right Side) */}
                 <div
                   onClick={toggleMusic}
@@ -5279,6 +5434,31 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
       {/* EASTER EGG: ABES HOLOGRAM */}
       {isHologramActive && (
         <Hologram onClose={() => setIsHologramActive(false)} />
+      )}
+
+      {/* RECRUITER FAST MODE / EXECUTIVE SUMMARY OVERLAY */}
+      {isRecruiterModeOpen && (
+        <RecruiterMode
+          onClose={() => {
+            setIsRecruiterModeOpen(false);
+            window.history.replaceState(null, "", window.location.pathname);
+          }}
+          onOpenApp={(appId) => {
+            if (appId === "projects") {
+              setIsProjectsWindowOpen(true);
+              window.history.replaceState(null, "", "#projects");
+            } else if (appId === "ai") {
+              setIsAiProxyOpen(true);
+              window.history.replaceState(null, "", "#ai");
+            } else if (appId === "journey") {
+              setIsJourneyWindowOpen(true);
+              window.history.replaceState(null, "", "#journey");
+            } else if (appId === "resume") {
+              setIsResumeWindowOpen(true);
+              window.history.replaceState(null, "", "#resume");
+            }
+          }}
+        />
       )}
 
       {/* HACKER WARNING MODAL (Confirmation Dialog) */}
