@@ -10,39 +10,32 @@ export default function CustomCursor() {
   const [cursorMode, setCursorMode] = useState('default');
 
   useEffect(() => {
+    let animId = null;
+    let isMoving = false;
+
     const checkCursorState = (e) => {
-      if (!e.target) return;
+      if (!e.target || !(e.target instanceof Element)) return;
       
       const inlineCursor = e.target.style?.cursor || '';
-      const computedCursor = window.getComputedStyle(e.target).cursor || '';
-      
       const isResize = 
         inlineCursor.includes('resize') || 
-        computedCursor.includes('resize') || 
-        e.target.closest('.react-resizable-handle');
+        e.target.closest('.react-resizable-handle, [class*="resize"]');
 
       if (isResize) {
         setCursorMode('resize');
-      } else if (e.target.closest('button, a, .cursor-pointer, input, textarea, .group')) {
+      } else if (e.target.closest('button, a, .cursor-pointer, input, textarea, .group, [role="button"]')) {
         setCursorMode('hover');
       } else {
         setCursorMode('default');
       }
     };
 
-    const onMouseMove = (e) => {
-      mouse.current = { x: e.clientX, y: e.clientY };
-      checkCursorState(e);
-    };
-
-    const onMouseOver = (e) => checkCursorState(e);
-
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseover', onMouseOver);
-
     const render = () => {
-      trail.current.x += (mouse.current.x - trail.current.x) * 0.15;
-      trail.current.y += (mouse.current.y - trail.current.y) * 0.15;
+      const dx = mouse.current.x - trail.current.x;
+      const dy = mouse.current.y - trail.current.y;
+      
+      trail.current.x += dx * 0.18;
+      trail.current.y += dy * 0.18;
 
       if (dotRef.current) {
         dotRef.current.style.transform = `translate3d(${mouse.current.x}px, ${mouse.current.y}px, 0)`;
@@ -50,12 +43,33 @@ export default function CustomCursor() {
       if (trailRef.current) {
         trailRef.current.style.transform = `translate3d(${trail.current.x}px, ${trail.current.y}px, 0)`;
       }
-      requestAnimationFrame(render);
+
+      // If trail has caught up to the mouse and no new move, sleep RAF to save 60FPS loop
+      if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1 || isMoving) {
+        isMoving = false;
+        animId = requestAnimationFrame(render);
+      } else {
+        animId = null;
+      }
     };
 
-    requestAnimationFrame(render);
+    const onMouseMove = (e) => {
+      mouse.current = { x: e.clientX, y: e.clientY };
+      isMoving = true;
+      if (!animId) {
+        animId = requestAnimationFrame(render);
+      }
+    };
+
+    const onMouseOver = (e) => checkCursorState(e);
+
+    window.addEventListener('mousemove', onMouseMove, { passive: true });
+    window.addEventListener('mouseover', onMouseOver, { passive: true });
+
+    animId = requestAnimationFrame(render);
 
     return () => {
+      if (animId) cancelAnimationFrame(animId);
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseover', onMouseOver);
     };

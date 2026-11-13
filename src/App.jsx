@@ -14,7 +14,6 @@ import Hologram from "./components/Hologram";
 import Engage2P from "./components/Engage2p";
 import AiProxy from "./components/AiProxy";
 import useSound from "use-sound";
-import bootLogo1 from "./assets/bootLogo1.png";
 
 const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 
@@ -205,6 +204,7 @@ const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 \\end{document}`;
 
 function App() {
+  const [isSocialsWindowOpen, setIsSocialsWindowOpen] = useState(false);
   const [isGraphLoading, setIsGraphLoading] = useState(true);
   const [graphData, setGraphData] = useState([]);
 
@@ -318,52 +318,71 @@ function App() {
     if (hasCounted.current) return;
     hasCounted.current = true;
 
-    // 1. Fetch previous count, add 1 for this exact load
-    const currentVisits =
-      parseInt(localStorage.getItem("vadanta_os_visits") || "0") + 1;
-
-    // 2. Save the new count back to memory
-    localStorage.setItem("vadanta_os_visits", currentVisits.toString());
-
-    // 3. Set the UI state
-    setVisitorCount(currentVisits);
-
-    // 4. Generate the terminal logs
     const generateIP = () =>
       `${Math.floor(Math.random() * 200) + 10}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 100)}.XXX`;
 
-    setVisitorLogs([
-      {
-        id: currentVisits,
-        ip: "NODE_LOCAL",
-        msg: `Hey 👋🏻 visitor #${currentVisits}`,
-        isCurrent: true,
-      },
-      {
-        id: Math.max(0, currentVisits - 1),
-        ip: generateIP(),
-        msg: "Session terminated. Connection closed.",
-        isCurrent: false,
-      },
-      {
-        id: Math.max(0, currentVisits - 2),
-        ip: generateIP(),
-        msg: "Payload downloaded: RESUME.tex",
-        isCurrent: false,
-      },
-      {
-        id: Math.max(0, currentVisits - 3),
-        ip: generateIP(),
-        msg: "Ping successful. Data routed.",
-        isCurrent: false,
-      },
-      {
-        id: Math.max(0, currentVisits - 4),
-        ip: generateIP(),
-        msg: "Unauthorized access attempt blocked.",
-        isCurrent: false,
-      },
-    ]);
+    const updateLogs = (count) => {
+      setVisitorLogs([
+        {
+          id: count,
+          ip: "NODE_LOCAL",
+          msg: `Hey 👋🏻 visitor #${count}`,
+          isCurrent: true,
+        },
+        {
+          id: Math.max(0, count - 1),
+          ip: generateIP(),
+          msg: "Session terminated. Connection closed.",
+          isCurrent: false,
+        },
+        {
+          id: Math.max(0, count - 2),
+          ip: generateIP(),
+          msg: "Payload downloaded: RESUME.tex",
+          isCurrent: false,
+        },
+        {
+          id: Math.max(0, count - 3),
+          ip: generateIP(),
+          msg: "Ping successful. Data routed.",
+          isCurrent: false,
+        },
+        {
+          id: Math.max(0, count - 4),
+          ip: generateIP(),
+          msg: "Unauthorized access attempt blocked.",
+          isCurrent: false,
+        },
+      ]);
+    };
+
+    const recordVisit = async () => {
+      // 1. Initial fast local baseline
+      const localVisits =
+        parseInt(localStorage.getItem("vadanta_os_visits") || "153", 10) + 1;
+      localStorage.setItem("vadanta_os_visits", localVisits.toString());
+      setVisitorCount(localVisits);
+      updateLogs(localVisits);
+
+      // 2. Cross-device Global Counter API (increments on every device/browser load)
+      try {
+        const res = await fetch(
+          "https://api.counterapi.dev/v1/vedisvigourous_citadel/visits/up",
+        );
+        if (res.ok) {
+          const data = await res.json();
+          if (data && typeof data.count === "number") {
+            setVisitorCount(data.count);
+            localStorage.setItem("vadanta_os_visits", data.count.toString());
+            updateLogs(data.count);
+          }
+        }
+      } catch (err) {
+        // Fallback already populated with localVisits
+      }
+    };
+
+    recordVisit();
   }, []);
 
   const [isHologramActive, setIsHologramActive] = useState(false);
@@ -939,31 +958,37 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
     },
   ];
 
-  // 1. THE UPGRADED MOUSE TRACKER (With Speed-Swoosh)
+  // 1. THE UPGRADED MOUSE TRACKER (With Speed-Swoosh & 60FPS RAF Transform)
   useEffect(() => {
+    let rafId = null;
     const handleGlobalMouseMove = (e) => {
       if (loading) return;
 
-      // Existing 3D tilt logic
-      const x = (e.clientX / window.innerWidth - 0.5) * 20;
-      const y = (e.clientY / window.innerHeight - 0.5) * 20;
-      setBgOffset({ x, y });
+      // 60FPS Parallax without React re-render storm
+      if (!rafId) {
+        rafId = requestAnimationFrame(() => {
+          const x = (e.clientX / window.innerWidth - 0.5) * 20;
+          const y = (e.clientY / window.innerHeight - 0.5) * 20;
+          document.documentElement.style.setProperty("--bg-x", `${x}px`);
+          document.documentElement.style.setProperty("--bg-y", `${y}px`);
+          rafId = null;
+        });
+      }
 
       // The Fast-Movement Swoosh Logic
-      // e.movementX/Y calculates the pixel jump between frames
       const speed = Math.abs(e.movementX) + Math.abs(e.movementY);
-
-      // If the mouse jumps more than 80 pixels in one frame, it's moving FAST.
       if (speed > 80 && !swooshCooldown.current) {
         playSwoosh();
         swooshCooldown.current = true;
-        // 500ms cooldown so it doesn't spam your ears
         setTimeout(() => (swooshCooldown.current = false), 500);
       }
     };
 
-    window.addEventListener("mousemove", handleGlobalMouseMove);
-    return () => window.removeEventListener("mousemove", handleGlobalMouseMove);
+    window.addEventListener("mousemove", handleGlobalMouseMove, { passive: true });
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      window.removeEventListener("mousemove", handleGlobalMouseMove);
+    };
   }, [loading, playSwoosh]);
 
   // ---> NEW CLOCK & NETWORK EFFECT GOES HERE <---
@@ -1162,6 +1187,14 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
   const hours = displayHours.toString().padStart(2, "0");
   const mins = time.getMinutes().toString().padStart(2, "0");
   const secs = time.getSeconds().toString().padStart(2, "0");
+
+  // ANALOGUE CLOCK HAND ROTATION ANGLES
+  const clockSec = time.getSeconds();
+  const clockMin = time.getMinutes();
+  const clockHour = time.getHours();
+  const secondAngle = clockSec * 6;
+  const minuteAngle = clockMin * 6 + clockSec * 0.1;
+  const hourAngle = (clockHour % 12) * 30 + clockMin * 0.5;
 
   // --- TERMINAL COMMAND PARSER ---
   const handleTerminalSubmit = (e) => {
@@ -1646,7 +1679,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
           <div
             className="absolute top-[-100px] bottom-[-100px] left-[-100px] right-[-100px] cyber-grid pointer-events-none z-[1] max-md:!transform-none"
             style={{
-              transform: `translate(${bgOffset.x * 0.5}px, ${bgOffset.y * 0.5}px)`,
+              transform: "translate(calc(var(--bg-x, 0px) * 0.5), calc(var(--bg-y, 0px) * 0.5))",
               transition: "transform 0.1s ease-out",
             }}
           ></div>
@@ -2126,9 +2159,208 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
 
             {/* DESKTOP WORKSPACE (Strictly Hidden on Mobile) */}
             <div className="flex flex-grow p-4 max-md:p-0 relative overflow-hidden">
-              {/* MOBILE WORKSPACE (Holo-Glass Beast Icons) */}
-              <div className="absolute inset-0 md:hidden flex flex-col justify-end items-center px-4 pb-[160px] z-40 pointer-events-none">
-                <div className="w-full max-w-[340px] grid grid-cols-4 gap-y-8 gap-x-4 justify-items-center pointer-events-auto">
+              {/* MOBILE WORKSPACE CONTAINER (Unified Centered Wireframe) */}
+              <div className="md:hidden flex flex-col items-center justify-center px-4 py-3 overflow-y-auto no-scrollbar w-full h-full relative z-40 pointer-events-auto">
+                <div className="w-full max-w-[340px] my-auto flex flex-col gap-3">
+                  {/* ROW 1: THE iOS-STYLE WIDGETS (Grid: 2 columns) */}
+                  <div className="grid grid-cols-2 gap-3 w-full mx-auto">
+                  {/* Left Widget (Analogue Clock) */}
+                  <div className="aspect-square relative rounded-2xl bg-[#050505]/90 border border-[#22c55e]/30 p-2.5 flex flex-col justify-between shadow-[0_4px_20px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.05)] backdrop-blur-md overflow-hidden group">
+                    {/* Cyber Corner Brackets */}
+                    <div className="absolute top-2 left-2 w-2 h-2 border-t-[1.5px] border-l-[1.5px] rounded-tl-sm border-[#22c55e]/40 pointer-events-none z-20"></div>
+                    <div className="absolute top-2 right-2 w-2 h-2 border-t-[1.5px] border-r-[1.5px] rounded-tr-sm border-[#22c55e]/40 pointer-events-none z-20"></div>
+                    <div className="absolute bottom-2 left-2 w-2 h-2 border-b-[1.5px] border-l-[1.5px] rounded-bl-sm border-[#22c55e]/40 pointer-events-none z-20"></div>
+                    <div className="absolute bottom-2 right-2 w-2 h-2 border-b-[1.5px] border-r-[1.5px] rounded-br-sm border-[#22c55e]/40 pointer-events-none z-20"></div>
+
+                    {/* Clock Widget Header */}
+                    <div className="flex items-center justify-between w-full px-1 z-10 shrink-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse"></span>
+                        <span className="text-[10px] font-mono font-bold tracking-wider text-[#22c55e]">SYS.CLK</span>
+                      </div>
+                      <span className="text-[8px] font-mono text-[#22c55e]/50 uppercase tracking-widest">{is24Hour ? "24H" : "12H"}</span>
+                    </div>
+
+                    {/* SVG Analogue Clock Face */}
+                    <div className="w-full flex-1 min-h-0 flex items-center justify-center relative py-1">
+                      <svg viewBox="0 0 100 100" className="w-full h-full max-h-[82px]">
+                        {/* Outer Dial Circle */}
+                        <circle cx="50" cy="50" r="46" fill="#030704" stroke="rgba(34, 197, 94, 0.25)" strokeWidth="1" />
+                        <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(34, 197, 94, 0.12)" strokeWidth="0.5" strokeDasharray="2,2" />
+
+                        {/* 12 Hour Ticks */}
+                        {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((deg) => {
+                          const isMajor = deg % 90 === 0;
+                          return (
+                            <line
+                              key={deg}
+                              x1="50"
+                              y1={isMajor ? "10" : "12"}
+                              x2="50"
+                              y2={isMajor ? "16" : "14"}
+                              stroke={isMajor ? "#22c55e" : "rgba(34, 197, 94, 0.4)"}
+                              strokeWidth={isMajor ? "1.5" : "0.75"}
+                              strokeLinecap="round"
+                              transform={`rotate(${deg} 50 50)`}
+                            />
+                          );
+                        })}
+
+                        {/* Hour Hand */}
+                        <line
+                          x1="50"
+                          y1="50"
+                          x2="50"
+                          y2="26"
+                          stroke="#22c55e"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          transform={`rotate(${hourAngle} 50 50)`}
+                          style={{
+                            filter: "drop-shadow(0 0 4px rgba(34, 197, 94, 0.9))",
+                          }}
+                        />
+
+                        {/* Minute Hand */}
+                        <line
+                          x1="50"
+                          y1="50"
+                          x2="50"
+                          y2="16"
+                          stroke="#22c55e"
+                          strokeWidth="1.75"
+                          strokeLinecap="round"
+                          transform={`rotate(${minuteAngle} 50 50)`}
+                          style={{
+                            filter: "drop-shadow(0 0 4px rgba(34, 197, 94, 0.9))",
+                          }}
+                        />
+
+                        {/* Second Hand with Counterweight */}
+                        <line
+                          x1="50"
+                          y1="58"
+                          x2="50"
+                          y2="12"
+                          stroke="#86efac"
+                          strokeWidth="1"
+                          strokeLinecap="round"
+                          transform={`rotate(${secondAngle} 50 50)`}
+                          style={{
+                            filter: "drop-shadow(0 0 6px rgba(34, 197, 94, 1))",
+                          }}
+                        />
+
+                        {/* Center Pivot Point */}
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="2.5"
+                          fill="#22c55e"
+                          style={{ filter: "drop-shadow(0 0 4px #22c55e)" }}
+                        />
+                        <circle cx="50" cy="50" r="1" fill="#ffffff" />
+                      </svg>
+                    </div>
+
+                    {/* Bottom Digital Time Display */}
+                    <div className="flex items-center justify-between w-full px-1 z-10 text-[9px] font-mono text-[#22c55e]/70 shrink-0">
+                      <span className="tracking-widest font-bold">{hours}:{mins}:{secs}</span>
+                      <span className="text-[8px] text-[#22c55e]/50 tracking-wider uppercase">{ampm}</span>
+                    </div>
+                  </div>
+
+                  {/* Right Widget (GitHub Contribution) */}
+                  <a
+                    href="https://github.com/VedisVigourous"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="aspect-square relative rounded-2xl bg-[#050505]/90 border border-[#22c55e]/30 p-2.5 flex flex-col justify-between shadow-[0_4px_20px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.05)] backdrop-blur-md overflow-hidden active:scale-95 transition-all duration-200 group"
+                  >
+                    {/* Cyber Corner Brackets */}
+                    <div className="absolute top-2 left-2 w-2 h-2 border-t-[1.5px] border-l-[1.5px] rounded-tl-sm border-[#22c55e]/40 pointer-events-none z-20"></div>
+                    <div className="absolute top-2 right-2 w-2 h-2 border-t-[1.5px] border-r-[1.5px] rounded-tr-sm border-[#22c55e]/40 pointer-events-none z-20"></div>
+                    <div className="absolute bottom-2 left-2 w-2 h-2 border-b-[1.5px] border-l-[1.5px] rounded-bl-sm border-[#22c55e]/40 pointer-events-none z-20"></div>
+                    <div className="absolute bottom-2 right-2 w-2 h-2 border-b-[1.5px] border-r-[1.5px] rounded-br-sm border-[#22c55e]/40 pointer-events-none z-20"></div>
+
+                    {/* Header row */}
+                    <div className="flex items-center justify-between w-full px-1 z-10 shrink-0">
+                      <div className="flex items-center gap-1.5">
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          className="w-3.5 h-3.5 text-[#22c55e]"
+                        >
+                          <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                        </svg>
+                        <span className="text-[10px] font-mono font-bold tracking-wider text-[#22c55e]">GITHUB</span>
+                      </div>
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse"></span>
+                    </div>
+
+                    {/* Cropped Chart Image */}
+                    <div className="w-full flex-1 min-h-0 my-1 overflow-hidden rounded-xl bg-black/60 border border-[#22c55e]/15 flex items-center justify-center relative">
+                      <img
+                        src="https://ghchart.rshah.org/22c55e/vedisvigourous"
+                        alt="GitHub Contributions"
+                        className="w-full h-full object-cover object-right opacity-80 group-hover:opacity-100 transition-opacity"
+                        style={{
+                          filter: "invert(0.85) hue-rotate(180deg) contrast(1.8)",
+                        }}
+                      />
+                    </div>
+
+                    {/* Bottom micro stats */}
+                    <div className="flex items-center justify-between w-full px-1 z-10 text-[9px] font-mono text-[#22c55e]/70 shrink-0">
+                      <span className="tracking-wider">COMMITS</span>
+                      <span className="text-[#22c55e] font-bold">@VedisVigourous</span>
+                    </div>
+                  </a>
+                </div>
+
+                {/* ROW 2: ACTION BUTTONS (Flex: 2 columns) */}
+                <div className="flex items-center gap-3 w-full max-w-[340px] mx-auto">
+                  {/* Left Button ("vAI Active") */}
+                  <button
+                    onClick={() => {
+                      playAppOpen();
+                      setIsAiProxyOpen(true);
+                    }}
+                    className="flex-1 py-2.5 px-3 rounded-2xl bg-[#050505]/90 border border-[#22c55e]/30 shadow-[0_4px_15px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.05)] backdrop-blur-md flex items-center justify-center gap-2 text-[#22c55e] font-mono text-xs font-bold tracking-wider active:scale-95 active:border-[#22c55e] active:shadow-[0_0_15px_rgba(34,197,94,0.3)] transition-all cursor-pointer group"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-ping shrink-0"></span>
+                    <span className="truncate">vAI Active</span>
+                  </button>
+
+                  {/* Right Button ("My Socials") */}
+                  <button
+                    onClick={() => {
+                      playAppOpen();
+                      setIsSocialsWindowOpen(true);
+                    }}
+                    className="flex-1 py-2.5 px-3 rounded-2xl bg-[#050505]/90 border border-[#22c55e]/30 shadow-[0_4px_15px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.05)] backdrop-blur-md flex items-center justify-center gap-2 text-[#22c55e] font-mono text-xs font-bold tracking-wider active:scale-95 active:border-[#22c55e] active:shadow-[0_0_15px_rgba(34,197,94,0.3)] transition-all cursor-pointer group"
+                  >
+                    <svg
+                      className="w-3.5 h-3.5 text-[#22c55e]/80 group-hover:text-[#22c55e] shrink-0"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <circle cx="18" cy="5" r="3"></circle>
+                      <circle cx="6" cy="12" r="3"></circle>
+                      <circle cx="18" cy="19" r="3"></circle>
+                      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                    </svg>
+                    <span className="truncate">My Socials</span>
+                  </button>
+                </div>
+
+                {/* ROW 3: THE 4x2 APP GRID */}
+                <div className="grid grid-cols-4 gap-y-3.5 gap-x-4 w-full max-w-[340px] mx-auto justify-items-center">
                   {/* 1. IDENTITY.exe */}
                   <div
                     onClick={() => {
@@ -2463,13 +2695,56 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                     </svg>
                   </div>
                 </div>
+
+                {/* ROW 4: VISITOR TELEMETRY STATUS PILL */}
+                <div className="w-full max-w-[340px] mx-auto py-2 px-3.5 rounded-xl bg-[#050505]/80 border border-[#22c55e]/30 shadow-[0_4px_15px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.04)] backdrop-blur-md flex items-center justify-between font-mono shrink-0">
+                  <div className="flex items-center gap-2">
+                    <span className="relative flex h-2 w-2 shrink-0">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#22c55e] opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-[#22c55e]"></span>
+                    </span>
+                    <span className="text-[11px] font-bold tracking-wider text-white">
+                      Hey 👋! <span className="text-[#22c55e]">Visitor #{visitorCount}</span>
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-[9px] text-[#22c55e]/70 tracking-widest uppercase shrink-0">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e]"></span>
+                    <span>SYS_ONLINE</span>
+                  </div>
+                </div>
+
+                {/* ROW 5: MOBILE CLI DOCK WIDGET (Unified & Vertically Centered) */}
+                <div
+                  onClick={() => {
+                    playAppOpen();
+                    setIsTerminalFocused(true);
+                    setTimeout(() => terminalInputRef.current?.focus(), 100);
+                  }}
+                  className="w-full h-12 px-4 rounded-xl border border-[#22c55e]/30 bg-[#050505]/90 backdrop-blur-md shadow-[0_4px_15px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.05)] flex items-center justify-between cursor-pointer active:scale-95 active:border-[#22c55e] transition-all font-mono shrink-0 group"
+                >
+                  <div className="flex items-center font-bold tracking-wider text-[12px]">
+                    <span className="text-white/90 group-hover:text-white transition-colors">
+                      root@vadanta:~
+                    </span>
+                    <span className="text-[#22c55e] ml-[3px] text-sm font-black animate-[pulse_1s_steps(2,start)_infinite] drop-shadow-[0_0_8px_rgba(34,197,94,0.8)]">
+                      _
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-[#22c55e]/50">
+                    <span className="font-bold text-[#22c55e]/70">commit</span>
+                    <span className="border border-[#22c55e]/20 bg-[#22c55e]/5 px-1.5 py-1 rounded shadow-[inset_0_0_8px_rgba(34,197,94,0.1)] text-[#22c55e] font-mono">
+                      {recentCommits[0]?.hash || "SYS_OK"}
+                    </span>
+                  </div>
+                </div>
               </div>
+            </div>
 
               {/* --- CENTRAL CHART & MODULES --- */}
               <div
                 className="hidden md:flex absolute inset-0 flex-col items-center justify-center pb-24 pointer-events-none z-0"
                 style={{
-                  transform: `translate(${bgOffset.x * -0.6}px, ${bgOffset.y * -0.6}px)`,
+                  transform: "translate(calc(var(--bg-x, 0px) * -0.6), calc(var(--bg-y, 0px) * -0.6))",
                   transition: "transform 0.1s ease-out",
                 }}
               >
@@ -2636,7 +2911,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
               <div
                 className="hidden md:flex flex-col space-y-6 w-24 mt-4 relative z-40"
                 style={{
-                  transform: `translate(${bgOffset.x * 0.4}px, ${bgOffset.y * 0.4}px)`,
+                  transform: "translate(calc(var(--bg-x, 0px) * 0.4), calc(var(--bg-y, 0px) * 0.4))",
                   transition: "transform 0.1s ease-out",
                 }}
               >
@@ -2929,7 +3204,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
               <div
                 className="hidden md:flex absolute top-4 right-4 mt-4 flex-col space-y-6 w-24 items-center z-40"
                 style={{
-                  transform: `translate(${bgOffset.x * 0.4}px, ${bgOffset.y * 0.4}px)`,
+                  transform: "translate(calc(var(--bg-x, 0px) * 0.4), calc(var(--bg-y, 0px) * 0.4))",
                   transition: "transform 0.1s ease-out",
                 }}
               >
@@ -3658,6 +3933,127 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                       </div>
                     </div>
                   )}
+                </div>
+              )}
+
+              {/* ========================================================================= */}
+              {/* MOBILE OVERRIDE: SOCIALS MODAL */}
+              {/* ========================================================================= */}
+              {isSocialsWindowOpen && (
+                <div className="hidden max-md:flex fixed inset-0 z-[99999] flex-col bg-[#050505] overflow-hidden font-mono text-[#22c55e] animate-[fadeIn_0.2s_ease-out]">
+                  {/* CLI Header Bar */}
+                  <div className="w-full h-14 shrink-0 border-b border-[#22c55e]/30 bg-[#0a0a0a] flex items-center justify-between px-4 shadow-[0_4px_15px_rgba(34,197,94,0.1)]">
+                    <div className="flex items-center gap-3">
+                      <span className="w-2 h-4 bg-[#22c55e] animate-pulse"></span>
+                      <span className="font-bold tracking-widest text-sm uppercase">
+                        ~/socials.net
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => setIsSocialsWindowOpen(false)}
+                      className="text-[#22c55e] hover:bg-red-500/20 hover:text-red-500 px-3 py-2 rounded text-xs font-bold transition-colors cursor-pointer"
+                    >
+                      [X]
+                    </button>
+                  </div>
+
+                  {/* Directory / Socials Content Area */}
+                  <div className="flex-1 overflow-y-auto no-scrollbar p-5 flex flex-col justify-center max-w-md w-full mx-auto gap-4">
+                    <div className="text-[10px] opacity-50 mb-2 px-1 tracking-widest uppercase">
+                      TOTAL_UPLINKS: 3 <br />
+                      ACCESS_LEVEL: root // PUBLIC_TRANSMISSION
+                    </div>
+
+                    {/* 1. GitHub */}
+                    <a
+                      href="https://github.com/VedisVigourous"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-[#0a0a0a] border border-[#22c55e]/30 shadow-[0_4px_15px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.05)] active:scale-[0.98] active:bg-[#22c55e]/10 active:border-[#22c55e] transition-all group cursor-pointer"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-[#050505] border border-[#22c55e]/40 flex items-center justify-center text-[#22c55e] shadow-[0_0_12px_rgba(34,197,94,0.15)] group-hover:border-[#22c55e] group-hover:shadow-[0_0_15px_rgba(34,197,94,0.3)] transition-all shrink-0">
+                          <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                          </svg>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-base font-bold tracking-wider text-white group-hover:text-[#22c55e] transition-colors">
+                            GitHub
+                          </span>
+                          <span className="text-xs text-[#22c55e]/70 tracking-widest">
+                            @VedisVigourous
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs text-[#22c55e]/60 group-hover:text-[#22c55e] transition-colors">
+                        <span className="text-[10px] font-bold tracking-wider">[OPEN]</span>
+                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M7 17l9.2-9.2M17 17V8H8" />
+                        </svg>
+                      </div>
+                    </a>
+
+                    {/* 2. LinkedIn */}
+                    <a
+                      href="https://linkedin.com/in/vadanta"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-[#0a0a0a] border border-[#22c55e]/30 shadow-[0_4px_15px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.05)] active:scale-[0.98] active:bg-[#22c55e]/10 active:border-[#22c55e] transition-all group cursor-pointer"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-[#050505] border border-[#22c55e]/40 flex items-center justify-center text-[#22c55e] shadow-[0_0_12px_rgba(34,197,94,0.15)] group-hover:border-[#22c55e] group-hover:shadow-[0_0_15px_rgba(34,197,94,0.3)] transition-all shrink-0">
+                          <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                            <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                          </svg>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-base font-bold tracking-wider text-white group-hover:text-[#22c55e] transition-colors">
+                            LinkedIn
+                          </span>
+                          <span className="text-xs text-[#22c55e]/70 tracking-widest">
+                            in/vadanta
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs text-[#22c55e]/60 group-hover:text-[#22c55e] transition-colors">
+                        <span className="text-[10px] font-bold tracking-wider">[OPEN]</span>
+                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M7 17l9.2-9.2M17 17V8H8" />
+                        </svg>
+                      </div>
+                    </a>
+
+                    {/* 3. Instagram */}
+                    <a
+                      href="https://instagram.com/vedant_chauhaan"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-[#0a0a0a] border border-[#22c55e]/30 shadow-[0_4px_15px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.05)] active:scale-[0.98] active:bg-[#22c55e]/10 active:border-[#22c55e] transition-all group cursor-pointer"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-[#050505] border border-[#22c55e]/40 flex items-center justify-center text-[#22c55e] shadow-[0_0_12px_rgba(34,197,94,0.15)] group-hover:border-[#22c55e] group-hover:shadow-[0_0_15px_rgba(34,197,94,0.3)] transition-all shrink-0">
+                          <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                          </svg>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-base font-bold tracking-wider text-white group-hover:text-[#22c55e] transition-colors">
+                            Instagram
+                          </span>
+                          <span className="text-xs text-[#22c55e]/70 tracking-widest">
+                            @vedant_chauhaan
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs text-[#22c55e]/60 group-hover:text-[#22c55e] transition-colors">
+                        <span className="text-[10px] font-bold tracking-wider">[OPEN]</span>
+                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M7 17l9.2-9.2M17 17V8H8" />
+                        </svg>
+                      </div>
+                    </a>
+                  </div>
                 </div>
               )}
               {/* ========================================================================= */}
@@ -4603,7 +4999,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                     ? "bottom-0 h-[100dvh] bg-[#050505] z-[9999] max-md:fixed max-md:inset-x-0 max-md:top-[32px] max-md:h-[calc(100dvh-32px)]"
                     : isTerminalFocused
                       ? "bottom-0 bg-[#050505]/95 backdrop-blur-xl border-t border-[#22c55e]/30 shadow-[0_0_30px_rgba(34,197,94,0.2)] z-[80] max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:top-[32px] max-md:h-[calc(100dvh-32px)] max-md:w-full max-md:m-0 max-md:rounded-none max-md:border-0 max-md:z-[9999] max-md:pb-2"
-                      : "bottom-0 bg-[#050505]/60 backdrop-blur-sm border-t border-[#22c55e]/10 shadow-none z-[80] max-md:bottom-[85px] max-md:h-14 max-md:w-[calc(100%-32px)] max-md:mx-4 max-md:rounded-2xl max-md:border max-md:border-[#22c55e]/30 max-md:bg-[#050505]/40"
+                      : "bottom-0 bg-[#050505]/60 backdrop-blur-sm border-t border-[#22c55e]/10 shadow-none z-[80] max-md:hidden"
                 }`}
               >
                 {/* Idle Clue & Toggle Arrow Container (Hidden on Mobile) */}
