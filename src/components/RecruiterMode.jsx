@@ -14,27 +14,27 @@ export default function RecruiterMode({ onClose, onOpenApp }) {
       badge: "Flagship OS",
       description: "Next-gen cyberpunk web operating system featuring real-time terminal shell, 4 canvas arcade engines, reactive widgets, and audio synthesizers.",
       tech: ["React 19", "Vite", "Tailwind", "Canvas API", "GSAP"],
-      liveUrl: "https://github.com/VedisVigourous",
-      githubUrl: "https://github.com/VedisVigourous",
+      liveUrl: "https://github.com/VedisVigourous/project-citadel",
+      githubUrl: "https://github.com/VedisVigourous/project-citadel",
       appId: "projects"
     },
     {
-      title: "vAI Conversational Core",
-      badge: "LLM Agent",
-      description: "Integrated AI persona assistant built on top of high-throughput Groq LLM inference, providing contextual portfolio analytics and live dossier queries.",
-      tech: ["Groq API", "Llama / GPT-OSS", "React", "REST"],
-      liveUrl: "https://github.com/VedisVigourous",
-      githubUrl: "https://github.com/VedisVigourous",
-      appId: "ai"
+      title: "DSAvation (Technovation ABESEC)",
+      badge: "Production Platform",
+      description: "Curated DSA prep platform with 220+ LeetCode problems, video breakdowns, company tags, and live club leaderboard serving 200+ students.",
+      tech: ["React", "Vite", "Tailwind CSS", "LeetCode Engine"],
+      liveUrl: "https://dsavation.vercel.app",
+      githubUrl: "https://github.com/Technovation-ABES/DSAvation",
+      appId: "projects"
     },
     {
-      title: "Telemetry Data & Security Modules",
-      badge: "Backend & Systems",
-      description: "ETL backend data processing, real-time visitor telemetry tracking, and browser sandboxed security protocol simulations.",
-      tech: ["Python", "JavaScript", "REST APIs", "LocalDB"],
-      liveUrl: "https://github.com/VedisVigourous",
-      githubUrl: "https://github.com/VedisVigourous",
-      appId: "journey"
+      title: "GDG ABESEC Official Portal",
+      badge: "Official Portal",
+      description: "Official web portal for Google Developer Groups on Campus ABESEC managing hackathons, workshops, and community rosters.",
+      tech: ["React", "Vite", "Tailwind CSS", "Cloud"],
+      liveUrl: "https://gdgabesec.xyz",
+      githubUrl: "https://github.com/Developer-Students-Club-ABESEC/GDG-Official-Website",
+      appId: "projects"
     }
   ];
 
@@ -268,12 +268,37 @@ export default function RecruiterMode({ onClose, onOpenApp }) {
                   </p>
                 </div>
 
-                <div className="flex flex-wrap gap-1.5 pt-3 border-t border-white/5">
-                  {p.tech.map((t) => (
-                    <span key={t} className="text-[9px] text-[#22c55e]/80 font-mono">
-                      #{t}
-                    </span>
-                  ))}
+                <div>
+                  <div className="flex flex-wrap gap-1.5 pt-3 border-t border-white/5">
+                    {p.tech.map((t) => (
+                      <span key={t} className="text-[9px] text-[#22c55e]/80 font-mono">
+                        #{t}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="flex items-center gap-2 mt-3 pt-2" onClick={(e) => e.stopPropagation()}>
+                    {p.githubUrl && (
+                      <a
+                        href={p.githubUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[10px] text-[#22c55e] border border-[#22c55e]/40 px-2 py-0.5 rounded hover:bg-[#22c55e] hover:text-black transition-all"
+                      >
+                        [ Repo ]
+                      </a>
+                    )}
+                    {p.liveUrl && p.liveUrl !== p.githubUrl && (
+                      <a
+                        href={p.liveUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[10px] text-black bg-[#22c55e] font-bold px-2 py-0.5 rounded hover:bg-emerald-400 transition-all"
+                      >
+                        [ Live Site ↗ ]
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}

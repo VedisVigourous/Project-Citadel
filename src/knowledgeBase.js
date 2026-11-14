@@ -23,9 +23,8 @@ Your tone is sharp, executive, technically authoritative, and slightly witty.
       {ABES Engineering College}{Ghaziabad, India}
       {Bachelor of Technology in Computer Science \\& Engineering}{Nov. 2025 -- Present}
       \\resumeItemListStart
-        \\resumeItem{\\textbf{Performance}: 9.13/10.00 (Ist Year)}
-        \\resumeItem{Current Focus: Data Structures \\& Algorithms (Java), Object-Oriented Programming.}
-        \\resumeItem{Key Coursework: C++, Java Programming, Web Development Fundamentals.}
+        \\resumeItem{\\textbf{Academic Performance}: 9.13/10.00 CGPA (Ist Year).}
+        \\resumeItem{\\textbf{Core Coursework}: Data Structures \\& Algorithms (Java), Object-Oriented Programming (C++/Java), Operating Systems Concepts, Discrete Mathematics.}
       \\resumeItemListEnd
   \\resumeSubHeadingListEnd
 
@@ -33,33 +32,37 @@ Your tone is sharp, executive, technically authoritative, and slightly witty.
 \\section{Technical Skills}
  \\begin{itemize}[leftmargin=0.15in, label={}]
     \\small{\\item{
-     \\textbf{Languages}{: Java (Intermediate), JavaScript, C++, HTML/CSS} \\\\
-     \\textbf{Cloud \\& AI}{: Google Gemini API, Generative AI, Vertex AI, Google Cloud Platform (GCP)} \\\\
-     \\textbf{Developer Tools}{: Git, GitHub Actions, Chrome Extension API, VS Code, IntelliJ IDEA} \\\\
-     \\textbf{Core Concepts}{: Data Structures \\& Algorithms (DSA), DOM Manipulation, Object Oriented Programming}
+     \\textbf{Languages}{: Java (Intermediate/OOP), JavaScript (ES6+), C++, HTML5, CSS3, SQL} \\\\
+     \\textbf{Frameworks \\& Libraries}{: React 19, Vite, Tailwind CSS, DOM Manipulation, HTML5 Canvas API, REST APIs} \\\\
+     \\textbf{Cloud \\& AI}{: Google Gemini 1.5 API, Vertex AI, Google Cloud Platform (GCP), Generative AI} \\\\
+     \\textbf{Developer Tools}{: Git, GitHub Actions, Chrome Extension APIs, VS Code, IntelliJ IDEA, Overleaf} \\\\
+     \\textbf{Core Concepts}{: Data Structures \\& Algorithms (220+ LeetCode), State Management, Responsive Systems Design}
     }}
  \\end{itemize}
 
-%-----------CERTIFICATIONS-----------
-\\section{Certifications \\& Awards}
- \\begin{itemize}[leftmargin=0.15in, label={}]
-    \\small{\\item{
-     \\textbf{\\href{https://catalog-education.oracle.com/ords/certview/sharebadge?id=2EC9B50AAE0E57C91B9A0D7C3E27276E32A1D2760D8FB299F208125ADC931D38}{\\underline{{Oracle AI Certified Foundations Associate}}}}{: Validated proficiency in AI/ML fundamentals.} \\\\[4pt]
-     \\textbf{\\href{https://www.skills.google/public_profiles/7c538f5b-2024-4d94-a220-233117c019b1}{\\underline{{Google Cloud Skills Boost (Public Profile)}}}}{: Earned Level 3 GenAI Badge \\& 10+ Skill Badges.} \\\\[4pt]
-     \\textbf{Develop GenAI Apps with Gemini}{: Certified by Google Cloud for building LLM-powered applications.} \\\\[4pt]
-     \\textbf{Prompt Design in Vertex AI}{: Mastered prompt engineering techniques for large language models.}
-    }}
- \\end{itemize}
-
-%-----------EXPERIENCE \\& VIRTUAL PROGRAMS-----------
-\\section{Experience \\& Virtual Programs}
+%-----------EXPERIENCE & LEADERSHIP-----------
+\\section{Experience \\& Community Leadership}
   \\resumeSubHeadingListStart
+    \\resumeSubheading
+      {Google Developer Groups (GDG) On Campus ABESEC}{Ghaziabad, India}
+      {Core Contributor / Web Team}{2026 -- Present}
+      \\resumeItemListStart
+        \\resumeItem{Contributed to the official web portal (\\href{https://gdgabesec.xyz}{\\underline{gdgabesec.xyz}}), engineering performant frontend modules and workshop pipelines.}
+        \\resumeItem{Facilitated technical workshops and student onboarding initiatives to scale campus developer culture.}
+      \\resumeItemListEnd
+    \\resumeSubheading
+      {Technovation: The Networking Club}{Ghaziabad, India}
+      {Technical Lead / Platform Contributor}{Aug. 2026 -- Present}
+      \\resumeItemListStart
+        \\resumeItem{Co-engineered \\textbf{DSAvation} (\\href{https://dsavation.vercel.app}{\\underline{dsavation.vercel.app}}), a structured interview prep portal tracking 220+ curated LeetCode problems with analytics and live campus leaderboard for 200+ students.}
+        \\resumeItem{Coordinated club technical operations, algorithmic challenges, and peer-to-peer programming sessions.}
+      \\resumeItemListEnd
     \\resumeSubheading
       {Deloitte}{Remote}
       {\\underline{\\href{https://drive.google.com/file/d/1jkFJsC4KCXWQ9cGysLDuxky9i-xQfBZe/view?usp=sharing}{Technology Job Simulation Participant}}}{July 2026}
       \\resumeItemListStart
-        \\resumeItem{Engineered backend data normalization (ETL) logic in Python to convert unstructured JSON telemetry data into a unified database format, successfully passing automated unit tests.}
-        \\resumeItem{Drafted a comprehensive 120-hour software development proposal for a secure, geofenced intranet dashboard monitoring 36 industrial devices across multiple factories.}
+        \\resumeItem{Engineered backend data normalization (ETL) logic in Python to convert unstructured JSON telemetry data into unified relational tables, passing automated unit tests.}
+        \\resumeItem{Drafted a comprehensive 120-hour software development proposal for an industrial device monitoring dashboard.}
       \\resumeItemListEnd
   \\resumeSubHeadingListEnd
 
@@ -67,36 +70,47 @@ Your tone is sharp, executive, technically authoritative, and slightly witty.
 \\section{Projects}
     \\resumeSubHeadingListStart
       \\resumeProjectHeading
-          {\\textbf{Project Resonance (Accessibility Tool)} $|$ \\emph{JavaScript, Gemini 1.5 API, Chrome APIs}}{Apr. 2026}
+          {\\textbf{\\href{https://dsavation.vercel.app}{\\underline{DSAvation (DSA Preparation Platform)}}} $|$ \\emph{React, Vite, Tailwind CSS, LeetCode Engine}}{2026}
           \\resumeItemListStart
-            \\resumeItem{Developed an AI-powered Chrome Extension to bridge the digital culture gap for visually impaired users by dynamically reading aloud the context, vibe, and humor of internet memes.}
-            \\resumeItem{Engineered the core architecture using DOM manipulation and background service workers to intercept web elements and securely route data to the Google Gemini 1.5 Flash API.}
-            \\resumeItem{Competed at the MLH HackDays offline hackathon, successfully pitching the live product and securing a Top 33 placement out of 120+ participating teams.}
+            \\resumeItem{Co-engineered a club-wide DSA learning platform curated with 220+ interview problems, video breakdowns, company tags, and daily challenges serving 200+ active students.}
+            \\resumeItem{Architected category filtering, dynamic progress tracking, and live campus leaderboard to foster peer competition.}
           \\resumeItemListEnd
       \\resumeProjectHeading
-          {\\textbf{\\href{https://vedisvigourous.github.io}{\\underline{Behance Homepage Clone}}} $|$ \\emph{HTML5, CSS3, Flexbox/Grid}}{Feb. 2026}
+          {\\textbf{\\href{https://gdgabesec.xyz}{\\underline{GDG ABESEC Official Web Portal}}} $|$ \\emph{React, Vite, Tailwind CSS, Cloud Deployment}}{2026}
           \\resumeItemListStart
-            \\resumeItem{Engineered a pixel-perfect replica of the Behance homepage using semantic HTML5 and advanced CSS.}
-            \\resumeItem{Implemented complex UI layouts using Flexbox and CSS Grid to ensure responsiveness and visual fidelity.}
-            \\resumeItem{Optimized frontend structure for maintainability, demonstrating strong grasp of Web Development fundamentals.}
+            \\resumeItem{Contributed to the production web portal for Google Developer Groups on Campus ABESEC, managing hackathons, workshop schedules, and developer rosters.}
+            \\resumeItem{Architected accessible UI components with optimized asset delivery and responsive layouts across mobile and desktop.}
           \\resumeItemListEnd
       \\resumeProjectHeading
-          {\\textbf{Java OOPs Game Suite} $|$ \\emph{Java, Object-Oriented Programming}}{Jan. 2026}
+          {\\textbf{\\href{https://github.com/VedisVigourous/project-citadel}{\\underline{Project Citadel (Vadanta OS Web Desktop)}}} $|$ \\emph{React 19, Tailwind CSS, Canvas API}}{2026}
           \\resumeItemListStart
-            \\resumeItem{Developed a modular suite of console-based games (Number Guessing, Rock-Paper-Scissors) using pure Java.}
-            \\resumeItem{Implemented core OOP principles including Inheritance and Encapsulation to manage game logic.}
-            \\resumeItem{Refined algorithmic logic for random number generation and user input validation.}
+            \\resumeItem{Engineered an interactive cyberpunk web operating system featuring real-time terminal shell, custom draggable window manager, 4 canvas arcade engines, and integrated AI assistant proxy.}
+          \\resumeItemListEnd
+      \\resumeProjectHeading
+          {\\textbf{\\href{https://github.com/hobo7676/hackdays-spiker}{\\underline{Project Resonance (Accessibility Tool)}}} $|$ \\emph{JavaScript, Gemini 1.5 Flash API, Chrome APIs}}{Apr. 2026}
+          \\resumeItemListStart
+            \\resumeItem{Developed an AI Chrome Extension for visually impaired users by dynamically reading aloud meme context and humor via background service workers and Google Gemini 1.5 Flash API.}
+            \\resumeItem{Pitched at MLH HackDays offline hackathon, securing Top 33 placement out of 120+ teams.}
           \\resumeItemListEnd
     \\resumeSubHeadingListEnd
 
-%-----------EXTRACURRICULAR-----------
+%-----------CERTIFICATIONS-----------
+\\section{Certifications \\& Badges}
+ \\begin{itemize}[leftmargin=0.15in, label={}]
+    \\small{\\item{
+     \\textbf{\\href{https://catalog-education.oracle.com/ords/certview/sharebadge?id=2EC9B50AAE0E57C91B9A0D7C3E27276E32A1D2760D8FB299F208125ADC931D38}{\\underline{{Oracle AI Certified Foundations Associate}}}}{: Validated proficiency in AI/ML fundamentals.} \\\\
+     \\textbf{\\href{https://www.skills.google/public_profiles/7c538f5b-2024-4d94-a220-233117c019b1}{\\underline{{Google Cloud Skills Boost Profile}}}}{: Earned Level 3 GenAI Badge \\& 10+ Google Cloud Skill Badges.} \\\\
+     \\textbf{Develop GenAI Apps with Gemini \\& Prompt Design in Vertex AI}{: Google Cloud certified in LLM application design.}
+    }}
+ \\end{itemize}
+
+%-----------EXTRACURRICULAR & HACKATHONS-----------
 \\section{Extracurricular \\& Hackathons}
  \\begin{itemize}[leftmargin=0.15in, label={}]
     \\small{\\item{
-     \\textbf{HackDays Offline Hackathon (MLH)}{: Reached Round 2 (Top 33 out of 120+ teams) at Galgotias College by building a live accessibility product. One of only two first-year teams to clear initial evaluations.} \\\\
-     \\textbf{Major League Hacking (MLH)}{: Participant in Global Hack Week; collaborated on open-source challenges.} \\\\
-     \\textbf{Competitive Coding}{: Achieved \\textbf{3-Star (Java)} \\& \\textbf{2-Star (Problem Solving)} on \\href{https://www.hackerrank.com/profile/codegrounds666}{\\underline{HackerRank}}.} \\\\
-     \\textbf{Coding Platforms}{: Active participant in CodeChef's "Clash of Coder" and HackerRank's "CodeWizard".}
+     \\textbf{MLH HackDays Offline Hackathon}{: Reached Round 2 (Top 33 out of 120+ teams) at Galgotias College as a first-year team.} \\\\
+     \\textbf{Major League Hacking (MLH)}{: Active participant in Global Hack Week; collaborated on open-source repositories.} \\\\
+     \\textbf{Competitive Programming}{: 3-Star (Java) \\& 2-Star (Problem Solving) on \\href{https://www.hackerrank.com/profile/codegrounds666}{\\underline{HackerRank}}; active on LeetCode.}
     }}
  \\end{itemize}
 
@@ -136,11 +150,12 @@ Your tone is sharp, executive, technically authoritative, and slightly witty.
                5. FreeCodeCamp - Web Design v8
             'Projects.dir - holds some of my github repos and projects i am working on or already worked 
              - For a brief I have worked on some of the projects like
-                1. Project Resonance (Accessibility Tool) - Developed an AI-powered Chrome Extension to bridge the digital culture gap for visually impaired users by dynamically reading aloud the context, vibe, and humor of internet memes.
-                2. Behance Homepage Clone - Engineered a pixel-perfect replica of the Behance homepage using semantic HTML5 and advanced CSS.
-                3. This Masterpiece (Portfolio Website) - Developed a personal portfolio website showcasing my projects, skills, and achievements as a proper operating system holding features like games and all too.
-                4. Java OOPs Game Suite - Developed a modular suite of console-based games (Number Guessing, Rock-Paper-Scissors) using pure Java.
-                5.Learning Repositories for different languages in a structured and detailed manner.
+                1. DSAvation (Technovation ABESEC) - Co-engineered an interactive DSA problem-solving platform curated with 220+ interview problems, video breakdowns, company tags, and daily club challenges for 200+ students. Live: https://dsavation.vercel.app | Repo: https://github.com/Technovation-ABES/DSAvation
+                2. GDG ABESEC Official Portal - Contributed to the official web portal for Google Developer Groups on Campus ABESEC, managing hackathon pipelines, workshop schedules, and team directory. Live: https://gdgabesec.xyz | Repo: https://github.com/Developer-Students-Club-ABESEC/GDG-Official-Website
+                3. This Masterpiece (Portfolio Website / Citadel OS) - Developed a next-gen web operating system portfolio featuring 4 canvas arcade games, terminal shell, audio synths, and vAI proxy.
+                4. Project Resonance (Accessibility Tool) - Developed an AI-powered Chrome Extension bridging digital culture for visually impaired users by dynamically reading aloud internet memes using Gemini 1.5 API (MLH HackDays Top 33).
+                5. Police Daily Performa - Web app for Delhi Police staff to efficiently fill, calculate, and export daily administrative reports.
+                6. DSA Algorithm Vault - Archive of optimized competitive programming solutions in Java and C++.
             'Mails.conn - users can directly send me mail via this app it also showcase manual fallback mail - vadanta592007@hotmail.com'
             'Journey.log - holds my journey and experiences in a really crative way depicted like a PCB board and nodes hloding details like my first commit, enrollment in college, first hackathon, technical club recruitment in "Technovation the Networking Club" and so on.'
             'Education.exe - it showcases a nicely done hologram of my college with details like my cgpa [9.13 in 1st year] , technical club recruitment and overall coding base.

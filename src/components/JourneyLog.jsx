@@ -11,7 +11,7 @@ const journeyNodes = [
     desc: "Root access established early. Progressed from troubleshooting family hardware and visual block coding in 4th grade to writing raw syntax by 9th grade, laying the permanent foundation for CSE.",
     image: null,
     x: 6,
-    y: 40,
+    y: 42,
   },
   {
     id: "first_commit",
@@ -27,7 +27,7 @@ const journeyNodes = [
       details:
         "Earned exclusive GitHub developer badges for consistent pull request merges and rapid, direct-to-main repository commits.",
     },
-    x: 18,
+    x: 17,
     y: 75,
   },
   {
@@ -37,8 +37,8 @@ const journeyNodes = [
     category: "ACADEMIC",
     desc: "Enrolled in Computer Science and Engineering at ABES Engineering College. Built a strong foundation in core programming, object-oriented principles, and system logic.",
     image: "/campus.jpg",
-    x: 31,
-    y: 30,
+    x: 28,
+    y: 28,
   },
   {
     id: "algo_grind",
@@ -47,8 +47,8 @@ const journeyNodes = [
     category: "SKILL BUILDING",
     desc: "Built a solid foundation in core Data Structures and Algorithms during my first year. Transitioned to LeetCode for advanced algorithmic problem-solving and CodeChef for competitive programming in Year 2.",
     image: null,
-    x: 44,
-    y: 80,
+    x: 39,
+    y: 78,
   },
   {
     id: "arcade_loot",
@@ -57,8 +57,8 @@ const journeyNodes = [
     category: "CERTIFICATION",
     desc: "Selected as one of only 70 participants to complete advanced generative AI and cloud infrastructure challenges on GCP, earning official badges and the exclusive physical swag box.",
     image: "/swags.jpg",
-    x: 57,
-    y: 35,
+    x: 50,
+    y: 32,
   },
   {
     id: "hackdays",
@@ -74,28 +74,52 @@ const journeyNodes = [
       details:
         "An intelligent web-analysis tool utilizing multimodal AI to map and process complex data structures on the fly.",
     },
-    x: 70,
-    y: 50,
+    x: 61,
+    y: 65,
   },
   {
     id: "tech_club",
     title: "Technovation Induction",
     date: "Aug 2026",
-    category: "LEADERSHIP",
-    desc: "Officially recruited into Technovation: The Networking Club. Driving community growth, managing technical operations, and facilitating developer events to scale campus-wide networking.",
+    category: "LEADERSHIP & DEV",
+    desc: "Recruited into Technovation: The Networking Club. Co-engineered DSAvation (curated DSA prep platform with 220+ LeetCode problems and live campus leaderboard for 200+ students) while driving technical club initiatives.",
     image: "/ticket.jpg",
-    x: 83,
+    project: {
+      type: "PRODUCTION",
+      name: "DSAVATION PLATFORM",
+      stack: "REACT // VITE // TAILWIND // LEETCODE",
+      details:
+        "Engineered the club-wide DSA tracker with 220+ interview questions, category filters, and live leaderboard.",
+    },
+    x: 72,
     y: 25,
   },
   {
+    id: "gdg_selection",
+    title: "GDG On Campus ABESEC",
+    date: "2026–27",
+    category: "COMMUNITY & DEV",
+    desc: "Selected to join Google Developer Groups (GDG) On Campus ABESEC for the 2026–27 session. Contributed to engineering the official GDG web portal and scaling developer initiatives across campus.",
+    image: "/gdg.jpg",
+    project: {
+      type: "PORTAL",
+      name: "GDG OFFICIAL PORTAL",
+      stack: "REACT // VITE // TAILWIND // CLOUD",
+      details:
+        "Architected core sections of gdgabesec.xyz managing hackathons, workshop pipelines, and developer rosters.",
+    },
+    x: 82,
+    y: 72,
+  },
+  {
     id: "horizon",
-    title: "Target: Open Source",
-    date: "2027",
-    category: "GOAL",
-    desc: "Actively studying large-scale codebases and preparing architecture for upcoming Google Summer of Code (GSoC) and GirlScript Summer of Code (GSSoC) contributions.",
+    title: "Research Paper Project",
+    date: "2026–2027",
+    category: "ACTIVE TARGET",
+    desc: "Currently directing engineering research towards authoring a technical research paper, exploring intelligent system design and novel frontend/systems architectures.",
     image: null,
-    x: 95,
-    y: 65,
+    x: 92,
+    y: 30,
   },
 ];
 
@@ -129,11 +153,11 @@ const generatePCBPath = (nodes) => {
 
 // Inactive background routing to make the board look complex
 const decorativeTraces = [
-  "M 10 25 H 20 V 15",
-  "M 30 15 V 35 H 40",
-  "M 80 85 V 75 H 90",
-  "M 15 85 H 30 V 70 H 40",
-  "M 55 15 H 65 V 25 H 75",
+  "M 8 15 H 18 V 22",
+  "M 32 12 V 20 H 42",
+  "M 12 88 H 22 V 82",
+  "M 52 86 H 66 V 78",
+  "M 84 14 H 94 V 20",
 ];
 
 const dummyNodes = generateDummyNodes();
@@ -235,28 +259,48 @@ export default function JourneyLog({ onClose, themeHue = 0 }) {
           <path
             d={mainTrace}
             fill="none"
-            stroke="rgba(34,197,94,0.4)"
+            stroke="rgba(34,197,94,0.35)"
             strokeWidth="0.8"
             vectorEffect="non-scaling-stroke"
             pathLength="100"
-            className="animate-[drawMainTrace_2.5s_ease-in-out_forwards]"
+            className="animate-[drawMainTrace_2s_ease-in-out_forwards]"
             style={{
               strokeDasharray: 100,
               strokeDashoffset: 100,
-              animationDelay: "1.5s",
+              animationDelay: "0.8s",
             }}
           />
 
-          {/* 2. INFINITE FLOWING CURRENT (Ignites & loops perfectly) */}
+          {/* 2. INFINITE FLOWING CURRENT (144Hz Butter-Smooth Laser Stream) */}
+          {/* Ambient Glow Pulse */}
+          <path
+            d={mainTrace}
+            fill="none"
+            stroke="#22c55e"
+            strokeWidth="3.5"
+            strokeOpacity="0.45"
+            vectorEffect="non-scaling-stroke"
+            strokeDasharray="8 16"
+            className="opacity-0 animate-[flowData_1.2s_linear_infinite,igniteCurrent_0.2s_forwards]"
+            style={{
+              animationDelay: "0s, 2.5s",
+              willChange: "stroke-dashoffset",
+            }}
+          />
+
+          {/* Sharp Laser Core */}
           <path
             d={mainTrace}
             fill="none"
             stroke="#4ade80"
             strokeWidth="1.5"
             vectorEffect="non-scaling-stroke"
-            strokeDasharray="6 14" // 20px total cycle
-            className="opacity-0 animate-[flowData_1s_linear_infinite,igniteCurrent_0.2s_forwards]"
-            style={{ animationDelay: "0s, 4s" }}
+            strokeDasharray="8 16"
+            className="opacity-0 animate-[flowData_1.2s_linear_infinite,igniteCurrent_0.2s_forwards]"
+            style={{
+              animationDelay: "0s, 2.5s",
+              willChange: "stroke-dashoffset",
+            }}
           />
         </svg>
 
@@ -322,9 +366,17 @@ export default function JourneyLog({ onClose, themeHue = 0 }) {
                 ></div>
               </div>
 
-              {/* THE LABEL */}
+              {/* THE LABEL (Dynamically positioned above or below to avoid ALL traces) */}
               <div
-                className={`absolute top-[160%] whitespace-nowrap tracking-[0.2em] text-[8px] font-bold transition-all duration-300 uppercase px-2 py-0.5 bg-black/90 border pointer-events-none ${activeNode?.id === node.id ? "text-[#4ade80] border-[#4ade80] shadow-[0_0_10px_rgba(74,222,128,0.3)]" : "text-[#22c55e]/70 border-[#22c55e]/30 group-hover:border-[#22c55e] group-hover:text-white"}`}
+                className={`absolute ${
+                  node.y <= 45 ? "bottom-[160%]" : "top-[160%]"
+                } ${
+                  node.x > 88 ? "right-[-10px] translate-x-0" : "left-1/2 -translate-x-1/2"
+                } whitespace-nowrap tracking-[0.2em] text-[8px] font-bold transition-all duration-300 uppercase px-2 py-0.5 bg-black/95 border pointer-events-none z-20 ${
+                  activeNode?.id === node.id
+                    ? "text-[#4ade80] border-[#4ade80] shadow-[0_0_10px_rgba(74,222,128,0.3)]"
+                    : "text-[#22c55e]/80 border-[#22c55e]/30 group-hover:border-[#22c55e] group-hover:text-white"
+                }`}
               >
                 {node.id === "origin" ? "SYS.BOOT" : `C${i}::${node.title}`}
               </div>
@@ -391,7 +443,7 @@ export default function JourneyLog({ onClose, themeHue = 0 }) {
                       src={activeNode.image}
                       alt={activeNode.title}
                       className={`w-full h-full p-1 alien-fix-${activeNode.id} ${
-                        activeNode.id === "arcade_loot"
+                        activeNode.id === "arcade_loot" || activeNode.id === "gdg_selection"
                           ? "object-contain"
                           : "object-cover object-top"
                       }`}
@@ -447,10 +499,11 @@ export default function JourneyLog({ onClose, themeHue = 0 }) {
           SYS.DIAGNOSTICS
         </div>
         <div className="text-[#22c55e]/70 text-[9px] tracking-wider font-mono">
-          NODES_LINKED: <span className="text-white ml-1">7/8 ONLINE</span>
+          NODES_LINKED: <span className="text-white ml-1">8/9 ONLINE</span>
         </div>
         <div className="text-[#22c55e]/70 text-[9px] tracking-wider font-mono">
-          ACTIVE_PHASE: <span className="text-white ml-1">SIH_OPS</span>
+          ACTIVE_PHASE:{" "}
+          <span className="text-white ml-1">Research Paper Project</span>
         </div>
         <div className="text-[#22c55e]/70 text-[9px] tracking-wider font-mono">
           NET_STATUS:{" "}
@@ -479,9 +532,9 @@ export default function JourneyLog({ onClose, themeHue = 0 }) {
             to { opacity: 1; }
           }
           
-          /* 3. Current flows infinitely */
+          /* 3. Current flows infinitely at silky smooth 144Hz high-refresh rate */
           @keyframes flowData {
-            from { stroke-dashoffset: 200; }
+            from { stroke-dashoffset: 48; }
             to { stroke-dashoffset: 0; }
           }
           
@@ -569,7 +622,7 @@ export default function JourneyLog({ onClose, themeHue = 0 }) {
                         <img
                           src={item.image}
                           alt={item.title}
-                          className={`w-full h-full opacity-80 ${item.id === "arcade_loot" ? "object-contain" : "object-cover object-top"}`}
+                          className={`w-full h-full opacity-80 ${item.id === "arcade_loot" || item.id === "gdg_selection" ? "object-contain" : "object-cover object-top"}`}
                           style={{
                             filter: `grayscale(100%) sepia(50%) hue-rotate(75deg) contrast(125%) brightness(75%)`,
                           }}

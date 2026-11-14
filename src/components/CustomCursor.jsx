@@ -4,15 +4,9 @@ export default function CustomCursor() {
   const dotRef = useRef(null);
   const trailRef = useRef(null);
 
-  const mouse = useRef({ x: 0, y: 0 });
-  const trail = useRef({ x: 0, y: 0 });
-
   const [cursorMode, setCursorMode] = useState('default');
 
   useEffect(() => {
-    let animId = null;
-    let isMoving = false;
-
     const checkCursorState = (e) => {
       if (!e.target || !(e.target instanceof Element)) return;
       
@@ -30,34 +24,14 @@ export default function CustomCursor() {
       }
     };
 
-    const render = () => {
-      const dx = mouse.current.x - trail.current.x;
-      const dy = mouse.current.y - trail.current.y;
-      
-      trail.current.x += dx * 0.18;
-      trail.current.y += dy * 0.18;
-
+    const onMouseMove = (e) => {
+      const x = e.clientX;
+      const y = e.clientY;
       if (dotRef.current) {
-        dotRef.current.style.transform = `translate3d(${mouse.current.x}px, ${mouse.current.y}px, 0)`;
+        dotRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
       }
       if (trailRef.current) {
-        trailRef.current.style.transform = `translate3d(${trail.current.x}px, ${trail.current.y}px, 0)`;
-      }
-
-      // If trail has caught up to the mouse and no new move, sleep RAF to save 60FPS loop
-      if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1 || isMoving) {
-        isMoving = false;
-        animId = requestAnimationFrame(render);
-      } else {
-        animId = null;
-      }
-    };
-
-    const onMouseMove = (e) => {
-      mouse.current = { x: e.clientX, y: e.clientY };
-      isMoving = true;
-      if (!animId) {
-        animId = requestAnimationFrame(render);
+        trailRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
       }
     };
 
@@ -66,10 +40,7 @@ export default function CustomCursor() {
     window.addEventListener('mousemove', onMouseMove, { passive: true });
     window.addEventListener('mouseover', onMouseOver, { passive: true });
 
-    animId = requestAnimationFrame(render);
-
     return () => {
-      if (animId) cancelAnimationFrame(animId);
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseover', onMouseOver);
     };
@@ -77,9 +48,13 @@ export default function CustomCursor() {
 
   return (
     <>
-      <div ref={dotRef} className="fixed top-0 left-0 pointer-events-none z-[9999999]">
+      <div 
+        ref={dotRef} 
+        className="fixed top-0 left-0 pointer-events-none z-[9999999] will-change-transform"
+        style={{ transform: 'translate3d(-100px, -100px, 0)' }}
+      >
         <div 
-          className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-300 ${
+          className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full transition-[width,height,background-color] duration-150 ${
             cursorMode === 'resize' 
               ? 'w-[6px] h-[6px] bg-[#22c55e] shadow-[0_0_15px_#22c55e]' 
               : 'w-[4px] h-[4px] bg-white shadow-[0_0_10px_white]'
@@ -87,9 +62,13 @@ export default function CustomCursor() {
         />
       </div>
 
-      <div ref={trailRef} className="fixed top-0 left-0 pointer-events-none z-[9999998]">
+      <div 
+        ref={trailRef} 
+        className="fixed top-0 left-0 pointer-events-none z-[9999998] will-change-transform"
+        style={{ transform: 'translate3d(-100px, -100px, 0)' }}
+      >
         <div
-          className={`absolute -translate-x-1/2 -translate-y-1/2 flex items-center justify-center transition-all duration-300 ease-out ${
+          className={`absolute -translate-x-1/2 -translate-y-1/2 flex items-center justify-center transition-[width,height,border-color,background-color,transform] duration-150 ease-out ${
             cursorMode === 'resize'
               ? 'w-12 h-12 border-2 border-[#22c55e] rounded-none scale-110 bg-[#22c55e]/20 backdrop-blur-[2px] shadow-[0_0_20px_rgba(34,197,94,0.4)] animate-pulse'
               : cursorMode === 'hover'

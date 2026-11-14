@@ -31,25 +31,18 @@ const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 \\usepackage{tabularx}
 \\input{glyphtounicode}
 
-%----------FONT OPTIONS----------
-% sans-serif
-% \\usepackage[sfdefault]{FiraSans}
-% \\usepackage[sfdefault]{roboto}
-% \\usepackage[sfdefault]{noto-sans}
-% \\usepackage[default]{sourcesanspro}
-
 \\pagestyle{fancy}
 \\fancyhf{} % clear all header and footer fields
 \\fancyfoot{}
 \\renewcommand{\\headrulewidth}{0pt}
 \\renewcommand{\\footrulewidth}{0pt}
 
-% Adjust margins
-\\addtolength{\\oddsidemargin}{-0.5in}
-\\addtolength{\\evensidemargin}{-0.5in}
-\\addtolength{\\textwidth}{1in}
-\\addtolength{\\topmargin}{-.5in}
-\\addtolength{\\textheight}{1.0in}
+% Adjust margins to fit single page perfectly
+\\addtolength{\\oddsidemargin}{-0.55in}
+\\addtolength{\\evensidemargin}{-0.55in}
+\\addtolength{\\textwidth}{1.1in}
+\\addtolength{\\topmargin}{-.6in}
+\\addtolength{\\textheight}{1.2in}
 
 \\urlstyle{same}
 
@@ -59,13 +52,12 @@ const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 
 % Sections formatting
 \\titleformat{\\section}{
-  \\vspace{-4pt}\\scshape\\raggedright\\large
+  \\vspace{-5pt}\\scshape\\raggedright\\large
 }{}{0em}{}[\\color{black}\\titlerule \\vspace{-5pt}]
 
 % Ensure that generate pdf is machine readable/ATS parsable
 \\pdfgentounicode=1
 
-%-------------------------
 % Custom commands
 \\newcommand{\\resumeItem}[1]{
   \\item\\small{
@@ -81,21 +73,12 @@ const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
     \\end{tabular*}\\vspace{-7pt}
 }
 
-\\newcommand{\\resumeSubSubheading}[2]{
-    \\item
-    \\begin{tabular*}{0.97\\textwidth}{l@{\\extracolsep{\\fill}}r}
-      \\textit{\\small#1} & \\textit{\\small #2} \\\\
-    \\end{tabular*}\\vspace{-7pt}
-}
-
 \\newcommand{\\resumeProjectHeading}[2]{
-    \\item
+  \\vspace{-2pt}\\item
     \\begin{tabular*}{0.97\\textwidth}{l@{\\extracolsep{\\fill}}r}
       \\small#1 & #2 \\\\
     \\end{tabular*}\\vspace{-7pt}
 }
-
-\\newcommand{\\resumeSubItem}[1]{\\resumeItem{#1}\\vspace{-4pt}}
 
 \\renewcommand\\labelitemii{$\\vcenter{\\hbox{\\tiny$\\bullet$}}$}
 
@@ -111,10 +94,11 @@ const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 
 %----------HEADING----------
 \\begin{center}
-    \\textbf{\\Huge \\scshape Vadanta Kumar Chauhaan} \\\\ \\vspace{1pt}
+    \\textbf{\\Huge \\scshape Vadanta Kumar Chauhaan} \\\\ \\vspace{2pt}
     \\small +91-9711297960 $|$ \\href{mailto:vadanta592007@hotmail.com}{\\underline{vadanta592007@hotmail.com}} $|$ 
     \\href{https://linkedin.com/in/vadanta}{\\underline{linkedin.com/in/vadanta}} $|$
-    \\href{https://github.com/VedisVigourous}{\\underline{github.com/VedisVigourous}}
+    \\href{https://github.com/VedisVigourous}{\\underline{github.com/VedisVigourous}} $|$
+    \\href{https://vadanta.is-a.dev}{\\underline{vadanta.is-a.dev}}
 \\end{center}
 
 %-----------EDUCATION-----------
@@ -124,9 +108,8 @@ const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
       {ABES Engineering College}{Ghaziabad, India}
       {Bachelor of Technology in Computer Science \\& Engineering}{Nov. 2025 -- Present}
       \\resumeItemListStart
-        \\resumeItem{\\textbf{Performance}: 9.13/10.00 (Ist Year)}
-        \\resumeItem{Current Focus: Data Structures \\& Algorithms (Java), Object-Oriented Programming.}
-        \\resumeItem{Key Coursework: C++, Java Programming, Web Development Fundamentals.}
+        \\resumeItem{\\textbf{Academic Performance}: 9.13/10.00 CGPA (Ist Year).}
+        \\resumeItem{\\textbf{Core Coursework}: Data Structures \\& Algorithms (Java), Object-Oriented Programming (C++/Java), Operating Systems Concepts, Discrete Mathematics.}
       \\resumeItemListEnd
   \\resumeSubHeadingListEnd
 
@@ -134,33 +117,37 @@ const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 \\section{Technical Skills}
  \\begin{itemize}[leftmargin=0.15in, label={}]
     \\small{\\item{
-     \\textbf{Languages}{: Java (Intermediate), JavaScript, C++, HTML/CSS} \\\\
-     \\textbf{Cloud \\& AI}{: Google Gemini API, Generative AI, Vertex AI, Google Cloud Platform (GCP)} \\\\
-     \\textbf{Developer Tools}{: Git, GitHub Actions, Chrome Extension API, VS Code, IntelliJ IDEA} \\\\
-     \\textbf{Core Concepts}{: Data Structures \\& Algorithms (DSA), DOM Manipulation, Object Oriented Programming}
+     \\textbf{Languages}{: Java (Intermediate/OOP), JavaScript (ES6+), C++, HTML5, CSS3, SQL} \\\\
+     \\textbf{Frameworks \\& Libraries}{: React 19, Vite, Tailwind CSS, DOM Manipulation, HTML5 Canvas API, REST APIs} \\\\
+     \\textbf{Cloud \\& AI}{: Google Gemini 1.5 API, Vertex AI, Google Cloud Platform (GCP), Generative AI} \\\\
+     \\textbf{Developer Tools}{: Git, GitHub Actions, Chrome Extension APIs, VS Code, IntelliJ IDEA, Overleaf} \\\\
+     \\textbf{Core Concepts}{: Data Structures \\& Algorithms (220+ LeetCode), State Management, Responsive Systems Design}
     }}
  \\end{itemize}
 
-%-----------CERTIFICATIONS-----------
-\\section{Certifications \\& Awards}
- \\begin{itemize}[leftmargin=0.15in, label={}]
-    \\small{\\item{
-     \\textbf{\\href{https://catalog-education.oracle.com/ords/certview/sharebadge?id=2EC9B50AAE0E57C91B9A0D7C3E27276E32A1D2760D8FB299F208125ADC931D38}{\\underline{{Oracle AI Certified Foundations Associate}}}}{: Validated proficiency in AI/ML fundamentals.} \\\\[4pt]
-     \\textbf{\\href{https://www.skills.google/public_profiles/7c538f5b-2024-4d94-a220-233117c019b1}{\\underline{{Google Cloud Skills Boost (Public Profile)}}}}{: Earned Level 3 GenAI Badge \\& 10+ Skill Badges.} \\\\[4pt]
-     \\textbf{Develop GenAI Apps with Gemini}{: Certified by Google Cloud for building LLM-powered applications.} \\\\[4pt]
-     \\textbf{Prompt Design in Vertex AI}{: Mastered prompt engineering techniques for large language models.}
-    }}
- \\end{itemize}
-
-%-----------EXPERIENCE \\& VIRTUAL PROGRAMS-----------
-\\section{Experience \\& Virtual Programs}
+%-----------EXPERIENCE & LEADERSHIP-----------
+\\section{Experience \\& Community Leadership}
   \\resumeSubHeadingListStart
+    \\resumeSubheading
+      {Google Developer Groups (GDG) On Campus ABESEC}{Ghaziabad, India}
+      {Core Contributor / Web Team}{2026 -- Present}
+      \\resumeItemListStart
+        \\resumeItem{Contributed to the official web portal (\\href{https://gdgabesec.xyz}{\\underline{gdgabesec.xyz}}), engineering performant frontend modules and workshop pipelines.}
+        \\resumeItem{Facilitated technical workshops and student onboarding initiatives to scale campus developer culture.}
+      \\resumeItemListEnd
+    \\resumeSubheading
+      {Technovation: The Networking Club}{Ghaziabad, India}
+      {Technical Lead / Platform Contributor}{Aug. 2026 -- Present}
+      \\resumeItemListStart
+        \\resumeItem{Co-engineered \\textbf{DSAvation} (\\href{https://dsavation.vercel.app}{\\underline{dsavation.vercel.app}}), a structured interview prep portal tracking 220+ curated LeetCode problems with analytics and live campus leaderboard for 200+ students.}
+        \\resumeItem{Coordinated club technical operations, algorithmic challenges, and peer-to-peer programming sessions.}
+      \\resumeItemListEnd
     \\resumeSubheading
       {Deloitte}{Remote}
       {\\underline{\\href{https://drive.google.com/file/d/1jkFJsC4KCXWQ9cGysLDuxky9i-xQfBZe/view?usp=sharing}{Technology Job Simulation Participant}}}{July 2026}
       \\resumeItemListStart
-        \\resumeItem{Engineered backend data normalization (ETL) logic in Python to convert unstructured JSON telemetry data into a unified database format, successfully passing automated unit tests.}
-        \\resumeItem{Drafted a comprehensive 120-hour software development proposal for a secure, geofenced intranet dashboard monitoring 36 industrial devices across multiple factories.}
+        \\resumeItem{Engineered backend data normalization (ETL) logic in Python to convert unstructured JSON telemetry data into unified relational tables, passing automated unit tests.}
+        \\resumeItem{Drafted a comprehensive 120-hour software development proposal for an industrial device monitoring dashboard.}
       \\resumeItemListEnd
   \\resumeSubHeadingListEnd
 
@@ -168,40 +155,50 @@ const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 \\section{Projects}
     \\resumeSubHeadingListStart
       \\resumeProjectHeading
-          {\\textbf{Project Resonance (Accessibility Tool)} $|$ \\emph{JavaScript, Gemini 1.5 API, Chrome APIs}}{Apr. 2026}
+          {\\textbf{\\href{https://dsavation.vercel.app}{\\underline{DSAvation (DSA Preparation Platform)}}} $|$ \\emph{React, Vite, Tailwind CSS, LeetCode Engine}}{2026}
           \\resumeItemListStart
-            \\resumeItem{Developed an AI-powered Chrome Extension to bridge the digital culture gap for visually impaired users by dynamically reading aloud the context, vibe, and humor of internet memes.}
-            \\resumeItem{Engineered the core architecture using DOM manipulation and background service workers to intercept web elements and securely route data to the Google Gemini 1.5 Flash API.}
-            \\resumeItem{Competed at the MLH HackDays offline hackathon, successfully pitching the live product and securing a Top 33 placement out of 120+ participating teams.}
+            \\resumeItem{Co-engineered a club-wide DSA learning platform curated with 220+ interview problems, video breakdowns, company tags, and daily challenges serving 200+ active students.}
+            \\resumeItem{Architected category filtering, dynamic progress tracking, and live campus leaderboard to foster peer competition.}
           \\resumeItemListEnd
       \\resumeProjectHeading
-          {\\textbf{\\href{https://vedisvigourous.github.io}{\\underline{Behance Homepage Clone}}} $|$ \\emph{HTML5, CSS3, Flexbox/Grid}}{Feb. 2026}
+          {\\textbf{\\href{https://gdgabesec.xyz}{\\underline{GDG ABESEC Official Web Portal}}} $|$ \\emph{React, Vite, Tailwind CSS, Cloud Deployment}}{2026}
           \\resumeItemListStart
-            \\resumeItem{Engineered a pixel-perfect replica of the Behance homepage using semantic HTML5 and advanced CSS.}
-            \\resumeItem{Implemented complex UI layouts using Flexbox and CSS Grid to ensure responsiveness and visual fidelity.}
-            \\resumeItem{Optimized frontend structure for maintainability, demonstrating strong grasp of Web Development fundamentals.}
+            \\resumeItem{Contributed to the production web portal for Google Developer Groups on Campus ABESEC, managing hackathons, workshop schedules, and developer rosters.}
+            \\resumeItem{Architected accessible UI components with optimized asset delivery and responsive layouts across mobile and desktop.}
           \\resumeItemListEnd
       \\resumeProjectHeading
-          {\\textbf{Java OOPs Game Suite} $|$ \\emph{Java, Object-Oriented Programming}}{Jan. 2026}
+          {\\textbf{\\href{https://github.com/VedisVigourous/project-citadel}{\\underline{Project Citadel (Vadanta OS Web Desktop)}}} $|$ \\emph{React 19, Tailwind CSS, Canvas API}}{2026}
           \\resumeItemListStart
-            \\resumeItem{Developed a modular suite of console-based games (Number Guessing, Rock-Paper-Scissors) using pure Java.}
-            \\resumeItem{Implemented core OOP principles including Inheritance and Encapsulation to manage game logic.}
-            \\resumeItem{Refined algorithmic logic for random number generation and user input validation.}
+            \\resumeItem{Engineered an interactive cyberpunk web operating system featuring real-time terminal shell, custom draggable window manager, 4 canvas arcade engines, and integrated AI assistant proxy.}
+          \\resumeItemListEnd
+      \\resumeProjectHeading
+          {\\textbf{\\href{https://github.com/hobo7676/hackdays-spiker}{\\underline{Project Resonance (Accessibility Tool)}}} $|$ \\emph{JavaScript, Gemini 1.5 Flash API, Chrome APIs}}{Apr. 2026}
+          \\resumeItemListStart
+            \\resumeItem{Developed an AI Chrome Extension for visually impaired users by dynamically reading aloud meme context and humor via background service workers and Google Gemini 1.5 Flash API.}
+            \\resumeItem{Pitched at MLH HackDays offline hackathon, securing Top 33 placement out of 120+ teams.}
           \\resumeItemListEnd
     \\resumeSubHeadingListEnd
 
-%-----------EXTRACURRICULAR-----------
-\\section{Extracurricular \\& Hackathons}
+%-----------CERTIFICATIONS-----------
+\\section{Certifications \\& Badges}
  \\begin{itemize}[leftmargin=0.15in, label={}]
     \\small{\\item{
-     \\textbf{HackDays Offline Hackathon (MLH)}{: Reached Round 2 (Top 33 out of 120+ teams) at Galgotias College by building a live accessibility product. One of only two first-year teams to clear initial evaluations.} \\\\
-     \\textbf{Major League Hacking (MLH)}{: Participant in Global Hack Week; collaborated on open-source challenges.} \\\\
-     \\textbf{Competitive Coding}{: Achieved \\textbf{3-Star (Java)} \\& \\textbf{2-Star (Problem Solving)} on \\href{https://www.hackerrank.com/profile/codegrounds666}{\\underline{HackerRank}}.} \\\\
-     \\textbf{Coding Platforms}{: Active participant in CodeChef's "Clash of Coder" and HackerRank's "CodeWizard".}
+     \\textbf{\\href{https://catalog-education.oracle.com/ords/certview/sharebadge?id=2EC9B50AAE0E57C91B9A0D7C3E27276E32A1D2760D8FB299F208125ADC931D38}{\\underline{{Oracle AI Certified Foundations Associate}}}}{: Validated proficiency in AI/ML fundamentals.} \\\\
+     \\textbf{\\href{https://www.skills.google/public_profiles/7c538f5b-2024-4d94-a220-233117c019b1}{\\underline{{Google Cloud Skills Boost Profile}}}}{: Earned Level 3 GenAI Badge \\& 10+ Google Cloud Skill Badges.} \\\\
+     \\textbf{Develop GenAI Apps with Gemini \\& Prompt Design in Vertex AI}{: Google Cloud certified in LLM application design.}
     }}
  \\end{itemize}
 
-%-------------------------------------------
+%-----------EXTRACURRICULAR & HACKATHONS-----------
+\\section{Extracurricular \\& Hackathons}
+ \\begin{itemize}[leftmargin=0.15in, label={}]
+    \\small{\\item{
+     \\textbf{MLH HackDays Offline Hackathon}{: Reached Round 2 (Top 33 out of 120+ teams) at Galgotias College as a first-year team.} \\\\
+     \\textbf{Major League Hacking (MLH)}{: Active participant in Global Hack Week; collaborated on open-source repositories.} \\\\
+     \\textbf{Competitive Programming}{: 3-Star (Java) \\& 2-Star (Problem Solving) on \\href{https://www.hackerrank.com/profile/codegrounds666}{\\underline{HackerRank}}; active on LeetCode.}
+    }}
+ \\end{itemize}
+
 \\end{document}`;
 
 function App() {
@@ -800,26 +797,26 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
           {
             id: 2,
             hash: "f4e5d6c",
-            repo: "Police_Daily_Performa",
-            msg: "optimized export engine",
+            repo: "DSAvation",
+            msg: "deployed 220+ leetcode problem tracker",
           },
           {
             id: 3,
+            hash: "8e9f1a2",
+            repo: "GDG_Official_Website",
+            msg: "shipped community portal & event pipeline",
+          },
+          {
+            id: 4,
             hash: "9a8b7c6",
             repo: "Project_Resonance",
             msg: "merged gemini vision api logic",
           },
           {
-            id: 4,
-            hash: "e5d4c3b",
-            repo: "Vadanta_OS_Citadel",
-            msg: "patched matrix background scroll",
-          },
-          {
             id: 5,
             hash: "b2a1f9e",
-            repo: "MLH_GHW_Guesser",
-            msg: "deployed logic-based number guesser",
+            repo: "Police_Daily_Performa",
+            msg: "optimized automated export engine",
           },
           {
             id: 6,
@@ -893,53 +890,57 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
   const projectsData = [
     {
       id: "01",
-      name: "Project_Resonance.crx",
-      tech: "JS / Gemini 1.5 / Chrome API",
-      desc: "AI-powered accessibility Chrome Extension bridging digital culture gaps. MLH HackDays Top 33.",
-      link: "https://github.com/hobo7676/hackdays-spiker",
-      vai: "[ MISSION ]: Bridge the digital culture gap for the visually impaired at MLH Hackdays.\n[ EXECUTION ]: Engineered a background service worker to intercept DOM elements. Securely routed raw meme data to the Gemini 1.5 Flash API to dynamically synthesize audio context, vibe, and humor.",
+      name: "DSAvation_Platform.web",
+      tech: "React / Vite / Tailwind / LeetCode",
+      desc: "Curated DSA interview prep platform featuring 220+ LeetCode problems, video breakdowns, company tags, daily challenges, and live leaderboard.",
+      link: "https://dsavation.vercel.app",
+      github: "https://github.com/Technovation-ABES/DSAvation",
+      vai: "[ MISSION ]: Deliver a structured, club-wide DSA curriculum and competitive ranking platform for 200+ students at ABESEC.\n[ EXECUTION ]: Architected an ultra-fast web portal with topic categorization, problem progress tracking, solution links, and daily challenge pipelines.",
     },
     {
       id: "02",
-      name: "Police_Daily_Performa.exe",
-      tech: "Web / UI",
-      desc: "Live web app engineered for Delhi Police staff to efficiently fill, download, and export daily performas.",
-      link: "https://github.com/VedisVigourous/Police-Daily-Performa",
+      name: "GDG_Official_Portal.web",
+      tech: "React / Vite / Tailwind / Cloud",
+      desc: "Official web portal for Google Developer Groups on Campus (GDG) ABESEC. Hub for tech workshops, hackathons, and community member rosters.",
+      link: "https://gdgabesec.xyz",
+      github: "https://github.com/Developer-Students-Club-ABESEC/GDG-Official-Website",
+      vai: "[ MISSION ]: Build the digital home for Google Developer Groups on Campus ABESEC.\n[ EXECUTION ]: Engineered high-performance modern web interface showcasing tech workshops, speaker sessions, event RSVP pipelines, and developer community resources.",
     },
     {
       id: "03",
       name: "Vadanta_OS_Citadel.exe",
-      tech: "React / Tailwind",
-      desc: "Highly interactive, state-driven operating system portfolio with a custom window management architecture.",
+      tech: "React 19 / Tailwind / Canvas",
+      desc: "Highly interactive, state-driven cyberpunk web operating system featuring real-time terminal shell, 4 canvas arcade engines, and audio synthesizers.",
       link: "https://github.com/VedisVigourous/project-citadel",
+      github: "https://github.com/VedisVigourous/project-citadel",
+      vai: "[ MISSION ]: Engineer an immersive, 60fps web operating system exploring frontend systems architecture.\n[ EXECUTION ]: Designed modular window manager, decoupled requestAnimationFrame parallax, dynamic soundboard, and AI persona proxy.",
     },
     {
       id: "04",
-      name: "MLH_GHW_Guesser.bat",
-      tech: "JS / HTML / CSS",
-      desc: "Logic-based number guessing engine developed and deployed for Major League Hacking's Global Hack Week.",
-      link: "https://github.com/VedisVigourous/vedisvigourous.github.io",
+      name: "Project_Resonance.crx",
+      tech: "JS / Gemini 1.5 / Chrome API",
+      desc: "AI-powered accessibility Chrome Extension bridging digital culture gaps for visually impaired users. MLH HackDays Top 33.",
+      link: "https://github.com/hobo7676/hackdays-spiker",
+      github: "https://github.com/hobo7676/hackdays-spiker",
+      vai: "[ MISSION ]: Bridge the digital culture gap for the visually impaired at MLH Hackdays.\n[ EXECUTION ]: Engineered a background service worker to intercept DOM elements. Securely routed raw meme data to the Gemini 1.5 Flash API to dynamically synthesize audio context, vibe, and humor.",
     },
     {
       id: "05",
-      name: "Java_OOP_Game_Suite.jar",
-      tech: "Java / OOP",
-      desc: "Modular console-based game suite implementing core encapsulation and inheritance principles.",
-      link: "https://github.com/VedisVigourous/LearnJava",
+      name: "Police_Daily_Performa.exe",
+      tech: "Web / UI / Automation",
+      desc: "Live web app engineered for Delhi Police staff to efficiently fill, calculate, download, and export official daily performas.",
+      link: "https://github.com/VedisVigourous/Police-Daily-Performa",
+      github: "https://github.com/VedisVigourous/Police-Daily-Performa",
+      vai: "[ MISSION ]: Streamline administrative reporting workflows for active police staff.\n[ EXECUTION ]: Implemented client-side validated form fields with auto-calculating tallies and one-click formatted report generation.",
     },
     {
       id: "06",
-      name: "Edu_Roadmap_AI.sys",
-      tech: "GenAI / Arch (WIP)",
-      desc: "Upcoming AI assistant specialized in generating dynamic, personalized education roadmaps.",
-      link: "#",
-    },
-    {
-      id: "07",
       name: "DSA_Algorithm_Vault.lib",
-      tech: "Java / C++/ DSA",
+      tech: "Java / C++ / DSA",
       desc: "Comprehensive archive of optimized algorithmic solutions for HackerRank, CodeChef, and competitive programming challenges.",
       link: "https://github.com/VedisVigourous/Code-Solutions",
+      github: "https://github.com/VedisVigourous/Code-Solutions",
+      vai: "[ MISSION ]: Master technical interview algorithmic patterns across core data structures.\n[ EXECUTION ]: Maintained optimized, commented implementations in Java and C++ covering graph traversals, dynamic programming, and binary trees.",
     },
   ];
 
@@ -3896,22 +3897,31 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                               </div>
                             )}
 
-                            {/* Interactive Open Repo Button */}
-                            {project.link !== "#" && (
-                              <div className="flex justify-end mt-3">
+                            {/* Interactive Action Buttons */}
+                            <div className="flex justify-end gap-2 mt-3">
+                              {project.github && project.github !== "#" && (
                                 <a
-                                  href={project.link}
+                                  href={project.github}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   onClick={(e) => e.stopPropagation()}
                                   className={`text-[10px] font-bold tracking-widest text-[#22c55e] border border-[#22c55e]/50 px-2 py-1 rounded hover:bg-[#22c55e] hover:text-black transition-all ${activeDesktopProject === project.id ? "opacity-100 translate-y-0" : "opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0"}`}
                                 >
-                                  {project.link.includes("github.com")
-                                    ? "[> OPEN_REPO]"
-                                    : "[> LIVE_LINK]"}
+                                  {"[> REPO]"}
                                 </a>
-                              </div>
-                            )}
+                              )}
+                              {project.link && project.link !== "#" && project.link !== project.github && (
+                                <a
+                                  href={project.link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                  className={`text-[10px] font-bold tracking-widest text-black bg-[#22c55e] border border-[#22c55e] px-2 py-1 rounded hover:bg-emerald-400 transition-all ${activeDesktopProject === project.id ? "opacity-100 translate-y-0" : "opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0"}`}
+                                >
+                                  {"[> LIVE_SITE]"}
+                                </a>
+                              )}
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -4044,22 +4054,28 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                         <div className="flex-1"></div>{" "}
                         {/* Spacer pushes buttons to bottom */}
                         {/* Action Buttons */}
-                        {selectedMobileProject.link !== "#" ? (
-                          <a
-                            href={selectedMobileProject.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-full block text-center bg-[#22c55e]/10 border-2 border-[#22c55e] py-4 text-[#22c55e] text-xs font-black tracking-[0.2em] uppercase active:bg-[#22c55e] active:text-black transition-all shadow-[0_0_15px_rgba(34,197,94,0.2)]"
-                          >
-                            {selectedMobileProject.link.includes("github.com")
-                              ? "[ OPEN_REPO ]"
-                              : "[ LIVE_LINK ]"}
-                          </a>
-                        ) : (
-                          <div className="w-full block text-center border-2 border-red-500/50 py-4 text-red-500 text-xs font-black tracking-[0.2em] uppercase bg-red-500/10">
-                            [ CLASSIFIED / WIP ]
-                          </div>
-                        )}
+                        <div className="flex gap-2 w-full">
+                          {selectedMobileProject.github && (
+                            <a
+                              href={selectedMobileProject.github}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex-1 text-center bg-[#22c55e]/10 border border-[#22c55e] py-3.5 text-[#22c55e] text-xs font-black tracking-[0.15em] uppercase active:bg-[#22c55e] active:text-black transition-all"
+                            >
+                              [ REPO ]
+                            </a>
+                          )}
+                          {selectedMobileProject.link && selectedMobileProject.link !== selectedMobileProject.github && (
+                            <a
+                              href={selectedMobileProject.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex-1 text-center bg-[#22c55e] border border-[#22c55e] py-3.5 text-black text-xs font-black tracking-[0.15em] uppercase active:bg-emerald-400 transition-all shadow-[0_0_15px_rgba(34,197,94,0.3)]"
+                            >
+                              [ LIVE_SITE ]
+                            </a>
+                          )}
+                        </div>
                       </div>
                     </div>
                   )}
