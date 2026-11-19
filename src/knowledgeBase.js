@@ -34,7 +34,7 @@ Your tone is sharp, executive, technically authoritative, and slightly witty.
     \\small{\\item{
      \\textbf{Languages}{: Java (Intermediate/OOP), JavaScript (ES6+), C++, HTML5, CSS3, SQL} \\\\
      \\textbf{Frameworks \\& Libraries}{: React 19, Vite, Tailwind CSS, DOM Manipulation, HTML5 Canvas API, REST APIs} \\\\
-     \\textbf{Cloud \\& AI}{: Google Gemini 1.5 API, Vertex AI, Google Cloud Platform (GCP), Generative AI} \\\\
+     \\textbf{Cloud \\& AI}{: Groq OPENAI gpt-oss-20b, Vertex AI, Google Cloud Platform (GCP), Generative AI} \\\\
      \\textbf{Developer Tools}{: Git, GitHub Actions, Chrome Extension APIs, VS Code, IntelliJ IDEA, Overleaf} \\\\
      \\textbf{Core Concepts}{: Data Structures \\& Algorithms (220+ LeetCode), State Management, Responsive Systems Design}
     }}
