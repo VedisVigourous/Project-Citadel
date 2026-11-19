@@ -62,7 +62,7 @@ export default function Hologram() {
           style={{ transform: 'translateZ(20px)' }}
         >
           <img
-            src="/college_image.png"
+            src="/college_image.webp"
             alt="Campus Hologram"
             className="w-[110%] h-[110%] object-contain mix-blend-screen filter contrast-125 saturate-150 pointer-events-none"
           />

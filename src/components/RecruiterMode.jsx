@@ -83,7 +83,12 @@ export default function RecruiterMode({ onClose, onOpenApp }) {
             {/* Avatar */}
             <div className="relative shrink-0">
               <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl border-2 border-[#22c55e]/60 overflow-hidden bg-black shadow-[0_0_20px_rgba(34,197,94,0.2)]">
-                <img src="/profile.png" alt="Vadanta Kumar Chauhaan" className="w-full h-full object-cover" />
+                <img
+                  src="/profile1.webp"
+                  onError={(e) => { e.currentTarget.src = "/profile.webp"; }}
+                  alt="Vadanta Kumar Chauhaan"
+                  className="w-full h-full object-cover"
+                />
               </div>
               <span className="absolute -bottom-2 -right-2 px-2 py-0.5 rounded-full bg-[#22c55e] text-black text-[9px] font-black uppercase tracking-wider shadow-[0_0_10px_rgba(34,197,94,0.6)]">
                 ONLINE

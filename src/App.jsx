@@ -2162,17 +2162,20 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                 </div>
 
                 {/* 4. RECRUITER FAST MODE SWITCH */}
-                <div className="hidden sm:flex items-center ml-4">
+                <div className="hidden sm:flex items-center ml-3">
                   <button
                     onClick={() => {
                       playAppOpen();
                       setIsRecruiterModeOpen(true);
                       window.history.replaceState(null, "", "#recruiter");
                     }}
-                    className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-[#22c55e]/50 bg-[#22c55e]/10 hover:bg-[#22c55e] hover:text-black transition-all cursor-pointer text-[10px] font-bold text-[#22c55e] tracking-wider active:scale-95 shadow-[0_0_12px_rgba(34,197,94,0.2)] group"
+                    className="relative flex items-center gap-1.5 px-2.5 py-1 bg-[#050505]/90 border border-[#22c55e]/40 hover:border-[#22c55e] hover:bg-[#22c55e]/15 transition-all duration-200 cursor-pointer text-[10px] font-mono font-bold text-[#22c55e] tracking-wider active:scale-95 shadow-[0_0_12px_rgba(34,197,94,0.15)] group overflow-hidden"
+                    style={{
+                      clipPath: "polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px)"
+                    }}
                   >
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] group-hover:bg-black animate-pulse"></span>
-                    <span>⚡ RECRUITER MODE</span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] shadow-[0_0_6px_#22c55e] animate-pulse"></span>
+                    <span className="text-[#22c55e] group-hover:text-white transition-colors">[⚡ RECRUITER_MODE]</span>
                   </button>
                 </div>
               </div>
@@ -2185,17 +2188,6 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
 
               {/* Right Side: Network, Clock & Mobile WiFi */}
               <div className="flex items-center gap-3 sm:gap-4 opacity-90 relative z-50">
-                {/* MOBILE RECRUITER FAST MODE BADGE */}
-                <button
-                  onClick={() => {
-                    playAppOpen();
-                    setIsRecruiterModeOpen(true);
-                    window.history.replaceState(null, "", "#recruiter");
-                  }}
-                  className="sm:hidden flex items-center gap-1 px-2.5 py-0.5 rounded-full border border-[#22c55e]/50 bg-[#22c55e]/15 text-[9px] font-bold text-[#22c55e] tracking-wider active:scale-95 mr-1 shadow-[0_0_8px_rgba(34,197,94,0.3)]"
-                >
-                  <span>⚡ FAST VIEW</span>
-                </button>
 
                 {/* MOBILE AUDIO TOGGLE (Replaces WiFi on Right Side) */}
                 <div
@@ -2455,27 +2447,43 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                   </a>
                 </div>
 
-                {/* ROW 2: ACTION BUTTONS (Flex: 2 columns) */}
-                <div className="flex items-center gap-3 w-full max-w-[340px] mx-auto">
-                  {/* Left Button ("vAI Active") */}
+                {/* ROW 2: ACTION BUTTONS (Tactical 3-Column Action Grid) */}
+                <div className="grid grid-cols-3 gap-2 w-full max-w-[340px] mx-auto">
+                  {/* 1. RECRUITER FAST VIEW */}
+                  <button
+                    onClick={() => {
+                      playAppOpen();
+                      setIsRecruiterModeOpen(true);
+                      window.history.replaceState(null, "", "#recruiter");
+                    }}
+                    className="py-2.5 px-1.5 rounded-xl bg-gradient-to-b from-[#050505] to-[#0a0a0a] border border-[#22c55e]/50 shadow-[0_0_15px_rgba(34,197,94,0.15),inset_0_1px_1px_rgba(255,255,255,0.06)] backdrop-blur-md flex items-center justify-center gap-1.5 text-[#22c55e] font-mono font-bold tracking-wider active:scale-95 active:border-[#22c55e] transition-all cursor-pointer group"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse shrink-0"></span>
+                    <span className="text-[10px] truncate">⚡ RECRUITER</span>
+                  </button>
+
+                  {/* 2. TALK TO vAI (Interactive AI Persona) */}
                   <button
                     onClick={() => {
                       playAppOpen();
                       setIsAiProxyOpen(true);
                     }}
-                    className="flex-1 py-2.5 px-3 rounded-2xl bg-[#050505]/90 border border-[#22c55e]/30 shadow-[0_4px_15px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.05)] backdrop-blur-md flex items-center justify-center gap-2 text-[#22c55e] font-mono text-xs font-bold tracking-wider active:scale-95 active:border-[#22c55e] active:shadow-[0_0_15px_rgba(34,197,94,0.3)] transition-all cursor-pointer group"
+                    className="py-2.5 px-1.5 rounded-xl bg-gradient-to-b from-[#050505] to-[#0a0a0a] border border-[#22c55e]/50 shadow-[0_0_15px_rgba(34,197,94,0.15),inset_0_1px_1px_rgba(255,255,255,0.06)] backdrop-blur-md flex items-center justify-center gap-1.5 text-[#22c55e] font-mono font-bold tracking-wider active:scale-95 active:border-[#22c55e] transition-all cursor-pointer group"
                   >
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-ping shrink-0"></span>
-                    <span className="truncate">vAI Active</span>
+                    <svg className="w-3 h-3 text-[#22c55e] shrink-0 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                      <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                    </svg>
+                    <span className="text-[10px] truncate">✦ vAI CHAT</span>
                   </button>
 
-                  {/* Right Button ("My Socials") */}
+                  {/* 3. MY SOCIALS */}
                   <button
                     onClick={() => {
                       playAppOpen();
                       setIsSocialsWindowOpen(true);
                     }}
-                    className="flex-1 py-2.5 px-3 rounded-2xl bg-[#050505]/90 border border-[#22c55e]/30 shadow-[0_4px_15px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.05)] backdrop-blur-md flex items-center justify-center gap-2 text-[#22c55e] font-mono text-xs font-bold tracking-wider active:scale-95 active:border-[#22c55e] active:shadow-[0_0_15px_rgba(34,197,94,0.3)] transition-all cursor-pointer group"
+                    className="py-2.5 px-1.5 rounded-xl bg-gradient-to-b from-[#050505] to-[#0a0a0a] border border-[#22c55e]/30 shadow-[0_4px_15px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.05)] backdrop-blur-md flex items-center justify-center gap-1.5 text-[#22c55e] font-mono font-bold tracking-wider active:scale-95 active:border-[#22c55e] transition-all cursor-pointer group"
                   >
                     <svg
                       className="w-3.5 h-3.5 text-[#22c55e]/80 group-hover:text-[#22c55e] shrink-0"
@@ -2492,7 +2500,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                       <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
                       <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
                     </svg>
-                    <span className="truncate">My Socials</span>
+                    <span className="text-[10px] truncate">SOCIALS</span>
                   </button>
                 </div>
 
@@ -2996,7 +3004,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                     <span className="absolute -inset-[500%] bg-[conic-gradient(transparent_0_140deg,#22c55e_180deg,transparent_180_320deg,#22c55e_360deg)] animate-[spin_2s_linear_infinite]" />
 
                     {/* 2. Inner Matte Core */}
-                    <span className="relative flex items-center justify-center gap-2 h-full w-full cursor-pointer bg-[#050505] pl-4 pr-6 py-3 max-md:p-3 group-hover:bg-[#22c55e] transition-colors duration-300 overflow-hidden">
+                    <span className="relative flex items-center justify-center gap-2 h-full w-full cursor-pointer bg-[#050505] pl-4 pr-6 py-3 max-md:px-3.5 max-md:py-2 group-hover:bg-[#22c55e] transition-colors duration-300 overflow-hidden">
                       {/* 3. IDLE STATE: The Diagonal Stripe Sweep */}
                       <div
                         className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(34,197,94,0.12)_10px,rgba(34,197,94,0.12)_20px)] group-hover:opacity-0 transition-opacity duration-300 pointer-events-none"
@@ -3009,15 +3017,35 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                       {/* 4. HOVER STATE: Solid Black Industrial Stripes */}
                       <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(0,0,0,0.15)_10px,rgba(0,0,0,0.15)_20px)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
 
+                      {/* Mobile AI Neural Spark Icon */}
+                      <svg
+                        className="w-3.5 h-3.5 text-[#22c55e] group-hover:text-black transition-colors shrink-0 md:hidden animate-pulse"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                      >
+                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+                        <circle cx="12" cy="12" r="3" fill="currentColor" />
+                      </svg>
+
                       {/* Radar Ping */}
                       <div className="relative flex h-2.5 w-2.5 z-10 shrink-0 pointer-events-none">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#22c55e] group-hover:bg-black transition-colors duration-300"></span>
                         <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#22c55e] group-hover:bg-black transition-colors duration-300"></span>
                       </div>
 
-                      {/* Text (Hidden on mobile for a clean icon-only FAB) */}
-                      <span className="text-[13px] max-md:hidden font-black tracking-[0.2em] uppercase text-[#22c55e] group-hover:text-black transition-colors duration-300 relative z-10 pointer-events-none drop-shadow-[0_0_8px_rgba(34,197,94,0.5)] group-hover:drop-shadow-none whitespace-nowrap">
+                      {/* Desktop Label */}
+                      <span className="hidden md:inline-block text-[13px] font-black tracking-[0.2em] uppercase text-[#22c55e] group-hover:text-black transition-colors duration-300 relative z-10 pointer-events-none drop-shadow-[0_0_8px_rgba(34,197,94,0.5)] group-hover:drop-shadow-none whitespace-nowrap">
                         Hey There, VAI!
+                      </span>
+
+                      {/* Mobile Visible Label */}
+                      <span className="md:hidden flex items-center gap-1.5 text-[11px] font-mono font-black tracking-wider uppercase text-[#22c55e] group-hover:text-black transition-colors duration-300 relative z-10 pointer-events-none drop-shadow-[0_0_8px_rgba(34,197,94,0.6)] whitespace-nowrap">
+                        TALK TO vAI
+                        <span className="text-[8px] px-1 py-0.2 rounded border border-[#22c55e]/40 bg-[#22c55e]/15 group-hover:border-black group-hover:bg-black/20 font-bold">
+                          AI
+                        </span>
                       </span>
                     </span>
                   </button>
@@ -4260,7 +4288,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                               {
                                 name: "Generative AI Professional",
                                 issuer: "Oracle",
-                                path: "/milestones/Oracle_GenAI.png",
+                                path: "/milestones/Oracle_GenAI.webp",
                               },
                               {
                                 name: "Technology Job Simulation",
@@ -4270,12 +4298,12 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                               {
                                 name: "Hackdays Hackathon",
                                 issuer: "Hackdays",
-                                path: "/milestones/Hackathon_01_Hackdays.png",
+                                path: "/milestones/Hackathon_01_Hackdays.webp",
                               },
                               {
                                 name: "Student Ambassador Program",
                                 issuer: "Google",
-                                path: "/milestones/Google_StudentAmbassador.png",
+                                path: "/milestones/Google_StudentAmbassador.webp",
                               },
                             ].map((cert, idx) => (
                               <div
@@ -4327,19 +4355,19 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                                 {[
                                   {
                                     name: "Prompt Engineering",
-                                    path: "/milestones/WilcoLabs/prompt_engineering.png",
+                                    path: "/milestones/WilcoLabs/prompt_engineering.webp",
                                   },
                                   {
                                     name: "Copilot Integration",
-                                    path: "/milestones/WilcoLabs/copilot_integration.png",
+                                    path: "/milestones/WilcoLabs/copilot_integration.webp",
                                   },
                                   {
                                     name: "Magic Quest",
-                                    path: "/milestones/WilcoLabs/magic_quest.png",
+                                    path: "/milestones/WilcoLabs/magic_quest.webp",
                                   },
                                   {
                                     name: "Code Smarter",
-                                    path: "/milestones/WilcoLabs/code-smarter.png",
+                                    path: "/milestones/WilcoLabs/code-smarter.webp",
                                   },
                                 ].map((cert, i) => (
                                   <button
@@ -4372,11 +4400,11 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                                 {[
                                   {
                                     name: "Basic Problem Solving",
-                                    path: "/milestones/HackerRank_PS_Basic.png",
+                                    path: "/milestones/HackerRank_PS_Basic.webp",
                                   },
                                   {
                                     name: "JavaScript Basic",
-                                    path: "/milestones/HackerRank_Js_Basic.png",
+                                    path: "/milestones/HackerRank_Js_Basic.webp",
                                   },
                                   {
                                     name: "Legacy Responsive Web Design",
@@ -4413,15 +4441,15 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                                 {[
                                   {
                                     name: "HTML",
-                                    path: "/milestones/Simplilearn_HTML.png",
+                                    path: "/milestones/SimpliLearn_HTML.webp",
                                   },
                                   {
                                     name: "CSS",
-                                    path: "/milestones/Simplilearn_CSS.png",
+                                    path: "/milestones/SimpliLearn_CSS.webp",
                                   },
                                   {
                                     name: "React",
-                                    path: "/milestones/Simplilearn_React.png",
+                                    path: "/milestones/SimpliLearn_React.webp",
                                   },
                                 ].map((cert, i) => (
                                   <button
@@ -4531,7 +4559,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                           {
                             name: "Generative AI Professional",
                             issuer: "Oracle",
-                            path: "/milestones/Oracle_GenAI.png",
+                            path: "/milestones/Oracle_GenAI.webp",
                           },
                           {
                             name: "Technology Job Simulation",
@@ -4541,12 +4569,12 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                           {
                             name: "Hackdays Hackathon",
                             issuer: "Hackdays",
-                            path: "/milestones/Hackathon_01_Hackdays.png",
+                            path: "/milestones/Hackathon_01_Hackdays.webp",
                           },
                           {
                             name: "Student Ambassador",
                             issuer: "Google",
-                            path: "/milestones/Google_StudentAmbassador.png",
+                            path: "/milestones/Google_StudentAmbassador.webp",
                           },
                         ].map((cert, idx) => (
                           <div
@@ -4600,19 +4628,19 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                             {[
                               {
                                 name: "Prompt Engineering",
-                                path: "/milestones/WilcoLabs/prompt_engineering.png",
+                                path: "/milestones/WilcoLabs/prompt_engineering.webp",
                               },
                               {
                                 name: "Copilot Integration",
-                                path: "/milestones/WilcoLabs/copilot_integration.png",
+                                path: "/milestones/WilcoLabs/copilot_integration.webp",
                               },
                               {
                                 name: "Magic Quest",
-                                path: "/milestones/WilcoLabs/magic_quest.png",
+                                path: "/milestones/WilcoLabs/magic_quest.webp",
                               },
                               {
                                 name: "Code Smarter",
-                                path: "/milestones/WilcoLabs/code-smarter.png",
+                                path: "/milestones/WilcoLabs/code-smarter.webp",
                               },
                             ].map((cert, idx) => (
                               <button
@@ -4646,11 +4674,11 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                             {[
                               {
                                 name: "Basic Problem Solving",
-                                path: "/milestones/HackerRank_PS_Basic.png",
+                                path: "/milestones/HackerRank_PS_Basic.webp",
                               },
                               {
                                 name: "JavaScript Basic",
-                                path: "/milestones/HackerRank_Js_Basic.png",
+                                path: "/milestones/HackerRank_Js_Basic.webp",
                               },
                               {
                                 name: "Responsive Web Design",
@@ -5714,7 +5742,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                 <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-black/60 z-20 pointer-events-none rounded-[1.8rem]"></div>
 
                 <img
-                  src="Zv9IB.jpg"
+                  src="/profile.webp"
                   alt="Vadanta Kumar Chauhaan"
                   className="w-full h-full object-contain object-top rounded-[1.7rem] grayscale opacity-90 contrast-[1.15]"
                   style={{

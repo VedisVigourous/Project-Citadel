@@ -406,22 +406,23 @@ const TouchBtn = ({ label, targetKey, colorClass }) => {
     <button
       onTouchStart={(e) => { e.preventDefault(); trigger('keydown'); }}
       onTouchEnd={(e) => { e.preventDefault(); trigger('keyup'); }}
-      className={`w-12 h-12 flex items-center justify-center rounded-lg border-2 ${colorClass} font-black text-lg select-none touch-none shadow-[inset_0_0_10px_rgba(0,0,0,0.5)] transition-colors`}
+      onMouseDown={(e) => { e.preventDefault(); trigger('keydown'); }}
+      onMouseUp={(e) => { e.preventDefault(); trigger('keyup'); }}
+      onMouseLeave={() => trigger('keyup')}
+      className={`w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center rounded-lg border-2 ${colorClass} font-black text-base select-none touch-none shadow-[inset_0_0_8px_rgba(0,0,0,0.5)] active:scale-95 transition-all cursor-pointer`}
     >
       {label}
     </button>
   );
 };
 
-// 2. The Universal D-Pad
-const DPad = ({ up, down, left, right, colorClass }) => (
-  <div className="relative w-[136px] h-[136px] z-50">
-    <div className="absolute top-0 left-1/2 -translate-x-1/2"><TouchBtn label="▲" targetKey={up} colorClass={colorClass} /></div>
-    <div className="absolute bottom-0 left-1/2 -translate-x-1/2"><TouchBtn label="▼" targetKey={down} colorClass={colorClass} /></div>
-    <div className="absolute left-0 top-1/2 -translate-y-1/2"><TouchBtn label="◄" targetKey={left} colorClass={colorClass} /></div>
-    <div className="absolute right-0 top-1/2 -translate-y-1/2"><TouchBtn label="►" targetKey={right} colorClass={colorClass} /></div>
-    {/* Decorative Center Core */}
-    <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-2 ${colorClass} opacity-40`}></div>
+// 2. The Sleek Horizontal Directional Pad (Maximizes Canvas Viewspace)
+const HorizontalPad = ({ up, down, left, right, colorClass }) => (
+  <div className="flex items-center gap-1.5 sm:gap-2 z-50">
+    <TouchBtn label="◄" targetKey={left} colorClass={colorClass} />
+    <TouchBtn label="▲" targetKey={up} colorClass={colorClass} />
+    <TouchBtn label="▼" targetKey={down} colorClass={colorClass} />
+    <TouchBtn label="►" targetKey={right} colorClass={colorClass} />
   </div>
 );
 
@@ -434,18 +435,18 @@ export default function Engage2P() {
       {/* ========================================================= */}
       {/* PLAYER 2 MOBILE CONTROLLER (TOP - ROTATED 180 DEGREES)    */}
       {/* ========================================================= */}
-      <div className="hidden max-md:flex w-full h-[200px] shrink-0 items-center justify-between px-4 sm:px-8 bg-[#080808] border-b-2 border-white/10 rotate-180 z-20 shadow-[0_4px_30px_rgba(0,0,0,0.8)]">
-         <div className="text-[#d946ef] font-mono tracking-widest flex flex-col items-center">
-           <span className="font-black text-3xl drop-shadow-[0_0_10px_rgba(217,70,239,0.8)]">P2</span>
-           <span className="text-[9px] opacity-70 mt-1 uppercase text-center">Challenger</span>
+      <div className="hidden max-md:flex w-full h-[78px] shrink-0 items-center justify-between px-3 sm:px-6 bg-[#080808] border-b border-white/10 rotate-180 z-20 shadow-[0_4px_25px_rgba(0,0,0,0.8)]">
+         <div className="text-[#d946ef] font-mono tracking-widest flex items-center gap-2">
+           <span className="font-black text-2xl drop-shadow-[0_0_10px_rgba(217,70,239,0.8)]">P2</span>
+           <span className="text-[8px] opacity-70 uppercase tracking-widest border border-[#d946ef]/30 px-1.5 py-0.5 rounded">CHALLENGER</span>
          </div>
          
          {/* Middle Decal to balance the layout */}
-         <div className="flex flex-col items-center justify-center opacity-20 border-2 border-dashed border-[#d946ef] p-2 rounded-full w-12 h-12">
-            <span className="text-[10px] font-black tracking-widest text-[#d946ef]">VS</span>
+         <div className="flex items-center justify-center opacity-30 border border-dashed border-[#d946ef] rounded-full w-8 h-8">
+            <span className="text-[9px] font-black tracking-widest text-[#d946ef]">VS</span>
          </div>
 
-         <DPad up="ArrowUp" down="ArrowDown" left="ArrowLeft" right="ArrowRight" colorClass="text-[#d946ef] border-[#d946ef]/40 active:bg-[#d946ef] active:text-black" />
+         <HorizontalPad up="ArrowUp" down="ArrowDown" left="ArrowLeft" right="ArrowRight" colorClass="text-[#d946ef] border-[#d946ef]/40 active:bg-[#d946ef] active:text-black" />
       </div>
 
       {/* ========================================================= */}
@@ -487,37 +488,34 @@ export default function Engage2P() {
       {/* ========================================================= */}
       {/* PLAYER 1 MOBILE CONTROLLER (BOTTOM)                       */}
       {/* ========================================================= */}
-      <div className="hidden max-md:flex w-full h-[200px] shrink-0 items-center justify-between px-4 sm:px-8 bg-[#080808] border-t-2 border-white/10 z-20 shadow-[0_-4px_30px_rgba(0,0,0,0.8)] relative">
+      <div className="hidden max-md:flex w-full h-[78px] shrink-0 items-center justify-between px-3 sm:px-6 bg-[#080808] border-t border-white/10 z-20 shadow-[0_-4px_25px_rgba(0,0,0,0.8)] relative">
          
          {/* Left: Player 1 Identity */}
-         <div className="text-[#22c55e] font-mono tracking-widest flex flex-col items-center">
-           <span className="font-black text-3xl drop-shadow-[0_0_10px_rgba(34,197,94,0.8)]">P1</span>
-           <span className="text-[9px] opacity-70 mt-1 uppercase text-center">System<br/>Host</span>
+         <div className="text-[#22c55e] font-mono tracking-widest flex items-center gap-2">
+           <span className="font-black text-2xl drop-shadow-[0_0_10px_rgba(34,197,94,0.8)]">P1</span>
+           <span className="text-[8px] opacity-70 uppercase tracking-widest border border-[#22c55e]/30 px-1.5 py-0.5 rounded">HOST</span>
          </div>
          
-         {/* Middle: Tactical 2x2 Game Selector */}
-         <div className="flex flex-col items-center gap-1.5 shrink-0">
-           <div className="text-[7px] tracking-widest text-white/40 uppercase font-mono">SYS.ARCADE</div>
-           <div className="grid grid-cols-2 gap-2">
-             {[
-               { id: 'pong', label: 'P', color: 'text-[#22c55e] border-[#22c55e]', shadow: 'shadow-[0_0_10px_rgba(34,197,94,0.5)]' },
-               { id: 'tron', label: 'G', color: 'text-[#d946ef] border-[#d946ef]', shadow: 'shadow-[0_0_10px_rgba(217,70,239,0.5)]' },
-               { id: 'brawl', label: 'B', color: 'text-[#3b82f6] border-[#3b82f6]', shadow: 'shadow-[0_0_10px_rgba(59,130,246,0.5)]' },
-               { id: 'volley', label: 'V', color: 'text-[#10b981] border-[#10b981]', shadow: 'shadow-[0_0_10px_rgba(16,185,129,0.5)]' }
-             ].map(g => (
-               <button 
-                 key={g.id} 
-                 onClick={() => setActiveGame(g.id)}
-                 className={`w-9 h-9 rounded flex items-center justify-center border-2 transition-all font-black text-sm ${activeGame === g.id ? `${g.color} bg-white/10 ${g.shadow} scale-110` : 'border-white/10 text-white/30'}`}
-               >
-                 {g.label}
-               </button>
-             ))}
-           </div>
+         {/* Middle: Tactical Compact Game Selector */}
+         <div className="flex items-center gap-1.5 shrink-0">
+           {[
+             { id: 'pong', label: 'P', color: 'text-[#22c55e] border-[#22c55e]', shadow: 'shadow-[0_0_10px_rgba(34,197,94,0.5)]' },
+             { id: 'tron', label: 'G', color: 'text-[#d946ef] border-[#d946ef]', shadow: 'shadow-[0_0_10px_rgba(217,70,239,0.5)]' },
+             { id: 'brawl', label: 'B', color: 'text-[#3b82f6] border-[#3b82f6]', shadow: 'shadow-[0_0_10px_rgba(59,130,246,0.5)]' },
+             { id: 'volley', label: 'V', color: 'text-[#10b981] border-[#10b981]', shadow: 'shadow-[0_0_10px_rgba(16,185,129,0.5)]' }
+           ].map(g => (
+             <button 
+               key={g.id} 
+               onClick={() => setActiveGame(g.id)}
+               className={`w-7 h-7 sm:w-8 sm:h-8 rounded flex items-center justify-center border transition-all font-black text-xs ${activeGame === g.id ? `${g.color} bg-white/10 ${g.shadow} scale-105` : 'border-white/10 text-white/30'}`}
+             >
+               {g.label}
+             </button>
+           ))}
          </div>
 
-         {/* Right: D-Pad */}
-         <DPad up="w" down="s" left="a" right="d" colorClass="text-[#22c55e] border-[#22c55e]/40 active:bg-[#22c55e] active:text-black" />
+         {/* Right: Horizontal Gamepad */}
+         <HorizontalPad up="w" down="s" left="a" right="d" colorClass="text-[#22c55e] border-[#22c55e]/40 active:bg-[#22c55e] active:text-black" />
       </div>
 
     </div>

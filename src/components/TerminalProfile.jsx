@@ -10,14 +10,14 @@ const TerminalProfile = ({ themeHue = 0 }) => {
         
         {/* 1. Base Image - Pure monochrome default (Now using object-cover) */}
         <img
-          src="/Zv9IB.jpg" 
+          src="/profile.webp" 
           alt="Vadanta Profile"
           className="absolute inset-0 w-full h-full object-cover filter grayscale contrast-125 brightness-110 transition-all duration-700 ease-in-out group-hover:opacity-0 group-hover:scale-105"
         />
 
         {/* 2. True Color Hover Image - Counteracts OS Theme Hue */}
         <img
-          src="/Zv9IB.jpg" 
+          src="/profile.webp" 
           alt="Vadanta Profile True Color"
           className="absolute inset-0 w-full h-full object-cover opacity-0 transition-all duration-700 ease-in-out group-hover:opacity-100 group-hover:scale-105"
           style={{ filter: `hue-rotate(-${themeHue}deg)` }}
