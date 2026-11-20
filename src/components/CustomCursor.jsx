@@ -8,9 +8,11 @@ const CustomCursor = React.memo(() => {
   const [cursorMode, setCursorMode] = useState('default');
 
   useEffect(() => {
-    let latestX = -100;
-    let latestY = -100;
-    let rafId = null;
+    let targetX = -100;
+    let targetY = -100;
+    let currentX = -100;
+    let currentY = -100;
+    let animId = null;
 
     const checkCursorState = (e) => {
       if (!e.target || !(e.target instanceof Element)) return;
@@ -34,24 +36,28 @@ const CustomCursor = React.memo(() => {
     };
 
     const onMouseMove = (e) => {
-      latestX = e.clientX;
-      latestY = e.clientY;
+      targetX = e.clientX;
+      targetY = e.clientY;
 
-      // 144Hz+ Zero-Latency: Update the core dot IMMEDIATELY on hardware mousemove
+      // 0ms Hardware tracking: Inner core dot moves immediately with mouse
       if (dotRef.current) {
-        dotRef.current.style.transform = `translate3d(${latestX}px, ${latestY}px, 0)`;
-      }
-
-      // Outer targeting reticle synced via rAF with latest coordinate
-      if (!rafId) {
-        rafId = requestAnimationFrame(() => {
-          if (trailRef.current) {
-            trailRef.current.style.transform = `translate3d(${latestX}px, ${latestY}px, 0)`;
-          }
-          rafId = null;
-        });
+        dotRef.current.style.transform = `translate3d(${targetX}px, ${targetY}px, 0)`;
       }
     };
+
+    // Silky-Smooth 144Hz Fluid Lerp Animation for Outer Cyber Glass Reticle
+    const renderLoop = () => {
+      currentX += (targetX - currentX) * 0.20;
+      currentY += (targetY - currentY) * 0.20;
+
+      if (trailRef.current) {
+        trailRef.current.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+      }
+
+      animId = requestAnimationFrame(renderLoop);
+    };
+
+    animId = requestAnimationFrame(renderLoop);
 
     const onMouseOver = (e) => checkCursorState(e);
 
@@ -59,7 +65,7 @@ const CustomCursor = React.memo(() => {
     window.addEventListener('mouseover', onMouseOver, { passive: true });
 
     return () => {
-      if (rafId) cancelAnimationFrame(rafId);
+      if (animId) cancelAnimationFrame(animId);
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseover', onMouseOver);
     };
@@ -87,7 +93,7 @@ const CustomCursor = React.memo(() => {
         style={{ transform: 'translate3d(-100px, -100px, 0)' }}
       >
         <div
-          className={`absolute -translate-x-1/2 -translate-y-1/2 flex items-center justify-center transition-[width,height,border-color,background-color] duration-150 ease-out ${
+          className={`absolute -translate-x-1/2 -translate-y-1/2 flex items-center justify-center transition-all duration-300 ease-out ${
             cursorMode === 'resize'
               ? 'w-12 h-12 border-2 border-[#22c55e] rounded-none scale-110 bg-[#22c55e]/20 backdrop-blur-[2px] shadow-[0_0_20px_rgba(34,197,94,0.4)] animate-pulse'
               : cursorMode === 'hover'

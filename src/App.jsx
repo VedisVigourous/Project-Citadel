@@ -15,6 +15,7 @@ import Engage2P from "./components/Engage2p";
 import AiProxy from "./components/AiProxy";
 import useSound from "use-sound";
 import RecruiterMode from "./components/RecruiterMode";
+import { SYSTEM_DOSSIER } from "./knowledgeBase";
 
 const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
 
@@ -1580,32 +1581,88 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
           if (!query) {
             newHistory.push({
               type: "output",
-              text: "Usage: ai <your question>\nExample: ai who is vadanta?",
+              text: "Usage: ai <your question>\nExample: ai who is vadanta?\n         ai summarize your tech stack and achievements",
             });
           } else {
             newHistory.push({
               type: "output",
-              text: `[vAI] Processing neural query: "${query}"...`,
+              text: `[vAI] Transmitting neural query to core intelligence: "${query}"...`,
             });
-            const q = query.toLowerCase();
-            let response = "I am vAI, Vadanta's neural interface. Vadanta is a second-year CSE undergraduate at ABESEC with a 9.13 GPA, skilled in Java (DSA), React, and Google Cloud GenAI technologies.";
-            if (q.includes("gpa") || q.includes("grade") || q.includes("college") || q.includes("education")) {
-              response = "Vadanta studies Computer Science & Engineering at ABES Engineering College, maintaining a 9.13/10.00 GPA (1st Year). He is actively focusing on Java DSA, OOP, and Web Architecture.";
-            } else if (q.includes("project") || q.includes("build") || q.includes("work")) {
-              response = "Vadanta's flagship project is Vadanta_OS (this interactive cyberpunk web operating system), alongside Chrome extensions, AI tools, and full-stack applications. Type 'open projects' to inspect them.";
-            } else if (q.includes("skill") || q.includes("stack") || q.includes("tech")) {
-              response = "Primary stack: Java, C++, JavaScript (ES6+), React 19, Tailwind CSS, Vite, GCP Vertex AI, Gemini API, and Git/GitHub Actions.";
-            } else if (q.includes("contact") || q.includes("email") || q.includes("hire")) {
-              response = "You can reach Vadanta directly at vadanta592007@hotmail.com or through LinkedIn at linkedin.com/in/vadanta. Type 'ping' to send an email right from this terminal!";
-            } else if (q.includes("resume") || q.includes("cv")) {
-              response = "Type 'open resume' or check the top menu to download Vadanta's latest technical resume.";
-            }
-            setTimeout(() => {
-              setTerminalHistory((prev) => [
-                ...prev,
-                { type: "output", text: `[vAI] > ${response}` }
-              ]);
-            }, 300);
+
+            // Asynchronously query live vAI intelligence via Groq API
+            (async () => {
+              try {
+                const API_KEY = import.meta.env.VITE_GROQ_API_KEY;
+                if (!API_KEY) throw new Error("API_KEY_UNAVAILABLE");
+
+                const liveDate = new Date().toLocaleString("en-US", {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
+
+                const systemPrompt = `${SYSTEM_DOSSIER}\n\nCRITICAL CLI INSTRUCTION: Current system time is ${liveDate}. You are vAI operating directly inside the terminal CLI shell. Provide a concise (2-4 sentences max), technically sharp, authoritative response to the user's query.`;
+
+                const response = await fetch(
+                  "https://api.groq.com/openai/v1/chat/completions",
+                  {
+                    method: "POST",
+                    headers: {
+                      Authorization: `Bearer ${API_KEY}`,
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                      model: "openai/gpt-oss-20b",
+                      messages: [
+                        { role: "system", content: systemPrompt },
+                        { role: "user", content: query },
+                      ],
+                      temperature: 0.7,
+                      max_tokens: 300,
+                    }),
+                  }
+                );
+
+                const data = await response.json();
+                if (data.error) throw new Error(data.error.message);
+
+                const aiReply = data.choices?.[0]?.message?.content?.trim();
+                if (!aiReply) throw new Error("EMPTY_PAYLOAD");
+
+                setTerminalHistory((prev) => [
+                  ...prev,
+                  { type: "output", text: `[vAI] > ${aiReply}` },
+                ]);
+              } catch (err) {
+                console.warn("Terminal vAI fallback active:", err);
+                // Smart fallback with distinct, dynamic answers based on query
+                const q = query.toLowerCase();
+                let fallback = "";
+                if (q.includes("who") || q.includes("about") || q.includes("vadanta")) {
+                  fallback = "Vadanta Kumar Chauhaan is a B.Tech Computer Science student at ABES Engineering College (9.13 GPA), specializing in Full-Stack Web Architecture, Java DSA, React 19, and Google Cloud GenAI systems.";
+                } else if (q.includes("gpa") || q.includes("grade") || q.includes("college") || q.includes("education")) {
+                  fallback = "Vadanta studies Computer Science & Engineering at ABES Engineering College, maintaining a 9.13/10.00 GPA (1st Year). He is actively focusing on Java DSA, OOP, and Web Architecture.";
+                } else if (q.includes("project") || q.includes("build") || q.includes("work") || q.includes("repo")) {
+                  fallback = "Vadanta's flagship systems include Vadanta_OS (this interactive cyberpunk web operating system), DSAvation (220+ curated LeetCode tracker), and Project Resonance (Gemini Vision AI accessibility extension). Type 'open projects' to inspect them.";
+                } else if (q.includes("skill") || q.includes("stack") || q.includes("tech") || q.includes("language")) {
+                  fallback = "Core stack: Java (intermediate/OOP), C++, JavaScript (ES6+), React 19, Tailwind CSS, Canvas API, REST APIs, GCP Vertex AI, and Gemini API.";
+                } else if (q.includes("contact") || q.includes("email") || q.includes("hire") || q.includes("reach")) {
+                  fallback = "Direct uplink: vadanta592007@hotmail.com | LinkedIn: linkedin.com/in/vadanta | GitHub: github.com/VedisVigourous. Type 'ping' to send a message!";
+                } else if (q.includes("resume") || q.includes("cv")) {
+                  fallback = "Type 'open resume' or use the top menu bar to view and export Vadanta's full technical resume in TeX / PDF format.";
+                } else {
+                  fallback = `Query processed for "${query}": vAI neural node confirmed. Vadanta is a second-year CSE undergraduate (9.13 GPA) open for software engineering internships and AI systems development. Type 'help' to explore system diagnostics or 'ai <question>' for more insights.`;
+                }
+
+                setTerminalHistory((prev) => [
+                  ...prev,
+                  { type: "output", text: `[vAI] > ${fallback}` },
+                ]);
+              }
+            })();
           }
         } else if (lowerCmd === "recruiter" || lowerCmd === "fast") {
           setIsRecruiterModeOpen(true);
