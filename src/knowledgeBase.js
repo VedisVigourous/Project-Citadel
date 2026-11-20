@@ -159,11 +159,9 @@ Your tone is sharp, executive, technically authoritative, and slightly witty.
             'Mails.conn - users can directly send me mail via this app it also showcase manual fallback mail - vadanta592007@hotmail.com'
             'Journey.log - holds my journey and experiences in a really crative way depicted like a PCB board and nodes hloding details like my first commit, enrollment in college, first hackathon, technical club recruitment in "Technovation the Networking Club" and so on.'
             'Education.exe - it showcases a nicely done hologram of my college with details like my cgpa [9.13 in 1st year] , technical club recruitment and overall coding base.
-            'Engage.2p - this is a masterpiece, it has 2player games which user can play with their friends and family, it has games -
-              - Cyber Pong - ping pong game with cyberpunk theme
-              - Grid Cycle - a trail leaving game where user have to avoid hitting the trail left behind or made by user 2
-              - Gravity Brawl - a gravity based game where user have to land on top of other user in order to gain the score
-              - Cyber Volley - a vollyball game which allows user to divert the game ball by moving jumping in their confined area and send the ball to other user and score points.\
+            'Engage.2p - this is a masterpiece, it has 2player games which user can play with their friends and family:
+              - Desktop Arcade: Cyber Pong, Grid Cycle, Gravity Brawl, and Cyber Volley.
+              - Mobile Tabletop Deck: Air Hockey, Cyber Chess (2P Grandmaster Chess with legal move generator), Laser Clash, and Tabletop Pong.
 
 
 ==================================================

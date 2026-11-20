@@ -5,6 +5,14 @@ export default function NeonOutrun({ onExit }) {
   const [score, setScore] = useState(0);
   const [gameStarted, setGameStarted] = useState(false);
   const [gameOver, setGameOver] = useState(false);
+  const [resetKey, setResetKey] = useState(0);
+
+  const handleReset = () => {
+    setScore(0);
+    setGameOver(false);
+    setGameStarted(true);
+    setResetKey(k => k + 1);
+  };
 
   useEffect(() => {
     if (!gameStarted || gameOver) return;
@@ -166,7 +174,7 @@ export default function NeonOutrun({ onExit }) {
       window.removeEventListener('touchstart', handleTouchStart);
       cancelAnimationFrame(animationId);
     };
-  }, [gameStarted, gameOver]);
+  }, [gameStarted, gameOver, resetKey]);
 
   return (
     <div className="w-full h-full bg-black relative flex items-center justify-center font-mono overflow-hidden touch-none">
@@ -200,12 +208,20 @@ export default function NeonOutrun({ onExit }) {
         <div className="text-cyan-400 text-lg sm:text-2xl font-black drop-shadow-[0_0_10px_#06b6d4]">
           SCORE: {score.toString().padStart(6, '0')}
         </div>
-        <button 
-          onClick={onExit} 
-          className="pointer-events-auto text-cyan-500/50 border border-cyan-500/30 hover:bg-cyan-500/20 px-3 py-1 sm:px-4 text-[10px] sm:text-xs transition-all tracking-widest cursor-pointer bg-black/40 backdrop-blur-sm"
-        >
-          [ ABORT ]
-        </button>
+        <div className="flex items-center gap-2 pointer-events-auto">
+          <button 
+            onClick={handleReset} 
+            className="text-cyan-400 border border-cyan-500/50 hover:bg-cyan-500/20 px-3 py-1 sm:px-4 text-[10px] sm:text-xs transition-all tracking-widest cursor-pointer bg-black/60 backdrop-blur-sm rounded"
+          >
+            [ RESET ]
+          </button>
+          <button 
+            onClick={onExit} 
+            className="text-cyan-500/50 border border-cyan-500/30 hover:bg-cyan-500/20 px-3 py-1 sm:px-4 text-[10px] sm:text-xs transition-all tracking-widest cursor-pointer bg-black/40 backdrop-blur-sm rounded"
+          >
+            [ ABORT ]
+          </button>
+        </div>
       </div>
       
       <canvas ref={canvasRef} width={1000} height={700} className="w-full h-full object-cover" />

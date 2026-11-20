@@ -5726,8 +5726,8 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
 
           {/* Scrollable Dossier Content */}
           <div className="relative z-10 w-full flex-1 flex flex-col items-center pt-16 px-6 pb-6 overflow-y-auto no-scrollbar">
-            {/* Holographic Avatar Core (Natural Portrait Squircle) */}
-            <div className="relative w-38 h-56 mb-8 shrink-0 group">
+            {/* Holographic Avatar Core (Natural Portrait Squircle: 750x917) */}
+            <div className="relative w-[185px] h-[226px] mb-8 shrink-0 group">
               {/* Cupped Tactical Corner Brackets */}
               <div className="absolute -top-3 -left-3 w-8 h-8 border-t-2 border-l-2 border-[#22c55e] rounded-tl-[1.5rem] opacity-75 animate-pulse"></div>
               <div className="absolute -top-3 -right-3 w-8 h-8 border-t-2 border-r-2 border-[#22c55e] rounded-tr-[1.5rem] opacity-75 animate-pulse"></div>
@@ -5746,7 +5746,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                 <img
                   src="/profile.webp"
                   alt="Vadanta Kumar Chauhaan"
-                  className="w-full h-full object-contain object-top rounded-[1.7rem] grayscale opacity-90 contrast-[1.15]"
+                  className="w-full h-full object-cover object-top rounded-[1.7rem] grayscale opacity-90 contrast-[1.15]"
                   style={{
                     filter: `hue-rotate(-${themeHue}deg) sepia(1) hue-rotate(80deg) saturate(3)`,
                     background:

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Chess } from 'chess.js';
 
 // ============================================================================
 // PART A: ORIGINAL DESKTOP ARCADE (100% UNTOUCHED FOR LAPTOP / DESKTOP SCREENS)
@@ -19,10 +20,11 @@ const DesktopCyberPong = () => {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     let animationFrameId;
+    let hasHitPaddle = false;
 
     const game = {
       w: canvas.width, h: canvas.height,
-      ball: { x: 500, y: 300, dx: 4.5, dy: 4.5, radius: 8, speed: 4.5 },
+      ball: { x: canvas.width / 2, y: canvas.height / 2, dx: 2.2, dy: 2.2, radius: 8 },
       p1: { y: 250 }, p2: { y: 250 }, paddleW: 14, paddleH: 110
     };
 
@@ -32,10 +34,15 @@ const DesktopCyberPong = () => {
     window.addEventListener('keydown', handleKeyDown); window.addEventListener('keyup', handleKeyUp);
 
     const resetBall = () => {
+      hasHitPaddle = false;
       game.ball.x = game.w / 2; game.ball.y = game.h / 2;
-      game.ball.dx = (Math.random() > 0.5 ? 1 : -1) * game.ball.speed;
-      game.ball.dy = (Math.random() > 0.5 ? 1 : -1) * game.ball.speed;
+      // Gentle drop from air: slow speed (2.2) until first paddle touch
+      const initialSpeed = 2.2;
+      game.ball.dx = (Math.random() > 0.5 ? 1 : -1) * initialSpeed;
+      game.ball.dy = (Math.random() > 0.5 ? 1 : -1) * (initialSpeed * 0.7);
     };
+
+    resetBall();
 
     const update = () => {
       if (keys.w && game.p1.y > 0) game.p1.y -= 9;
@@ -50,9 +57,20 @@ const DesktopCyberPong = () => {
       const hitP2 = game.ball.x + game.ball.radius > game.w - 30 && game.ball.y > game.p2.y && game.ball.y < game.p2.y + game.paddleH;
 
       if (hitP1 || hitP2) {
-        game.ball.dx *= -1.07; game.ball.dy *= 1.02;
-        game.ball.dx = Math.max(-12, Math.min(12, game.ball.dx)); 
-        game.ball.dy = Math.max(-10, Math.min(10, game.ball.dy)); 
+        if (!hasHitPaddle) {
+          hasHitPaddle = true;
+          // Once touched for the first time, ramp to normal match rate
+          const normalSpeed = 5.5;
+          const dirX = hitP1 ? 1 : -1;
+          game.ball.dx = dirX * normalSpeed;
+          game.ball.dy = (game.ball.dy > 0 ? 1 : -1) * normalSpeed * 0.8;
+        } else {
+          // Gradual controlled acceleration per hit
+          game.ball.dx *= -1.04;
+          game.ball.dy *= 1.02;
+          game.ball.dx = Math.max(-12, Math.min(12, game.ball.dx)); 
+          game.ball.dy = Math.max(-10, Math.min(10, game.ball.dy)); 
+        }
       }
 
       if (game.ball.x < -20) { setScore(s => ({ ...s, p2: s.p2 + 1 })); resetBall(); } 
@@ -398,13 +416,24 @@ const DesktopCyberVolley = () => {
 
 const DesktopEngage2P = () => {
   const [activeGame, setActiveGame] = useState('pong'); 
+  const [resetKey, setResetKey] = useState(0);
+
+  const handleReset = () => {
+    setResetKey(k => k + 1);
+  };
 
   return (
     <div className="w-full h-full bg-black flex flex-col p-4 relative overflow-hidden">
-      <div className="w-full border border-[#22c55e]/50 py-2 mb-4 bg-[#22c55e]/5 text-center shrink-0">
+      <div className="w-full border border-[#22c55e]/50 py-2 mb-4 bg-[#22c55e]/5 text-center shrink-0 flex items-center justify-between px-4">
         <span className="text-[#22c55e] font-mono text-sm tracking-[0.3em] uppercase drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]">
           Life is all about engaging!
         </span>
+        <button
+          onClick={handleReset}
+          className="px-3 py-1 rounded bg-red-500/10 border border-red-500/50 hover:bg-red-500 hover:text-black text-red-400 font-mono text-[10px] tracking-widest uppercase transition-all duration-200 cursor-pointer shadow-[0_0_10px_rgba(239,68,68,0.3)]"
+        >
+          ↺ RESET MATCH
+        </button>
       </div>
 
       <div className="flex flex-wrap justify-center gap-4 mb-4 shrink-0">
@@ -415,10 +444,10 @@ const DesktopEngage2P = () => {
       </div>
 
       <div className="flex-1 w-full border border-[#22c55e]/30 bg-[#020202] relative overflow-hidden flex items-center justify-center p-2 z-10 shadow-[inset_0_0_50px_rgba(0,0,0,0.9)]">
-        {activeGame === 'pong' && <DesktopCyberPong />}
-        {activeGame === 'tron' && <DesktopGridCycle />}
-        {activeGame === 'brawl' && <DesktopGravityBrawl />}
-        {activeGame === 'volley' && <DesktopCyberVolley />}
+        {activeGame === 'pong' && <DesktopCyberPong key={resetKey} />}
+        {activeGame === 'tron' && <DesktopGridCycle key={resetKey} />}
+        {activeGame === 'brawl' && <DesktopGravityBrawl key={resetKey} />}
+        {activeGame === 'volley' && <DesktopCyberVolley key={resetKey} />}
       </div>
       
       <div className="mt-2 text-center font-mono text-[10px] tracking-widest flex justify-center gap-8 shrink-0">
@@ -756,376 +785,348 @@ const MobileAirHockey = () => {
 };
 
 
-// 2. MOBILE CYBER BLASTER (Head-to-Head Starfighter Plasma Duel with Destructible Shields)
-const MobileCyberBlaster = () => {
-  const containerRef = useRef(null);
-  const canvasRef = useRef(null);
-  const [score, setScore] = useState({ p1: 0, p2: 0 });
-  const scoreRef = useRef({ p1: 0, p2: 0 });
-  const [gameStarted, setGameStarted] = useState(false);
-  const [hitBanner, setHitBanner] = useState(null);
-  const cooldownRef = useRef(false);
+// 2. MOBILE CYBER CHESS (Tabletop 2P Neon Grandmaster Engine powered by Chess.js)
+const MobileCyberChess = () => {
+  const [chess] = useState(() => new Chess());
+  const [fen, setFen] = useState(chess.fen());
+  const [selectedSquare, setSelectedSquare] = useState(null);
+  const [validMoves, setValidMoves] = useState([]);
+  const [lastMove, setLastMove] = useState(null);
+  const [matchStarted, setMatchStarted] = useState(false);
+  const [tabletopOrientation, setTabletopOrientation] = useState(true); // Player 2 pieces rotated 180° for true face-to-face tabletop!
+  const [captured, setCaptured] = useState({ w: [], b: [] });
+  const [historyCount, setHistoryCount] = useState(0);
 
-  useEffect(() => {
-    const container = containerRef.current;
-    const canvas = canvasRef.current;
-    if (!container || !canvas || !gameStarted) return;
+  const turn = chess.turn(); // 'w' or 'b'
+  const inCheck = chess.inCheck();
+  const isGameOver = chess.isGameOver();
 
-    let animId;
-    let lastFireTime = 0;
-    const ctx = canvas.getContext('2d');
-
-    canvas.width = container.clientWidth;
-    canvas.height = container.clientHeight;
-
-    const W = canvas.width;
-    const H = canvas.height;
-    const TOP_PAD = 36;
-    const BOT_PAD = 36;
-    const SHIP_W = Math.max(34, W * 0.12);
-
-    const game = {
-      p1: { x: W / 2, y: H - BOT_PAD - 20 },
-      p2: { x: W / 2, y: TOP_PAD + 20 },
-      p1Bolts: [],
-      p2Bolts: [],
-      sparks: [],
-      shields: [
-        { x: W * 0.22, y: H / 2, r: 16, hp: 6, maxHp: 6 },
-        { x: W * 0.50, y: H / 2, r: 20, hp: 8, maxHp: 8 },
-        { x: W * 0.78, y: H / 2, r: 16, hp: 6, maxHp: 6 },
-      ],
-    };
-
-    const triggerHit = (scorer) => {
-      if (cooldownRef.current) return;
-      cooldownRef.current = true;
-
-      if (scorer === 'P1') {
-        scoreRef.current.p1 += 1;
-      } else {
-        scoreRef.current.p2 += 1;
+  // Play micro beep for tactical moves
+  const playMoveAudio = (isCapture = false) => {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = isCapture ? 'sawtooth' : 'sine';
+      osc.frequency.setValueAtTime(isCapture ? 320 : 640, ctx.currentTime);
+      if (isCapture) {
+        osc.frequency.exponentialRampToValueAtTime(160, ctx.currentTime + 0.12);
       }
-      setScore({ ...scoreRef.current });
-      setHitBanner({
-        scorer: scorer === 'P1' ? 'PLAYER 1' : 'PLAYER 2',
-        color: scorer === 'P1' ? '#22c55e' : '#d946ef',
-        text: scorer === 'P1' ? 'P2 SHIELD DESTROYED! +1' : 'P1 SHIELD DESTROYED! +1',
-        p1: scoreRef.current.p1,
-        p2: scoreRef.current.p2,
-      });
+      gain.gain.setValueAtTime(0.08, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.15);
+    } catch (e) {
+      // Audio fallback silent
+    }
+  };
 
-      game.p1Bolts = [];
-      game.p2Bolts = [];
+  const updateGameState = (m = null) => {
+    setFen(chess.fen());
+    setSelectedSquare(null);
+    setValidMoves([]);
+    if (m) setLastMove({ from: m.from, to: m.to });
+    setHistoryCount(chess.history().length);
 
-      setTimeout(() => {
-        setHitBanner(null);
-        cooldownRef.current = false;
-      }, 1300);
-    };
-
-    const handleTouch = (e) => {
-      if (cooldownRef.current) return;
-      e.preventDefault();
-      const rect = canvas.getBoundingClientRect();
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
-      const curW = canvas.width;
-      const curH = canvas.height;
-
-      for (let i = 0; i < e.touches.length; i++) {
-        const t = e.touches[i];
-        const tx = (t.clientX - rect.left) * scaleX;
-        const ty = (t.clientY - rect.top) * scaleY;
-
-        if (ty > curH / 2) {
-          game.p1.x = Math.max(SHIP_W / 2 + 8, Math.min(curW - SHIP_W / 2 - 8, tx));
-        } else {
-          game.p2.x = Math.max(SHIP_W / 2 + 8, Math.min(curW - SHIP_W / 2 - 8, tx));
-        }
+    // Compute captured pieces
+    const history = chess.history({ verbose: true });
+    const wCaps = [];
+    const bCaps = [];
+    history.forEach(step => {
+      if (step.captured) {
+        if (step.color === 'w') bCaps.push(step.captured);
+        else wCaps.push(step.captured);
       }
-    };
+    });
+    setCaptured({ w: wCaps, b: bCaps });
+  };
 
-    canvas.addEventListener('touchstart', handleTouch, { passive: false });
-    canvas.addEventListener('touchmove', handleTouch, { passive: false });
+  const handleSquareClick = (square) => {
+    if (chess.isGameOver()) return;
 
-    const loop = (time) => {
-      const curW = canvas.width;
-      const curH = canvas.height;
+    const piece = chess.get(square);
 
-      // Auto Fire Plasma Cannons every 350ms
-      if (!cooldownRef.current && time - lastFireTime > 340) {
-        lastFireTime = time;
-        game.p1Bolts.push({ x: game.p1.x - 10, y: game.p1.y - 15, vy: -9 });
-        game.p1Bolts.push({ x: game.p1.x + 10, y: game.p1.y - 15, vy: -9 });
-        game.p2Bolts.push({ x: game.p2.x - 10, y: game.p2.y + 15, vy: 9 });
-        game.p2Bolts.push({ x: game.p2.x + 10, y: game.p2.y + 15, vy: 9 });
+    // 1. If currently a piece is selected and user taps a valid destination move
+    if (selectedSquare && validMoves.includes(square)) {
+      try {
+        const moveRes = chess.move({
+          from: selectedSquare,
+          to: square,
+          promotion: 'q', // auto-promote to Queen in blitz
+        });
+        if (moveRes) {
+          playMoveAudio(Boolean(moveRes.captured));
+          updateGameState(moveRes);
+          return;
+        }
+      } catch (err) {
+        // Invalid move attempt
       }
+    }
 
-      if (!cooldownRef.current) {
-        // Update P1 Bolts
-        for (let i = game.p1Bolts.length - 1; i >= 0; i--) {
-          const b = game.p1Bolts[i];
-          b.y += b.vy;
+    // 2. If user taps the already selected square, deselect it
+    if (square === selectedSquare) {
+      setSelectedSquare(null);
+      setValidMoves([]);
+      return;
+    }
 
-          let absorbed = false;
-          game.shields.forEach((s) => {
-            if (s.hp > 0 && Math.hypot(b.x - s.x, b.y - s.y) < s.r) {
-              s.hp--;
-              absorbed = true;
-              for (let k = 0; k < 4; k++) {
-                game.sparks.push({
-                  x: b.x, y: b.y,
-                  vx: (Math.random() - 0.5) * 6, vy: (Math.random() - 0.5) * 6,
-                  color: '#38bdf8', life: 1,
-                });
-              }
-            }
-          });
+    // 3. If user taps their own piece, select it and compute legal moves
+    if (piece && piece.color === chess.turn()) {
+      setSelectedSquare(square);
+      const moves = chess.moves({ square, verbose: true }).map(m => m.to);
+      setValidMoves(moves);
+      return;
+    }
 
-          if (absorbed) {
-            game.p1Bolts.splice(i, 1);
-            continue;
-          }
+    // 4. Otherwise clear selection
+    setSelectedSquare(null);
+    setValidMoves([]);
+  };
 
-          if (Math.hypot(b.x - game.p2.x, b.y - game.p2.y) < SHIP_W * 0.7) {
-            game.p1Bolts.splice(i, 1);
-            for (let k = 0; k < 15; k++) {
-              game.sparks.push({
-                x: game.p2.x, y: game.p2.y,
-                vx: (Math.random() - 0.5) * 10, vy: (Math.random() - 0.5) * 10,
-                color: '#22c55e', life: 1.2,
-              });
-            }
-            triggerHit('P1');
-            break;
-          }
+  const handleReset = () => {
+    chess.reset();
+    setLastMove(null);
+    updateGameState();
+  };
 
-          if (b.y < -10) game.p1Bolts.splice(i, 1);
-        }
+  const handleUndo = () => {
+    chess.undo();
+    updateGameState();
+  };
 
-        // Update P2 Bolts
-        for (let i = game.p2Bolts.length - 1; i >= 0; i--) {
-          const b = game.p2Bolts[i];
-          b.y += b.vy;
+  const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+  const ranks = ['8', '7', '6', '5', '4', '3', '2', '1'];
 
-          let absorbed = false;
-          game.shields.forEach((s) => {
-            if (s.hp > 0 && Math.hypot(b.x - s.x, b.y - s.y) < s.r) {
-              s.hp--;
-              absorbed = true;
-              for (let k = 0; k < 4; k++) {
-                game.sparks.push({
-                  x: b.x, y: b.y,
-                  vx: (Math.random() - 0.5) * 6, vy: (Math.random() - 0.5) * 6,
-                  color: '#38bdf8', life: 1,
-                });
-              }
-            }
-          });
+  const PIECE_GLYPHS = {
+    k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟'
+  };
 
-          if (absorbed) {
-            game.p2Bolts.splice(i, 1);
-            continue;
-          }
-
-          if (Math.hypot(b.x - game.p1.x, b.y - game.p1.y) < SHIP_W * 0.7) {
-            game.p2Bolts.splice(i, 1);
-            for (let k = 0; k < 15; k++) {
-              game.sparks.push({
-                x: game.p1.x, y: game.p1.y,
-                vx: (Math.random() - 0.5) * 10, vy: (Math.random() - 0.5) * 10,
-                color: '#d946ef', life: 1.2,
-              });
-            }
-            triggerHit('P2');
-            break;
-          }
-
-          if (b.y > curH + 10) game.p2Bolts.splice(i, 1);
-        }
-
-        // Update Sparks
-        for (let i = game.sparks.length - 1; i >= 0; i--) {
-          const sp = game.sparks[i];
-          sp.x += sp.vx;
-          sp.y += sp.vy;
-          sp.life -= 0.04;
-          if (sp.life <= 0) game.sparks.splice(i, 1);
-        }
-      }
-
-      // Render
-      ctx.fillStyle = '#030504';
-      ctx.fillRect(0, 0, curW, curH);
-
-      ctx.strokeStyle = 'rgba(34, 197, 94, 0.2)';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(6, TOP_PAD, curW - 12, curH - TOP_PAD - BOT_PAD);
-
-      ctx.strokeStyle = 'rgba(56, 189, 248, 0.25)';
-      ctx.setLineDash([6, 6]);
-      ctx.beginPath();
-      ctx.moveTo(6, curH / 2);
-      ctx.lineTo(curW - 6, curH / 2);
-      ctx.stroke();
-      ctx.setLineDash([]);
-
-      // Shields
-      game.shields.forEach((s) => {
-        if (s.hp > 0) {
-          const alpha = s.hp / s.maxHp;
-          ctx.strokeStyle = `rgba(56, 189, 248, ${0.4 + alpha * 0.6})`;
-          ctx.lineWidth = 3;
-          ctx.shadowBlur = 12;
-          ctx.shadowColor = '#38bdf8';
-          ctx.beginPath();
-          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-          ctx.stroke();
-          ctx.fillStyle = `rgba(56, 189, 248, ${0.1 + alpha * 0.2})`;
-          ctx.fill();
-        }
-      });
-
-      // P1 Bolts
-      ctx.fillStyle = '#22c55e';
-      ctx.shadowBlur = 12;
-      ctx.shadowColor = '#22c55e';
-      game.p1Bolts.forEach((b) => {
-        ctx.fillRect(b.x - 2, b.y - 6, 4, 12);
-      });
-
-      // P2 Bolts
-      ctx.fillStyle = '#d946ef';
-      ctx.shadowBlur = 12;
-      ctx.shadowColor = '#d946ef';
-      game.p2Bolts.forEach((b) => {
-        ctx.fillRect(b.x - 2, b.y - 6, 4, 12);
-      });
-
-      // Sparks
-      game.sparks.forEach((sp) => {
-        ctx.fillStyle = sp.color;
-        ctx.shadowBlur = 8;
-        ctx.shadowColor = sp.color;
-        ctx.globalAlpha = Math.max(0, sp.life);
-        ctx.fillRect(sp.x - 1.5, sp.y - 1.5, 3, 3);
-        ctx.globalAlpha = 1.0;
-      });
-
-      // P1 Ship
-      ctx.save();
-      ctx.translate(game.p1.x, game.p1.y);
-      ctx.fillStyle = '#22c55e';
-      ctx.shadowBlur = 16;
-      ctx.shadowColor = '#22c55e';
-      ctx.beginPath();
-      ctx.moveTo(0, -18);
-      ctx.lineTo(SHIP_W / 2, 14);
-      ctx.lineTo(0, 8);
-      ctx.lineTo(-SHIP_W / 2, 14);
-      ctx.closePath();
-      ctx.fill();
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(-3, -8, 6, 10);
-      ctx.restore();
-
-      // P2 Ship
-      ctx.save();
-      ctx.translate(game.p2.x, game.p2.y);
-      ctx.rotate(Math.PI);
-      ctx.fillStyle = '#d946ef';
-      ctx.shadowBlur = 16;
-      ctx.shadowColor = '#d946ef';
-      ctx.beginPath();
-      ctx.moveTo(0, -18);
-      ctx.lineTo(SHIP_W / 2, 14);
-      ctx.lineTo(0, 8);
-      ctx.lineTo(-SHIP_W / 2, 14);
-      ctx.closePath();
-      ctx.fill();
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(-3, -8, 6, 10);
-      ctx.restore();
-
-      // Live Scores
-      ctx.save();
-      ctx.translate(curW - 25, TOP_PAD + 25);
-      ctx.rotate(Math.PI);
-      ctx.font = 'bold 24px monospace';
-      ctx.fillStyle = '#d946ef';
-      ctx.shadowBlur = 8;
-      ctx.shadowColor = '#d946ef';
-      ctx.fillText(`P2: ${scoreRef.current.p2}`, 0, 0);
-      ctx.restore();
-
-      ctx.font = 'bold 24px monospace';
-      ctx.fillStyle = '#22c55e';
-      ctx.shadowBlur = 8;
-      ctx.shadowColor = '#22c55e';
-      ctx.fillText(`P1: ${scoreRef.current.p1}`, 20, curH - BOT_PAD - 10);
-
-      animId = requestAnimationFrame(loop);
-    };
-
-    animId = requestAnimationFrame(loop);
-    return () => {
-      canvas.removeEventListener('touchstart', handleTouch);
-      canvas.removeEventListener('touchmove', handleTouch);
-      cancelAnimationFrame(animId);
-    };
-  }, [gameStarted]);
+  const getGameOverMessage = () => {
+    if (chess.isCheckmate()) {
+      const winner = chess.turn() === 'w' ? 'PLAYER 2 (BLACK)' : 'PLAYER 1 (WHITE)';
+      return { title: 'CHECKMATE', sub: `${winner} WINS!` };
+    }
+    if (chess.isDraw()) {
+      return { title: 'STALEMATE / DRAW', sub: 'MATCH CONCLUDED IN A DRAW' };
+    }
+    return { title: 'GAME OVER', sub: 'MATCH FINISHED' };
+  };
 
   return (
-    <div ref={containerRef} className="w-full h-full relative overflow-hidden select-none touch-none">
-      {/* Hit Celebration Banner */}
-      {hitBanner && (
-        <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/60 pointer-events-none animate-[fadeIn_0.15s_ease-out]">
-          <div
-            className="p-5 rounded-2xl border-2 bg-black/95 text-center shadow-[0_0_40px_currentColor] scale-110 transition-transform flex flex-col items-center"
-            style={{ borderColor: hitBanner.color, color: hitBanner.color }}
-          >
-            <div className="text-xl font-black font-mono tracking-widest animate-bounce">
-              ⚡ DIRECT HIT! ⚡
-            </div>
-            <div className="text-xs font-mono font-bold tracking-wider mt-1 text-white">
-              {hitBanner.text}
-            </div>
-            <div className="text-2xl font-mono font-black mt-2 tracking-widest">
-              {hitBanner.p1} : {hitBanner.p2}
-            </div>
-          </div>
+    <div className="w-full h-full flex flex-col bg-[#030604] relative overflow-hidden select-none touch-none font-mono">
+      {/* TABLETOP P2 HUD (Top Player - Black) */}
+      <div className={`w-full px-3 py-1.5 flex items-center justify-between border-b border-white/10 bg-[#080d09] shrink-0 ${tabletopOrientation ? 'rotate-180' : ''}`}>
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#d946ef] shadow-[0_0_8px_#d946ef]"></span>
+          <span className="text-[11px] font-black text-[#d946ef] tracking-wider">P2 // BLACK</span>
+          {turn === 'b' && (
+            <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-[#d946ef]/20 text-[#d946ef] border border-[#d946ef]/50 animate-pulse">
+              YOUR TURN
+            </span>
+          )}
+        </div>
+        {/* Captured White Pieces */}
+        <div className="flex items-center gap-0.5 text-xs text-[#22c55e]/70">
+          {captured.b.map((p, idx) => (
+            <span key={idx}>{PIECE_GLYPHS[p] || p}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* CHECK ALERT BANNER */}
+      {inCheck && !isGameOver && (
+        <div className="w-full bg-red-600/30 border-y border-red-500 py-1 text-center shrink-0 animate-pulse">
+          <span className="text-red-400 text-[10px] font-black tracking-widest uppercase">
+            ⚠ SYSTEM ALERT: {turn === 'w' ? 'WHITE' : 'BLACK'} KING IS IN CHECK!
+          </span>
         </div>
       )}
 
-      {!gameStarted && (
-        <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 pointer-events-auto">
-          <div className="bg-[#0a0a0a] border border-[#d946ef]/50 p-6 rounded-2xl max-w-[320px] w-full text-center shadow-[0_0_35px_rgba(217,70,239,0.25)] flex flex-col items-center">
-            <div className="w-10 h-10 rounded-full bg-[#d946ef]/10 border border-[#d946ef] flex items-center justify-center mb-3 text-lg">
-              🚀
+      {/* CHESS BOARD CONTAINER */}
+      <div className="flex-1 w-full flex items-center justify-center p-2 min-h-0">
+        <div className="w-full max-w-[370px] aspect-square rounded-xl border-2 border-[#22c55e]/40 shadow-[0_0_25px_rgba(34,197,94,0.15)] bg-[#040805] p-1 flex flex-col justify-between overflow-hidden">
+          {ranks.map((rank, rankIdx) => (
+            <div key={rank} className="flex-1 flex w-full">
+              {files.map((file, fileIdx) => {
+                const sq = `${file}${rank}`;
+                const piece = chess.get(sq);
+                const isLight = (fileIdx + rankIdx) % 2 === 0;
+                const isSelected = selectedSquare === sq;
+                const isValidDest = validMoves.includes(sq);
+                const isLastMoveSq = lastMove && (lastMove.from === sq || lastMove.to === sq);
+                const isCheckKing = inCheck && piece && piece.type === 'k' && piece.color === turn;
+
+                // Base square background
+                let bgClass = isLight ? 'bg-[#0f2417]' : 'bg-[#061009]';
+                if (isCheckKing) {
+                  bgClass = 'bg-red-950/80 shadow-[inset_0_0_15px_#ef4444] animate-pulse';
+                } else if (isSelected) {
+                  bgClass = turn === 'w' ? 'bg-[#22c55e]/30 shadow-[inset_0_0_12px_#22c55e]' : 'bg-[#d946ef]/30 shadow-[inset_0_0_12px_#d946ef]';
+                } else if (isLastMoveSq) {
+                  bgClass = 'bg-cyan-950/40 border border-cyan-500/30';
+                }
+
+                return (
+                  <button
+                    key={sq}
+                    type="button"
+                    onClick={() => handleSquareClick(sq)}
+                    onTouchEnd={(e) => {
+                      e.preventDefault();
+                      handleSquareClick(sq);
+                    }}
+                    className={`flex-1 h-full relative flex items-center justify-center transition-colors cursor-pointer ${bgClass} ${
+                      isSelected ? 'border-2 border-white/80' : 'border border-black/20'
+                    }`}
+                  >
+                    {/* Destination Dots / Brackets */}
+                    {isValidDest && !piece && (
+                      <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#38bdf8] pointer-events-none" />
+                    )}
+                    {isValidDest && piece && (
+                      <span className="absolute inset-0.5 border-2 border-red-500 rounded-sm pointer-events-none shadow-[0_0_8px_#ef4444] animate-pulse" />
+                    )}
+
+                    {/* Piece Glyph */}
+                    {piece && (
+                      <span
+                        className={`text-2xl sm:text-3xl leading-none font-bold select-none transition-transform active:scale-95 ${
+                          piece.color === 'w'
+                            ? 'text-[#4ade80] drop-shadow-[0_0_8px_rgba(74,222,128,0.9)]'
+                            : `text-[#f472b6] drop-shadow-[0_0_8px_rgba(244,114,182,0.9)] ${
+                                tabletopOrientation ? 'rotate-180' : ''
+                              }`
+                        }`}
+                      >
+                        {PIECE_GLYPHS[piece.type] || piece.type}
+                      </span>
+                    )}
+
+                    {/* Subtle Rank & File Coordinate Watermark on outer edges */}
+                    {fileIdx === 0 && (
+                      <span className="absolute top-0.5 left-0.5 text-[7px] text-white/20 font-mono leading-none">
+                        {rank}
+                      </span>
+                    )}
+                    {rankIdx === 7 && (
+                      <span className="absolute bottom-0.5 right-0.5 text-[7px] text-white/20 font-mono leading-none">
+                        {file}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
-            <h3 className="text-[#d946ef] text-xl font-black font-mono tracking-widest mb-2">
-              CYBER BLASTER
+          ))}
+        </div>
+      </div>
+
+      {/* QUICK TABLETOP CONTROLS (Undo, Reset, Flip Orientation) */}
+      <div className="w-full px-3 py-1 flex items-center justify-between gap-2 shrink-0 bg-[#060b07] border-t border-white/5">
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={handleReset}
+            className="px-2.5 py-1 rounded bg-red-500/10 border border-red-500/40 text-red-400 hover:bg-red-500 hover:text-black font-mono text-[9px] font-bold tracking-wider uppercase transition-all"
+          >
+            ↺ RESET
+          </button>
+          <button
+            type="button"
+            onClick={handleUndo}
+            disabled={historyCount === 0}
+            className={`px-2.5 py-1 rounded border font-mono text-[9px] font-bold tracking-wider uppercase transition-all ${
+              historyCount === 0
+                ? 'opacity-30 border-white/10 text-white/40 cursor-not-allowed'
+                : 'bg-white/5 border-white/20 text-white hover:bg-white/20 cursor-pointer'
+            }`}
+          >
+            ↶ UNDO
+          </button>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setTabletopOrientation(!tabletopOrientation)}
+          className="px-2.5 py-1 rounded bg-cyan-500/10 border border-cyan-500/40 text-cyan-400 hover:bg-cyan-500 hover:text-black font-mono text-[9px] font-bold tracking-wider uppercase transition-all"
+        >
+          ⇅ {tabletopOrientation ? 'TABLETOP: 180°' : 'STANDARD: 0°'}
+        </button>
+      </div>
+
+      {/* TABLETOP P1 HUD (Bottom Player - White) */}
+      <div className="w-full px-3 py-1.5 flex items-center justify-between border-t border-white/10 bg-[#080d09] shrink-0">
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#22c55e] shadow-[0_0_8px_#22c55e]"></span>
+          <span className="text-[11px] font-black text-[#22c55e] tracking-wider">P1 // WHITE</span>
+          {turn === 'w' && (
+            <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-[#22c55e]/20 text-[#22c55e] border border-[#22c55e]/50 animate-pulse">
+              YOUR TURN
+            </span>
+          )}
+        </div>
+        {/* Captured Black Pieces */}
+        <div className="flex items-center gap-0.5 text-xs text-[#d946ef]/70">
+          {captured.w.map((p, idx) => (
+            <span key={idx}>{PIECE_GLYPHS[p] || p}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* GAME OVER DIALOG */}
+      {isGameOver && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-[fadeIn_0.2s_ease-out]">
+          <div className="bg-[#080d09] border-2 border-[#22c55e] p-6 rounded-2xl max-w-[320px] w-full text-center shadow-[0_0_40px_rgba(34,197,94,0.3)] flex flex-col items-center">
+            <div className="text-3xl mb-2">🏆</div>
+            <h3 className="text-[#22c55e] text-2xl font-black font-mono tracking-widest mb-1">
+              {getGameOverMessage().title}
             </h3>
-            <p className="text-white/70 text-xs font-mono leading-relaxed mb-6">
-              Head-to-head neon starfighter duel. Drag your fighter along your baseline to dodge incoming bolts and blast through the center shields!
+            <p className="text-white/80 text-xs font-mono font-bold tracking-wider mb-6">
+              {getGameOverMessage().sub}
             </p>
             <button
               type="button"
-              onClick={() => setGameStarted(true)}
-              onTouchEnd={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setGameStarted(true);
-              }}
-              className="w-full py-3 rounded-xl bg-[#d946ef] hover:bg-[#c026d3] active:scale-95 text-black font-mono font-black text-xs tracking-widest uppercase shadow-[0_0_20px_rgba(217,70,239,0.6)] cursor-pointer transition-transform"
+              onClick={handleReset}
+              className="w-full py-3 rounded-xl bg-[#22c55e] hover:bg-[#16a34a] active:scale-95 text-black font-mono font-black text-xs tracking-widest uppercase shadow-[0_0_20px_rgba(34,197,94,0.6)] cursor-pointer transition-transform"
             >
-              LAUNCH INTERCEPTORS
+              PLAY NEW MATCH
             </button>
           </div>
         </div>
       )}
-      <canvas ref={canvasRef} className="w-full h-full block touch-none" />
+
+      {/* START MODAL */}
+      {!matchStarted && (
+        <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 pointer-events-auto">
+          <div className="bg-[#0a0a0a] border border-[#d946ef]/50 p-6 rounded-2xl max-w-[320px] w-full text-center shadow-[0_0_35px_rgba(217,70,239,0.25)] flex flex-col items-center">
+            <div className="w-12 h-12 rounded-full bg-[#d946ef]/10 border border-[#d946ef] flex items-center justify-center mb-3 text-2xl">
+              ♟️
+            </div>
+            <h3 className="text-[#d946ef] text-xl font-black font-mono tracking-widest mb-2">
+              CYBER CHESS 2P
+            </h3>
+            <p className="text-white/70 text-xs font-mono leading-relaxed mb-6">
+              Tabletop 2-Player Grandmaster Chess. Touch pieces to reveal neon legal moves. Tabletop mode rotates Black's pieces 180° for true face-to-face mobile battle!
+            </p>
+            <button
+              type="button"
+              onClick={() => setMatchStarted(true)}
+              onTouchEnd={(e) => {
+                e.preventDefault();
+                setMatchStarted(true);
+              }}
+              className="w-full py-3 rounded-xl bg-[#d946ef] hover:bg-[#c026d3] active:scale-95 text-black font-mono font-black text-xs tracking-widest uppercase shadow-[0_0_20px_rgba(217,70,239,0.6)] cursor-pointer transition-transform"
+            >
+              INITIALIZE CHESS BOARD
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -1280,19 +1281,22 @@ const MobilePong = () => {
     const TOP_PAD = 32;
     const BOT_PAD = 32;
 
-    // Upgraded Ball with Fast, Challenging Dynamics
+    // Gradual, Smooth Ball Acceleration Dynamics
+    const INITIAL_SERVE_SPEED = 5.0;
+    const MAX_BALL_SPEED = 14.0;
+
     const game = {
       p1: { x: (W - paddleW) / 2, y: H - BOT_PAD - paddleH },
       p2: { x: (W - paddleW) / 2, y: TOP_PAD },
-      ball: { x: W / 2, y: H / 2, dx: 6.5, dy: 9, radius: 8 },
+      ball: { x: W / 2, y: H / 2, dx: 2.5, dy: INITIAL_SERVE_SPEED, radius: 8 },
       rallies: 0,
     };
 
     const resetBall = (towardsP2) => {
       game.ball.x = canvas.width / 2;
       game.ball.y = canvas.height / 2;
-      game.ball.dx = (Math.random() > 0.5 ? 1 : -1) * (6 + Math.random() * 2);
-      game.ball.dy = towardsP2 ? -9 : 9;
+      game.ball.dx = (Math.random() > 0.5 ? 1 : -1) * (2.2 + Math.random() * 0.8);
+      game.ball.dy = towardsP2 ? -INITIAL_SERVE_SPEED : INITIAL_SERVE_SPEED;
       game.rallies = 0;
     };
 
@@ -1371,7 +1375,7 @@ const MobilePong = () => {
           game.ball.dx *= -1;
         }
 
-        // Hit P1 (Bottom) - Accelerate with deflection angle!
+        // Hit P1 (Bottom) - Gradual acceleration per rally
         if (
           game.ball.y + game.ball.radius >= game.p1.y &&
           game.ball.y - game.ball.radius <= game.p1.y + paddleH &&
@@ -1380,13 +1384,13 @@ const MobilePong = () => {
           game.ball.dy > 0
         ) {
           game.rallies += 1;
-          const speed = Math.min(22, Math.abs(game.ball.dy) * 1.07);
+          const speed = Math.min(MAX_BALL_SPEED, Math.abs(game.ball.dy) * 1.04 + 0.25);
           game.ball.dy = -speed;
           const offset = (game.ball.x - (game.p1.x + paddleW / 2)) / (paddleW / 2);
-          game.ball.dx = offset * 8;
+          game.ball.dx = offset * (speed * 0.7);
         }
 
-        // Hit P2 (Top) - Accelerate with deflection angle!
+        // Hit P2 (Top) - Gradual acceleration per rally
         if (
           game.ball.y - game.ball.radius <= game.p2.y + paddleH &&
           game.ball.y + game.ball.radius >= game.p2.y &&
@@ -1395,10 +1399,10 @@ const MobilePong = () => {
           game.ball.dy < 0
         ) {
           game.rallies += 1;
-          const speed = Math.min(22, Math.abs(game.ball.dy) * 1.07);
+          const speed = Math.min(MAX_BALL_SPEED, Math.abs(game.ball.dy) * 1.04 + 0.25);
           game.ball.dy = speed;
           const offset = (game.ball.x - (game.p2.x + paddleW / 2)) / (paddleW / 2);
-          game.ball.dx = offset * 8;
+          game.ball.dx = offset * (speed * 0.7);
         }
 
         // Scoring (Point triggers celebration and increments live scoreRef)
@@ -1525,18 +1529,19 @@ const MobilePong = () => {
 // Main Mobile Arcade Container with Dedicated Top Control Bar (Zero overlap with Modals or Game Field)
 const MobileTabletopArcade = () => {
   const [mobileGame, setMobileGame] = useState('hockey');
+  const [resetKey, setResetKey] = useState(0);
 
   const mobileGames = [
     { id: 'hockey', label: 'HOCKEY', icon: '⚡', color: 'text-cyan-400', activeBg: 'bg-cyan-400' },
-    { id: 'blaster', label: 'BLASTER', icon: '🚀', color: 'text-[#d946ef]', activeBg: 'bg-[#d946ef]' },
+    { id: 'chess', label: 'CHESS', icon: '♟️', color: 'text-[#d946ef]', activeBg: 'bg-[#d946ef]' },
     { id: 'clash', label: 'CLASH', icon: '💥', color: 'text-amber-400', activeBg: 'bg-amber-400' },
     { id: 'pong', label: 'PONG', icon: '🏓', color: 'text-[#22c55e]', activeBg: 'bg-[#22c55e]' },
   ];
 
   return (
     <div className="w-full h-full flex flex-col bg-black relative overflow-hidden select-none touch-none">
-      {/* Top Dedicated Game Selector Bar - neatly padded, distinct, zero modal overlap */}
-      <div className="w-full h-11 shrink-0 bg-[#080808] border-b border-white/10 px-2 flex items-center justify-between gap-1.5 z-40 select-none">
+      {/* Top Dedicated Game Selector Bar with [↺ RESET] */}
+      <div className="w-full h-11 shrink-0 bg-[#080808] border-b border-white/10 px-2 flex items-center justify-between gap-1 z-40 select-none">
         {mobileGames.map((g) => (
           <button
             key={g.id}
@@ -1547,24 +1552,38 @@ const MobileTabletopArcade = () => {
               e.stopPropagation();
               setMobileGame(g.id);
             }}
-            className={`flex-1 py-1.5 px-1 rounded-lg font-mono text-[10px] font-black tracking-wider transition-all duration-200 cursor-pointer flex items-center justify-center gap-1 active:scale-95 ${
+            className={`flex-1 py-1.5 px-0.5 rounded-lg font-mono text-[9px] font-black tracking-wider transition-all duration-200 cursor-pointer flex items-center justify-center gap-1 active:scale-95 ${
               mobileGame === g.id
                 ? `${g.activeBg} text-black shadow-[0_0_12px_rgba(255,255,255,0.4)] font-extrabold`
                 : `bg-white/5 ${g.color} border border-white/10 hover:bg-white/10`
             }`}
           >
-            <span className="text-[11px]">{g.icon}</span>
+            <span className="text-[10px]">{g.icon}</span>
             <span>{g.label}</span>
           </button>
         ))}
+
+        <button
+          type="button"
+          onClick={() => setResetKey((k) => k + 1)}
+          onTouchEnd={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setResetKey((k) => k + 1);
+          }}
+          className="px-2 py-1.5 rounded-lg bg-red-500/15 border border-red-500/50 text-red-400 active:bg-red-500 active:text-black font-mono text-[9px] font-black tracking-wider uppercase transition-all duration-200 cursor-pointer flex items-center justify-center gap-0.5 shadow-[0_0_8px_rgba(239,68,68,0.2)]"
+        >
+          <span>↺</span>
+          <span className="hidden xs:inline">RESET</span>
+        </button>
       </div>
 
       {/* 100% Dynamic Scaling Canvas Area */}
       <div className="flex-1 w-full h-full relative overflow-hidden">
-        {mobileGame === 'hockey' && <MobileAirHockey />}
-        {mobileGame === 'blaster' && <MobileCyberBlaster />}
-        {mobileGame === 'clash' && <MobileLaserClash />}
-        {mobileGame === 'pong' && <MobilePong />}
+        {mobileGame === 'hockey' && <MobileAirHockey key={resetKey} />}
+        {mobileGame === 'chess' && <MobileCyberChess key={resetKey} />}
+        {mobileGame === 'clash' && <MobileLaserClash key={resetKey} />}
+        {mobileGame === 'pong' && <MobilePong key={resetKey} />}
       </div>
     </div>
   );

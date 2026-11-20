@@ -5,6 +5,14 @@ export default function OverclockedSnake({ onExit }) {
   const [score, setScore] = useState(0);
   const [gameStarted, setGameStarted] = useState(false);
   const [gameOver, setGameOver] = useState(false);
+  const [resetKey, setResetKey] = useState(0);
+
+  const handleReset = () => {
+    setScore(0);
+    setGameOver(false);
+    setGameStarted(true);
+    setResetKey(k => k + 1);
+  };
 
   useEffect(() => {
     if (!gameStarted || gameOver) return;
@@ -221,7 +229,7 @@ export default function OverclockedSnake({ onExit }) {
       window.removeEventListener("touchend", handleTouchEnd);
       cancelAnimationFrame(animationId);
     };
-  }, [gameStarted, gameOver]);
+  }, [gameStarted, gameOver, resetKey]);
 
   return (
     <div className="w-full h-full bg-black relative flex items-center justify-center font-mono overflow-hidden touch-none">
@@ -280,12 +288,20 @@ export default function OverclockedSnake({ onExit }) {
         <div className="text-[#22c55e] text-lg sm:text-2xl font-black drop-shadow-[0_0_10px_#22c55e]">
           SCORE: {score.toString().padStart(5, "0")}
         </div>
-        <button
-          onClick={onExit}
-          className="pointer-events-auto text-[#22c55e]/50 border border-[#22c55e]/30 hover:bg-[#22c55e]/10 px-3 py-1 sm:px-4 text-[10px] sm:text-xs transition-all tracking-widest cursor-pointer bg-black/40 backdrop-blur-sm rounded"
-        >
-          [ ABORT ]
-        </button>
+        <div className="flex items-center gap-2 pointer-events-auto">
+          <button
+            onClick={handleReset}
+            className="text-[#22c55e] border border-[#22c55e]/50 hover:bg-[#22c55e]/20 px-3 py-1 sm:px-4 text-[10px] sm:text-xs transition-all tracking-widest cursor-pointer bg-black/60 backdrop-blur-sm rounded"
+          >
+            [ RESET ]
+          </button>
+          <button
+            onClick={onExit}
+            className="text-[#22c55e]/50 border border-[#22c55e]/30 hover:bg-[#22c55e]/10 px-3 py-1 sm:px-4 text-[10px] sm:text-xs transition-all tracking-widest cursor-pointer bg-black/40 backdrop-blur-sm rounded"
+          >
+            [ ABORT ]
+          </button>
+        </div>
       </div>
 
       <canvas

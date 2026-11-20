@@ -2,24 +2,24 @@ import React from 'react';
 
 const TerminalProfile = ({ themeHue = 0 }) => {
   return (
-    <div className="relative group overflow-hidden border-2 border-[#22c55e] w-64 h-80 cursor-crosshair shadow-[0_0_15px_rgba(34,197,94,0.3)] bg-black flex items-center justify-center p-4">
-      {/* Scaled down to w-64 to match portrait aspect ratio, p-4 creates the safe zone */}
+    <div className="relative group overflow-hidden border-2 border-[#22c55e] w-[245px] h-[300px] cursor-crosshair shadow-[0_0_15px_rgba(34,197,94,0.3)] bg-black flex items-center justify-center p-3">
+      {/* Scaled to 245x300 to match exact 750x917 portrait aspect ratio */}
       
       {/* INNER MASK: This completely traps the scale-105 zoom so it NEVER hits the brackets */}
-      <div className="relative w-full h-full overflow-hidden">
+      <div className="relative w-full h-full overflow-hidden rounded-sm">
         
-        {/* 1. Base Image - Pure monochrome default (Now using object-cover) */}
+        {/* 1. Base Image - Pure monochrome default (object-top preserves head room) */}
         <img
           src="/profile.webp" 
           alt="Vadanta Profile"
-          className="absolute inset-0 w-full h-full object-cover filter grayscale contrast-125 brightness-110 transition-all duration-700 ease-in-out group-hover:opacity-0 group-hover:scale-105"
+          className="absolute inset-0 w-full h-full object-cover object-top filter grayscale contrast-125 brightness-110 transition-all duration-700 ease-in-out group-hover:opacity-0 group-hover:scale-105"
         />
 
         {/* 2. True Color Hover Image - Counteracts OS Theme Hue */}
         <img
           src="/profile.webp" 
           alt="Vadanta Profile True Color"
-          className="absolute inset-0 w-full h-full object-cover opacity-0 transition-all duration-700 ease-in-out group-hover:opacity-100 group-hover:scale-105"
+          className="absolute inset-0 w-full h-full object-cover object-top opacity-0 transition-all duration-700 ease-in-out group-hover:opacity-100 group-hover:scale-105"
           style={{ filter: `hue-rotate(-${themeHue}deg)` }}
         />
       </div>

@@ -5,6 +5,14 @@ export default function CyberSwarm({ onExit }) {
   const [score, setScore] = useState(0);
   const [gameStarted, setGameStarted] = useState(false);
   const [gameOver, setGameOver] = useState(false);
+  const [resetKey, setResetKey] = useState(0);
+
+  const handleReset = () => {
+    setScore(0);
+    setGameOver(false);
+    setGameStarted(true);
+    setResetKey(k => k + 1);
+  };
 
   useEffect(() => {
     if (!gameStarted || gameOver) return;
@@ -295,7 +303,7 @@ export default function CyberSwarm({ onExit }) {
       window.removeEventListener("touchend", handleTouchEnd);
       cancelAnimationFrame(animationId);
     };
-  }, [gameStarted, gameOver]);
+  }, [gameStarted, gameOver, resetKey]);
 
   return (
     <div className="w-full h-full bg-black relative flex items-center justify-center font-mono overflow-hidden touch-none">
@@ -360,12 +368,20 @@ export default function CyberSwarm({ onExit }) {
         <div className="text-red-500 text-lg sm:text-2xl font-black drop-shadow-[0_0_10px_#ef4444]">
           SCORE: {score.toString().padStart(6, "0")}
         </div>
-        <button
-          onClick={onExit}
-          className="pointer-events-auto text-red-500/50 border border-red-500/30 hover:bg-red-500/20 px-3 py-1 sm:px-4 text-[10px] sm:text-xs transition-all tracking-widest cursor-pointer bg-black/40 backdrop-blur-sm rounded"
-        >
-          [ ABORT ]
-        </button>
+        <div className="flex items-center gap-2 pointer-events-auto">
+          <button
+            onClick={handleReset}
+            className="text-red-400 border border-red-500/50 hover:bg-red-500/20 px-3 py-1 sm:px-4 text-[10px] sm:text-xs transition-all tracking-widest cursor-pointer bg-black/60 backdrop-blur-sm rounded"
+          >
+            [ RESET ]
+          </button>
+          <button
+            onClick={onExit}
+            className="text-red-500/50 border border-red-500/30 hover:bg-red-500/20 px-3 py-1 sm:px-4 text-[10px] sm:text-xs transition-all tracking-widest cursor-pointer bg-black/40 backdrop-blur-sm rounded"
+          >
+            [ ABORT ]
+          </button>
+        </div>
       </div>
 
       <canvas
