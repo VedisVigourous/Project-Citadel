@@ -8,6 +8,8 @@ const CustomCursor = React.memo(() => {
   const [cursorMode, setCursorMode] = useState('default');
 
   useEffect(() => {
+    let latestX = -100;
+    let latestY = -100;
     let rafId = null;
 
     const checkCursorState = (e) => {
@@ -32,15 +34,19 @@ const CustomCursor = React.memo(() => {
     };
 
     const onMouseMove = (e) => {
+      latestX = e.clientX;
+      latestY = e.clientY;
+
+      // 144Hz+ Zero-Latency: Update the core dot IMMEDIATELY on hardware mousemove
+      if (dotRef.current) {
+        dotRef.current.style.transform = `translate3d(${latestX}px, ${latestY}px, 0)`;
+      }
+
+      // Outer targeting reticle synced via rAF with latest coordinate
       if (!rafId) {
-        const x = e.clientX;
-        const y = e.clientY;
         rafId = requestAnimationFrame(() => {
-          if (dotRef.current) {
-            dotRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-          }
           if (trailRef.current) {
-            trailRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+            trailRef.current.style.transform = `translate3d(${latestX}px, ${latestY}px, 0)`;
           }
           rafId = null;
         });
@@ -81,7 +87,7 @@ const CustomCursor = React.memo(() => {
         style={{ transform: 'translate3d(-100px, -100px, 0)' }}
       >
         <div
-          className={`absolute -translate-x-1/2 -translate-y-1/2 flex items-center justify-center transition-[width,height,border-color,background-color,transform] duration-150 ease-out ${
+          className={`absolute -translate-x-1/2 -translate-y-1/2 flex items-center justify-center transition-[width,height,border-color,background-color] duration-150 ease-out ${
             cursorMode === 'resize'
               ? 'w-12 h-12 border-2 border-[#22c55e] rounded-none scale-110 bg-[#22c55e]/20 backdrop-blur-[2px] shadow-[0_0_20px_rgba(34,197,94,0.4)] animate-pulse'
               : cursorMode === 'hover'

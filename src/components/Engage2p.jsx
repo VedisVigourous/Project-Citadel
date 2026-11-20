@@ -756,58 +756,15 @@ const MobileAirHockey = () => {
 };
 
 
-// 2. MOBILE TRON GRID-CYCLE (Tactile Arcade Turn Pedals + Absolute Swipes + Crash Celebration)
-const MobileGridCycle = () => {
+// 2. MOBILE CYBER BLASTER (Head-to-Head Starfighter Plasma Duel with Destructible Shields)
+const MobileCyberBlaster = () => {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
   const [score, setScore] = useState({ p1: 0, p2: 0 });
   const scoreRef = useRef({ p1: 0, p2: 0 });
   const [gameStarted, setGameStarted] = useState(false);
-  const [crashBanner, setCrashBanner] = useState(null);
-
-  const stateRef = useRef({
-    grid: null,
-    p1: { x: 0, y: 0, dir: 'UP', alive: true },
-    p2: { x: 0, y: 0, dir: 'DOWN', alive: true },
-    resetting: false,
-    cols: 0,
-    rows: 0,
-  });
-
-  // Dedicated Turn Handler (Zero-chaos arcade steering)
-  const steerPlayer = (player, turn) => {
-    const s = stateRef.current;
-    if (!s || s.resetting) return;
-
-    if (player === 'p1') {
-      const cur = s.p1.dir;
-      if (turn === 'left') {
-        if (cur === 'UP') s.p1.dir = 'LEFT';
-        else if (cur === 'LEFT') s.p1.dir = 'DOWN';
-        else if (cur === 'DOWN') s.p1.dir = 'RIGHT';
-        else if (cur === 'RIGHT') s.p1.dir = 'UP';
-      } else {
-        if (cur === 'UP') s.p1.dir = 'RIGHT';
-        else if (cur === 'RIGHT') s.p1.dir = 'DOWN';
-        else if (cur === 'DOWN') s.p1.dir = 'LEFT';
-        else if (cur === 'LEFT') s.p1.dir = 'UP';
-      }
-    } else {
-      // P2 is seated opposite, looking down the screen
-      const cur = s.p2.dir;
-      if (turn === 'left') {
-        if (cur === 'DOWN') s.p2.dir = 'RIGHT';
-        else if (cur === 'RIGHT') s.p2.dir = 'UP';
-        else if (cur === 'UP') s.p2.dir = 'LEFT';
-        else if (cur === 'LEFT') s.p2.dir = 'DOWN';
-      } else {
-        if (cur === 'DOWN') s.p2.dir = 'LEFT';
-        else if (cur === 'LEFT') s.p2.dir = 'UP';
-        else if (cur === 'UP') s.p2.dir = 'RIGHT';
-        else if (cur === 'RIGHT') s.p2.dir = 'DOWN';
-      }
-    }
-  };
+  const [hitBanner, setHitBanner] = useState(null);
+  const cooldownRef = useRef(false);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -815,214 +772,329 @@ const MobileGridCycle = () => {
     if (!container || !canvas || !gameStarted) return;
 
     let animId;
-    let lastTime = 0;
+    let lastFireTime = 0;
     const ctx = canvas.getContext('2d');
 
     canvas.width = container.clientWidth;
     canvas.height = container.clientHeight;
 
-    const gridSize = 10;
-    const cols = Math.floor(canvas.width / gridSize);
-    const rows = Math.floor(canvas.height / gridSize);
+    const W = canvas.width;
+    const H = canvas.height;
+    const TOP_PAD = 36;
+    const BOT_PAD = 36;
+    const SHIP_W = Math.max(34, W * 0.12);
 
-    stateRef.current.cols = cols;
-    stateRef.current.rows = rows;
-
-    const initRound = () => {
-      ctx.fillStyle = '#000000';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      stateRef.current.grid = Array(cols).fill().map(() => Array(rows).fill(0));
-      stateRef.current.p1 = { x: Math.floor(cols / 2), y: rows - 8, dir: 'UP', alive: true };
-      stateRef.current.p2 = { x: Math.floor(cols / 2), y: 8, dir: 'DOWN', alive: true };
-      stateRef.current.resetting = false;
-      setCrashBanner(null);
+    const game = {
+      p1: { x: W / 2, y: H - BOT_PAD - 20 },
+      p2: { x: W / 2, y: TOP_PAD + 20 },
+      p1Bolts: [],
+      p2Bolts: [],
+      sparks: [],
+      shields: [
+        { x: W * 0.22, y: H / 2, r: 16, hp: 6, maxHp: 6 },
+        { x: W * 0.50, y: H / 2, r: 20, hp: 8, maxHp: 8 },
+        { x: W * 0.78, y: H / 2, r: 16, hp: 6, maxHp: 6 },
+      ],
     };
 
-    // Absolute touch gesture detection (swiping strictly within your half)
-    const touchStarts = {};
-    const handleTouchStart = (e) => {
-      const rect = canvas.getBoundingClientRect();
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
-      for (let i = 0; i < e.changedTouches.length; i++) {
-        const t = e.changedTouches[i];
-        touchStarts[t.identifier] = {
-          x: (t.clientX - rect.left) * scaleX,
-          y: (t.clientY - rect.top) * scaleY,
-        };
+    const triggerHit = (scorer) => {
+      if (cooldownRef.current) return;
+      cooldownRef.current = true;
+
+      if (scorer === 'P1') {
+        scoreRef.current.p1 += 1;
+      } else {
+        scoreRef.current.p2 += 1;
       }
+      setScore({ ...scoreRef.current });
+      setHitBanner({
+        scorer: scorer === 'P1' ? 'PLAYER 1' : 'PLAYER 2',
+        color: scorer === 'P1' ? '#22c55e' : '#d946ef',
+        text: scorer === 'P1' ? 'P2 SHIELD DESTROYED! +1' : 'P1 SHIELD DESTROYED! +1',
+        p1: scoreRef.current.p1,
+        p2: scoreRef.current.p2,
+      });
+
+      game.p1Bolts = [];
+      game.p2Bolts = [];
+
+      setTimeout(() => {
+        setHitBanner(null);
+        cooldownRef.current = false;
+      }, 1300);
     };
 
-    const handleTouchEnd = (e) => {
+    const handleTouch = (e) => {
+      if (cooldownRef.current) return;
+      e.preventDefault();
       const rect = canvas.getBoundingClientRect();
       const scaleX = canvas.width / rect.width;
       const scaleY = canvas.height / rect.height;
+      const curW = canvas.width;
+      const curH = canvas.height;
 
-      for (let i = 0; i < e.changedTouches.length; i++) {
-        const t = e.changedTouches[i];
-        const start = touchStarts[t.identifier];
-        if (!start) continue;
+      for (let i = 0; i < e.touches.length; i++) {
+        const t = e.touches[i];
+        const tx = (t.clientX - rect.left) * scaleX;
+        const ty = (t.clientY - rect.top) * scaleY;
 
-        const endX = (t.clientX - rect.left) * scaleX;
-        const endY = (t.clientY - rect.top) * scaleY;
-        const dx = endX - start.x;
-        const dy = endY - start.y;
-        delete touchStarts[t.identifier];
-
-        const s = stateRef.current;
-        if (!s || s.resetting) continue;
-
-        // Player 1 (Bottom Half)
-        if (start.y > canvas.height / 2) {
-          if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 15) {
-            if (dx < 0 && s.p1.dir !== 'RIGHT') s.p1.dir = 'LEFT';
-            if (dx > 0 && s.p1.dir !== 'LEFT') s.p1.dir = 'RIGHT';
-          } else if (Math.abs(dy) > 15) {
-            if (dy < 0 && s.p1.dir !== 'DOWN') s.p1.dir = 'UP';
-            if (dy > 0 && s.p1.dir !== 'UP') s.p1.dir = 'DOWN';
-          }
+        if (ty > curH / 2) {
+          game.p1.x = Math.max(SHIP_W / 2 + 8, Math.min(curW - SHIP_W / 2 - 8, tx));
         } else {
-          // Player 2 (Top Half)
-          if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 15) {
-            // Note: from P2's viewpoint, screen-left is their right
-            if (dx < 0 && s.p2.dir !== 'RIGHT') s.p2.dir = 'LEFT';
-            if (dx > 0 && s.p2.dir !== 'LEFT') s.p2.dir = 'RIGHT';
-          } else if (Math.abs(dy) > 15) {
-            if (dy < 0 && s.p2.dir !== 'DOWN') s.p2.dir = 'UP';
-            if (dy > 0 && s.p2.dir !== 'UP') s.p2.dir = 'DOWN';
-          }
+          game.p2.x = Math.max(SHIP_W / 2 + 8, Math.min(curW - SHIP_W / 2 - 8, tx));
         }
       }
     };
 
-    canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
-    canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
+    canvas.addEventListener('touchstart', handleTouch, { passive: false });
+    canvas.addEventListener('touchmove', handleTouch, { passive: false });
 
-    const update = (time) => {
-      if (!lastTime) lastTime = time;
-      const s = stateRef.current;
+    const loop = (time) => {
+      const curW = canvas.width;
+      const curH = canvas.height;
 
-      if (time - lastTime > 1000 / 22 && s && !s.resetting) {
-        lastTime = time;
+      // Auto Fire Plasma Cannons every 350ms
+      if (!cooldownRef.current && time - lastFireTime > 340) {
+        lastFireTime = time;
+        game.p1Bolts.push({ x: game.p1.x - 10, y: game.p1.y - 15, vy: -9 });
+        game.p1Bolts.push({ x: game.p1.x + 10, y: game.p1.y - 15, vy: -9 });
+        game.p2Bolts.push({ x: game.p2.x - 10, y: game.p2.y + 15, vy: 9 });
+        game.p2Bolts.push({ x: game.p2.x + 10, y: game.p2.y + 15, vy: 9 });
+      }
 
-        // Move Players
-        [s.p1, s.p2].forEach((p) => {
-          if (p.dir === 'UP') p.y--;
-          if (p.dir === 'DOWN') p.y++;
-          if (p.dir === 'LEFT') p.x--;
-          if (p.dir === 'RIGHT') p.x++;
-        });
+      if (!cooldownRef.current) {
+        // Update P1 Bolts
+        for (let i = game.p1Bolts.length - 1; i >= 0; i--) {
+          const b = game.p1Bolts[i];
+          b.y += b.vy;
 
-        // Check Collisions
-        const p1Hit = s.p1.x < 0 || s.p1.x >= cols || s.p1.y < 0 || s.p1.y >= rows || s.grid[s.p1.x][s.p1.y] !== 0;
-        const p2Hit = s.p2.x < 0 || s.p2.x >= cols || s.p2.y < 0 || s.p2.y >= rows || s.grid[s.p2.x][s.p2.y] !== 0;
+          let absorbed = false;
+          game.shields.forEach((s) => {
+            if (s.hp > 0 && Math.hypot(b.x - s.x, b.y - s.y) < s.r) {
+              s.hp--;
+              absorbed = true;
+              for (let k = 0; k < 4; k++) {
+                game.sparks.push({
+                  x: b.x, y: b.y,
+                  vx: (Math.random() - 0.5) * 6, vy: (Math.random() - 0.5) * 6,
+                  color: '#38bdf8', life: 1,
+                });
+              }
+            }
+          });
 
-        if (p1Hit || p2Hit) {
-          s.resetting = true;
-          let winner = null;
-          if (!p1Hit && p2Hit) {
-            scoreRef.current.p1 += 1;
-            winner = { name: 'PLAYER 1', color: '#22c55e', text: 'P2 DEREZZED! P1 SCORES +1' };
-          } else if (p1Hit && !p2Hit) {
-            scoreRef.current.p2 += 1;
-            winner = { name: 'PLAYER 2', color: '#d946ef', text: 'P1 DEREZZED! P2 SCORES +1' };
-          } else {
-            winner = { name: 'MUTUAL CRASH', color: '#eab308', text: 'SIMULTANEOUS SYSTEM DEREZZ' };
+          if (absorbed) {
+            game.p1Bolts.splice(i, 1);
+            continue;
           }
 
-          setScore({ ...scoreRef.current });
-          setCrashBanner(winner);
-          setTimeout(initRound, 1400);
-        } else {
-          s.grid[s.p1.x][s.p1.y] = 1;
-          s.grid[s.p2.x][s.p2.y] = 2;
+          if (Math.hypot(b.x - game.p2.x, b.y - game.p2.y) < SHIP_W * 0.7) {
+            game.p1Bolts.splice(i, 1);
+            for (let k = 0; k < 15; k++) {
+              game.sparks.push({
+                x: game.p2.x, y: game.p2.y,
+                vx: (Math.random() - 0.5) * 10, vy: (Math.random() - 0.5) * 10,
+                color: '#22c55e', life: 1.2,
+              });
+            }
+            triggerHit('P1');
+            break;
+          }
 
-          ctx.fillStyle = '#22c55e';
-          ctx.shadowBlur = 10;
-          ctx.shadowColor = '#22c55e';
-          ctx.fillRect(s.p1.x * gridSize, s.p1.y * gridSize, gridSize - 1, gridSize - 1);
+          if (b.y < -10) game.p1Bolts.splice(i, 1);
+        }
 
-          ctx.fillStyle = '#d946ef';
-          ctx.shadowBlur = 10;
-          ctx.shadowColor = '#d946ef';
-          ctx.fillRect(s.p2.x * gridSize, s.p2.y * gridSize, gridSize - 1, gridSize - 1);
+        // Update P2 Bolts
+        for (let i = game.p2Bolts.length - 1; i >= 0; i--) {
+          const b = game.p2Bolts[i];
+          b.y += b.vy;
+
+          let absorbed = false;
+          game.shields.forEach((s) => {
+            if (s.hp > 0 && Math.hypot(b.x - s.x, b.y - s.y) < s.r) {
+              s.hp--;
+              absorbed = true;
+              for (let k = 0; k < 4; k++) {
+                game.sparks.push({
+                  x: b.x, y: b.y,
+                  vx: (Math.random() - 0.5) * 6, vy: (Math.random() - 0.5) * 6,
+                  color: '#38bdf8', life: 1,
+                });
+              }
+            }
+          });
+
+          if (absorbed) {
+            game.p2Bolts.splice(i, 1);
+            continue;
+          }
+
+          if (Math.hypot(b.x - game.p1.x, b.y - game.p1.y) < SHIP_W * 0.7) {
+            game.p2Bolts.splice(i, 1);
+            for (let k = 0; k < 15; k++) {
+              game.sparks.push({
+                x: game.p1.x, y: game.p1.y,
+                vx: (Math.random() - 0.5) * 10, vy: (Math.random() - 0.5) * 10,
+                color: '#d946ef', life: 1.2,
+              });
+            }
+            triggerHit('P2');
+            break;
+          }
+
+          if (b.y > curH + 10) game.p2Bolts.splice(i, 1);
+        }
+
+        // Update Sparks
+        for (let i = game.sparks.length - 1; i >= 0; i--) {
+          const sp = game.sparks[i];
+          sp.x += sp.vx;
+          sp.y += sp.vy;
+          sp.life -= 0.04;
+          if (sp.life <= 0) game.sparks.splice(i, 1);
         }
       }
-      animId = requestAnimationFrame(update);
+
+      // Render
+      ctx.fillStyle = '#030504';
+      ctx.fillRect(0, 0, curW, curH);
+
+      ctx.strokeStyle = 'rgba(34, 197, 94, 0.2)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(6, TOP_PAD, curW - 12, curH - TOP_PAD - BOT_PAD);
+
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.25)';
+      ctx.setLineDash([6, 6]);
+      ctx.beginPath();
+      ctx.moveTo(6, curH / 2);
+      ctx.lineTo(curW - 6, curH / 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Shields
+      game.shields.forEach((s) => {
+        if (s.hp > 0) {
+          const alpha = s.hp / s.maxHp;
+          ctx.strokeStyle = `rgba(56, 189, 248, ${0.4 + alpha * 0.6})`;
+          ctx.lineWidth = 3;
+          ctx.shadowBlur = 12;
+          ctx.shadowColor = '#38bdf8';
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.fillStyle = `rgba(56, 189, 248, ${0.1 + alpha * 0.2})`;
+          ctx.fill();
+        }
+      });
+
+      // P1 Bolts
+      ctx.fillStyle = '#22c55e';
+      ctx.shadowBlur = 12;
+      ctx.shadowColor = '#22c55e';
+      game.p1Bolts.forEach((b) => {
+        ctx.fillRect(b.x - 2, b.y - 6, 4, 12);
+      });
+
+      // P2 Bolts
+      ctx.fillStyle = '#d946ef';
+      ctx.shadowBlur = 12;
+      ctx.shadowColor = '#d946ef';
+      game.p2Bolts.forEach((b) => {
+        ctx.fillRect(b.x - 2, b.y - 6, 4, 12);
+      });
+
+      // Sparks
+      game.sparks.forEach((sp) => {
+        ctx.fillStyle = sp.color;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = sp.color;
+        ctx.globalAlpha = Math.max(0, sp.life);
+        ctx.fillRect(sp.x - 1.5, sp.y - 1.5, 3, 3);
+        ctx.globalAlpha = 1.0;
+      });
+
+      // P1 Ship
+      ctx.save();
+      ctx.translate(game.p1.x, game.p1.y);
+      ctx.fillStyle = '#22c55e';
+      ctx.shadowBlur = 16;
+      ctx.shadowColor = '#22c55e';
+      ctx.beginPath();
+      ctx.moveTo(0, -18);
+      ctx.lineTo(SHIP_W / 2, 14);
+      ctx.lineTo(0, 8);
+      ctx.lineTo(-SHIP_W / 2, 14);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(-3, -8, 6, 10);
+      ctx.restore();
+
+      // P2 Ship
+      ctx.save();
+      ctx.translate(game.p2.x, game.p2.y);
+      ctx.rotate(Math.PI);
+      ctx.fillStyle = '#d946ef';
+      ctx.shadowBlur = 16;
+      ctx.shadowColor = '#d946ef';
+      ctx.beginPath();
+      ctx.moveTo(0, -18);
+      ctx.lineTo(SHIP_W / 2, 14);
+      ctx.lineTo(0, 8);
+      ctx.lineTo(-SHIP_W / 2, 14);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(-3, -8, 6, 10);
+      ctx.restore();
+
+      // Live Scores
+      ctx.save();
+      ctx.translate(curW - 25, TOP_PAD + 25);
+      ctx.rotate(Math.PI);
+      ctx.font = 'bold 24px monospace';
+      ctx.fillStyle = '#d946ef';
+      ctx.shadowBlur = 8;
+      ctx.shadowColor = '#d946ef';
+      ctx.fillText(`P2: ${scoreRef.current.p2}`, 0, 0);
+      ctx.restore();
+
+      ctx.font = 'bold 24px monospace';
+      ctx.fillStyle = '#22c55e';
+      ctx.shadowBlur = 8;
+      ctx.shadowColor = '#22c55e';
+      ctx.fillText(`P1: ${scoreRef.current.p1}`, 20, curH - BOT_PAD - 10);
+
+      animId = requestAnimationFrame(loop);
     };
 
-    initRound();
-    animId = requestAnimationFrame(update);
+    animId = requestAnimationFrame(loop);
     return () => {
-      canvas.removeEventListener('touchstart', handleTouchStart);
-      canvas.removeEventListener('touchend', handleTouchEnd);
+      canvas.removeEventListener('touchstart', handleTouch);
+      canvas.removeEventListener('touchmove', handleTouch);
       cancelAnimationFrame(animId);
     };
   }, [gameStarted]);
 
   return (
     <div ref={containerRef} className="w-full h-full relative overflow-hidden select-none touch-none">
-      {/* Crash Celebration Banner */}
-      {crashBanner && (
+      {/* Hit Celebration Banner */}
+      {hitBanner && (
         <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/60 pointer-events-none animate-[fadeIn_0.15s_ease-out]">
           <div
             className="p-5 rounded-2xl border-2 bg-black/95 text-center shadow-[0_0_40px_currentColor] scale-110 transition-transform flex flex-col items-center"
-            style={{ borderColor: crashBanner.color, color: crashBanner.color }}
+            style={{ borderColor: hitBanner.color, color: hitBanner.color }}
           >
-            <div className="text-xl font-black font-mono tracking-widest animate-pulse">
-              💥 {crashBanner.name} 💥
+            <div className="text-xl font-black font-mono tracking-widest animate-bounce">
+              ⚡ DIRECT HIT! ⚡
             </div>
             <div className="text-xs font-mono font-bold tracking-wider mt-1 text-white">
-              {crashBanner.text}
+              {hitBanner.text}
             </div>
             <div className="text-2xl font-mono font-black mt-2 tracking-widest">
-              {scoreRef.current.p1} : {scoreRef.current.p2}
+              {hitBanner.p1} : {hitBanner.p2}
             </div>
           </div>
-        </div>
-      )}
-
-      {/* Tactile Ergonomic Steer Buttons - P2 (Top, Inverted for Player 2) */}
-      {gameStarted && (
-        <div className="absolute top-2 left-0 w-full px-3 flex justify-between z-20 pointer-events-auto rotate-180">
-          <button
-            type="button"
-            onTouchStart={(e) => { e.preventDefault(); steerPlayer('p2', 'left'); }}
-            onClick={() => steerPlayer('p2', 'left')}
-            className="px-4 py-2 rounded-xl bg-[#d946ef]/20 border border-[#d946ef] text-[#d946ef] font-mono font-black text-xs tracking-wider active:scale-95 shadow-[0_0_15px_rgba(217,70,239,0.5)] cursor-pointer"
-          >
-            ⮜ TURN
-          </button>
-          <button
-            type="button"
-            onTouchStart={(e) => { e.preventDefault(); steerPlayer('p2', 'right'); }}
-            onClick={() => steerPlayer('p2', 'right')}
-            className="px-4 py-2 rounded-xl bg-[#d946ef]/20 border border-[#d946ef] text-[#d946ef] font-mono font-black text-xs tracking-wider active:scale-95 shadow-[0_0_15px_rgba(217,70,239,0.5)] cursor-pointer"
-          >
-            TURN ⮞
-          </button>
-        </div>
-      )}
-
-      {/* Tactile Ergonomic Steer Buttons - P1 (Bottom for Player 1) */}
-      {gameStarted && (
-        <div className="absolute bottom-2 left-0 w-full px-3 flex justify-between z-20 pointer-events-auto">
-          <button
-            type="button"
-            onTouchStart={(e) => { e.preventDefault(); steerPlayer('p1', 'left'); }}
-            onClick={() => steerPlayer('p1', 'left')}
-            className="px-4 py-2 rounded-xl bg-[#22c55e]/20 border border-[#22c55e] text-[#22c55e] font-mono font-black text-xs tracking-wider active:scale-95 shadow-[0_0_15px_rgba(34,197,94,0.5)] cursor-pointer"
-          >
-            ⮜ TURN
-          </button>
-          <button
-            type="button"
-            onTouchStart={(e) => { e.preventDefault(); steerPlayer('p1', 'right'); }}
-            onClick={() => steerPlayer('p1', 'right')}
-            className="px-4 py-2 rounded-xl bg-[#22c55e]/20 border border-[#22c55e] text-[#22c55e] font-mono font-black text-xs tracking-wider active:scale-95 shadow-[0_0_15px_rgba(34,197,94,0.5)] cursor-pointer"
-          >
-            TURN ⮞
-          </button>
         </div>
       )}
 
@@ -1030,13 +1102,13 @@ const MobileGridCycle = () => {
         <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 pointer-events-auto">
           <div className="bg-[#0a0a0a] border border-[#d946ef]/50 p-6 rounded-2xl max-w-[320px] w-full text-center shadow-[0_0_35px_rgba(217,70,239,0.25)] flex flex-col items-center">
             <div className="w-10 h-10 rounded-full bg-[#d946ef]/10 border border-[#d946ef] flex items-center justify-center mb-3 text-lg">
-              🚲
+              🚀
             </div>
             <h3 className="text-[#d946ef] text-xl font-black font-mono tracking-widest mb-2">
-              NEON TRON
+              CYBER BLASTER
             </h3>
             <p className="text-white/70 text-xs font-mono leading-relaxed mb-6">
-              Vertical Lightcycle duel. Use the glowing corner Turn buttons or direct swipes on your half to maneuver. Trap your opponent in your neon trail!
+              Head-to-head neon starfighter duel. Drag your fighter along your baseline to dodge incoming bolts and blast through the center shields!
             </p>
             <button
               type="button"
@@ -1048,7 +1120,7 @@ const MobileGridCycle = () => {
               }}
               className="w-full py-3 rounded-xl bg-[#d946ef] hover:bg-[#c026d3] active:scale-95 text-black font-mono font-black text-xs tracking-widest uppercase shadow-[0_0_20px_rgba(217,70,239,0.6)] cursor-pointer transition-transform"
             >
-              IGNITE ENGINES
+              LAUNCH INTERCEPTORS
             </button>
           </div>
         </div>
@@ -1224,9 +1296,15 @@ const MobilePong = () => {
       game.rallies = 0;
     };
 
-    const triggerAce = (scorer) => {
+    const triggerGoal = (scorer) => {
       if (cooldownRef.current) return;
       cooldownRef.current = true;
+
+      // Park ball in neutral void during cooldown
+      game.ball.x = -999;
+      game.ball.y = -999;
+      game.ball.dx = 0;
+      game.ball.dy = 0;
 
       if (scorer === 'P1') {
         scoreRef.current.p1 += 1;
@@ -1248,6 +1326,7 @@ const MobilePong = () => {
         cooldownRef.current = false;
       }, 1300);
     };
+    const triggerAce = triggerGoal;
 
     const handleTouch = (e) => {
       if (cooldownRef.current) return;
@@ -1449,7 +1528,7 @@ const MobileTabletopArcade = () => {
 
   const mobileGames = [
     { id: 'hockey', label: 'HOCKEY', icon: '⚡', color: 'text-cyan-400', activeBg: 'bg-cyan-400' },
-    { id: 'tron', label: 'TRON', icon: '🚲', color: 'text-[#d946ef]', activeBg: 'bg-[#d946ef]' },
+    { id: 'blaster', label: 'BLASTER', icon: '🚀', color: 'text-[#d946ef]', activeBg: 'bg-[#d946ef]' },
     { id: 'clash', label: 'CLASH', icon: '💥', color: 'text-amber-400', activeBg: 'bg-amber-400' },
     { id: 'pong', label: 'PONG', icon: '🏓', color: 'text-[#22c55e]', activeBg: 'bg-[#22c55e]' },
   ];
@@ -1483,7 +1562,7 @@ const MobileTabletopArcade = () => {
       {/* 100% Dynamic Scaling Canvas Area */}
       <div className="flex-1 w-full h-full relative overflow-hidden">
         {mobileGame === 'hockey' && <MobileAirHockey />}
-        {mobileGame === 'tron' && <MobileGridCycle />}
+        {mobileGame === 'blaster' && <MobileCyberBlaster />}
         {mobileGame === 'clash' && <MobileLaserClash />}
         {mobileGame === 'pong' && <MobilePong />}
       </div>

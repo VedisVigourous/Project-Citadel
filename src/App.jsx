@@ -167,7 +167,7 @@ const resumeTexCode = `\\documentclass[letterpaper,11pt]{article}
             \\resumeItem{Architected accessible UI components with optimized asset delivery and responsive layouts across mobile and desktop.}
           \\resumeItemListEnd
       \\resumeProjectHeading
-          {\\textbf{\\href{https://github.com/VedisVigourous/project-citadel}{\\underline{Project Citadel (Vadanta OS Web Desktop)}}} $|$ \\emph{React 19, Tailwind CSS, Canvas API}}{2026}
+          {\\textbf{\\href{https://github.com/VedisVigourous/project-citadel}{\\underline{Vadanta OS (Interactive Web Desktop)}}} $|$ \\emph{React 19, Tailwind CSS, Canvas API}}{2026}
           \\resumeItemListStart
             \\resumeItem{Engineered an interactive cyberpunk web operating system featuring real-time terminal shell, custom draggable window manager, 4 canvas arcade engines, and integrated AI assistant proxy.}
           \\resumeItemListEnd
@@ -792,7 +792,7 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
           {
             id: 1,
             hash: "a1b2c3d",
-            repo: "Vadanta_OS_Citadel",
+            repo: "Vadanta_OS",
             msg: "engineered dynamic hud architecture",
           },
           {
@@ -822,7 +822,7 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
           {
             id: 6,
             hash: "c3d4e5f",
-            repo: "Vadanta_OS_Citadel",
+            repo: "Vadanta_OS",
             msg: "initialized secure uplink",
           },
         ]);
@@ -909,7 +909,7 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
     },
     {
       id: "03",
-      name: "Vadanta_OS_Citadel.exe",
+      name: "Vadanta_OS.exe",
       tech: "React 19 / Tailwind / Canvas",
       desc: "Highly interactive, state-driven cyberpunk web operating system featuring real-time terminal shell, 4 canvas arcade engines, and audio synthesizers.",
       link: "https://github.com/VedisVigourous/project-citadel",
@@ -948,14 +948,19 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
   // 1. THE UPGRADED MOUSE TRACKER (With Speed-Swoosh & 60FPS RAF Transform)
   useEffect(() => {
     let rafId = null;
+    let latestMouseX = 0;
+    let latestMouseY = 0;
     const handleGlobalMouseMove = (e) => {
       if (loading) return;
 
-      // 60FPS Parallax without React re-render storm
+      latestMouseX = e.clientX;
+      latestMouseY = e.clientY;
+
+      // Native Refresh-Rate Parallax (144Hz+) without React re-render storm
       if (!rafId) {
         rafId = requestAnimationFrame(() => {
-          const x = (e.clientX / window.innerWidth - 0.5) * 20;
-          const y = (e.clientY / window.innerHeight - 0.5) * 20;
+          const x = (latestMouseX / window.innerWidth - 0.5) * 20;
+          const y = (latestMouseY / window.innerHeight - 0.5) * 20;
           document.documentElement.style.setProperty("--bg-x", `${x}px`);
           document.documentElement.style.setProperty("--bg-y", `${y}px`);
           rafId = null;
@@ -1544,20 +1549,20 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
   | () () |    
    \\  _  /     
     \`---\`      
-   CITADEL     
+   VADANTA     
                   `}</pre>
                 </div>
                 <div className="flex flex-col gap-0.5 text-xs">
                   <span className="font-bold text-white text-sm">root@vadanta_os</span>
                   <span className="text-[#22c55e]/60">-----------------------------</span>
-                  <span><strong className="text-white">OS:</strong> Vadanta_OS v2.4 (Citadel Architecture)</span>
+                  <span><strong className="text-white">OS:</strong> Vadanta_OS v2.4</span>
                   <span><strong className="text-white">Host:</strong> ABES_Node // CSE Division</span>
                   <span><strong className="text-white">Kernel:</strong> React 19.2 // Vite 8.2 // Tailwind v4</span>
                   <span><strong className="text-white">Uptime:</strong> {mins}m {secs}s (Live Session)</span>
                   <span><strong className="text-white">Shell:</strong> vadanta-zsh 4.2.0-cyber</span>
                   <span><strong className="text-white">Display:</strong> {window.innerWidth}x{window.innerHeight} @ 60-144Hz</span>
                   <span><strong className="text-white">Memory:</strong> 64MB / 128MB (Virtual Heap)</span>
-                  <span><strong className="text-white">Terminal:</strong> CITADEL_DOCK_TTY1</span>
+                  <span><strong className="text-white">Terminal:</strong> VADANTA_DOCK_TTY1</span>
                   <div className="flex gap-1.5 mt-2">
                     <span className="w-3.5 h-3.5 rounded bg-black border border-white/20"></span>
                     <span className="w-3.5 h-3.5 rounded bg-[#22c55e]"></span>
@@ -1587,7 +1592,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
             if (q.includes("gpa") || q.includes("grade") || q.includes("college") || q.includes("education")) {
               response = "Vadanta studies Computer Science & Engineering at ABES Engineering College, maintaining a 9.13/10.00 GPA (1st Year). He is actively focusing on Java DSA, OOP, and Web Architecture.";
             } else if (q.includes("project") || q.includes("build") || q.includes("work")) {
-              response = "Vadanta's flagship project is Citadel OS (this interactive cyberpunk web operating system), alongside Chrome extensions, AI tools, and full-stack applications. Type 'open projects' to inspect them.";
+              response = "Vadanta's flagship project is Vadanta_OS (this interactive cyberpunk web operating system), alongside Chrome extensions, AI tools, and full-stack applications. Type 'open projects' to inspect them.";
             } else if (q.includes("skill") || q.includes("stack") || q.includes("tech")) {
               response = "Primary stack: Java, C++, JavaScript (ES6+), React 19, Tailwind CSS, Vite, GCP Vertex AI, Gemini API, and Git/GitHub Actions.";
             } else if (q.includes("contact") || q.includes("email") || q.includes("hire")) {
@@ -1791,7 +1796,6 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
             className="absolute top-[-100px] bottom-[-100px] left-[-100px] right-[-100px] cyber-grid pointer-events-none z-[1] max-md:!transform-none"
             style={{
               transform: "translate(calc(var(--bg-x, 0px) * 0.5), calc(var(--bg-y, 0px) * 0.5))",
-              transition: "transform 0.1s ease-out",
             }}
           ></div>
 
@@ -2891,7 +2895,6 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                 className="hidden md:flex absolute inset-0 flex-col items-center justify-center pb-24 pointer-events-none z-0"
                 style={{
                   transform: "translate(calc(var(--bg-x, 0px) * -0.6), calc(var(--bg-y, 0px) * -0.6))",
-                  transition: "transform 0.1s ease-out",
                 }}
               >
                 {/* TOP ROW: GitHub & Socials */}
@@ -3072,7 +3075,6 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                 className="hidden md:flex flex-col space-y-6 w-24 mt-4 relative z-40"
                 style={{
                   transform: "translate(calc(var(--bg-x, 0px) * 0.4), calc(var(--bg-y, 0px) * 0.4))",
-                  transition: "transform 0.1s ease-out",
                 }}
               >
                 {/* --- IDENTITY.exe (PREMIUM PAN, ZOOM & NEON SWEEP EDITION) --- */}
@@ -3365,7 +3367,6 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                 className="hidden md:flex absolute top-4 right-4 mt-4 flex-col space-y-6 w-24 items-center z-40"
                 style={{
                   transform: "translate(calc(var(--bg-x, 0px) * 0.4), calc(var(--bg-y, 0px) * 0.4))",
-                  transition: "transform 0.1s ease-out",
                 }}
               >
                 {/* Mail.conn Desktop Icon */}

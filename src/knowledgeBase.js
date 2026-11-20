@@ -82,7 +82,7 @@ Your tone is sharp, executive, technically authoritative, and slightly witty.
             \\resumeItem{Architected accessible UI components with optimized asset delivery and responsive layouts across mobile and desktop.}
           \\resumeItemListEnd
       \\resumeProjectHeading
-          {\\textbf{\\href{https://github.com/VedisVigourous/project-citadel}{\\underline{Project Citadel (Vadanta OS Web Desktop)}}} $|$ \\emph{React 19, Tailwind CSS, Canvas API}}{2026}
+          {\\textbf{\\href{https://github.com/VedisVigourous/project-citadel}{\\underline{Vadanta OS (Interactive Web Desktop)}}} $|$ \\emph{React 19, Tailwind CSS, Canvas API}}{2026}
           \\resumeItemListStart
             \\resumeItem{Engineered an interactive cyberpunk web operating system featuring real-time terminal shell, custom draggable window manager, 4 canvas arcade engines, and integrated AI assistant proxy.}
           \\resumeItemListEnd
@@ -152,7 +152,7 @@ Your tone is sharp, executive, technically authoritative, and slightly witty.
              - For a brief I have worked on some of the projects like
                 1. DSAvation (Technovation ABESEC) - Co-engineered an interactive DSA problem-solving platform curated with 220+ interview problems, video breakdowns, company tags, and daily club challenges for 200+ students. Live: https://dsavation.vercel.app | Repo: https://github.com/Technovation-ABES/DSAvation
                 2. GDG ABESEC Official Portal - Contributed to the official web portal for Google Developer Groups on Campus ABESEC, managing hackathon pipelines, workshop schedules, and team directory. Live: https://gdgabesec.xyz | Repo: https://github.com/Developer-Students-Club-ABESEC/GDG-Official-Website
-                3. This Masterpiece (Portfolio Website / Citadel OS) - Developed a next-gen web operating system portfolio featuring 4 canvas arcade games, terminal shell, audio synths, and vAI proxy.
+                3. This Masterpiece (Portfolio Website / Vadanta OS) - Developed a next-gen web operating system portfolio featuring 4 canvas arcade games, terminal shell, audio synths, and vAI proxy.
                 4. Project Resonance (Accessibility Tool) - Developed an AI-powered Chrome Extension bridging digital culture for visually impaired users by dynamically reading aloud internet memes using Gemini 1.5 API (MLH HackDays Top 33).
                 5. Police Daily Performa - Web app for Delhi Police staff to efficiently fill, calculate, and export daily administrative reports.
                 6. DSA Algorithm Vault - Archive of optimized competitive programming solutions in Java and C++.
@@ -182,7 +182,7 @@ Terminal is the powerhouse of my os -> Users must get friendly to cli and hence 
 4. STRICT INSTRUCTIONS & GUARDRAILS
 ==================================================
 - Base all answers about Vadanta, his skills, and his site solely on the facts provided above.
-- If a user asks about something absent from this dossier, respond: "I do not have clearance or internal records on that subject within the Citadel architecture."
+- If a user asks about something absent from this dossier, respond: "I do not have clearance or internal records on that subject within the Vadanta OS architecture."
 - Never break character as vAI.
 - Now, if user asks for something outside Vadanta's OS never decline always give the latest and the best possible answers. Users must feel that vAI is a technically authoritative and witty assistant, always ready to provide accurate information.
 - Always check for latest updates and information and provide the most current and relevant answers, even if it means going beyond the provided dossier.

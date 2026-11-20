@@ -10,7 +10,7 @@ const RecruiterMode = React.memo(({ onClose, onOpenApp }) => {
 
   const featuredProjects = [
     {
-      title: "Project Citadel (VADANTA_OS)",
+      title: "VADANTA_OS (Interactive Web Desktop)",
       badge: "Flagship OS",
       description: "Next-gen cyberpunk web operating system featuring real-time terminal shell, 4 canvas arcade engines, reactive widgets, and audio synthesizers.",
       tech: ["React 19", "Vite", "Tailwind", "Canvas API", "GSAP"],
@@ -310,7 +310,7 @@ const RecruiterMode = React.memo(({ onClose, onOpenApp }) => {
           </div>
         </section>
 
-        {/* BOTTOM CTA: RETURN TO THE CITADEL EXPERIENCE */}
+        {/* BOTTOM CTA: RETURN TO THE VADANTA OS EXPERIENCE */}
         <section className="w-full py-8 text-center flex flex-col items-center justify-center gap-3">
           <p className="text-xs text-white/50">
             Want to see the interactive terminal, 4 custom games, live telemetry, and draggable windows?
@@ -322,7 +322,7 @@ const RecruiterMode = React.memo(({ onClose, onOpenApp }) => {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
             </svg>
-            <span>Launch Full Interactive Citadel OS</span>
+            <span>Launch Full Interactive OS</span>
           </button>
         </section>
 

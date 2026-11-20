@@ -1,6 +1,6 @@
 {
-  "name": "Vadanta OS // Citadel",
-  "short_name": "VadantaOS",
+  "name": "Vadanta Kumar Chauhaan",
+  "short_name": "Vadanta",
   "description": "Next-gen Cyberpunk Operating System Portfolio of Vadanta Kumar Chauhaan",
   "start_url": "/",
   "display": "standalone",
@@ -15,9 +15,9 @@
       "purpose": "any maskable"
     },
     {
-      "src": "/profile.png",
+      "src": "/profile.webp",
       "sizes": "512x512",
-      "type": "image/png",
+      "type": "image/webp",
       "purpose": "any"
     }
   ]
