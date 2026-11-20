@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function RecruiterMode({ onClose, onOpenApp }) {
+const RecruiterMode = React.memo(({ onClose, onOpenApp }) => {
   const skills = [
     { category: "Languages", items: ["Java", "JavaScript (ES6+)", "C++", "HTML5/CSS3"] },
     { category: "Frameworks & Libs", items: ["React 19", "Vite 8", "Tailwind CSS v4", "GSAP", "Node.js"] },
@@ -329,4 +329,6 @@ export default function RecruiterMode({ onClose, onOpenApp }) {
       </main>
     </div>
   );
-}
+});
+
+export default RecruiterMode;

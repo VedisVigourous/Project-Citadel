@@ -1,12 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-export default function CustomCursor() {
+const CustomCursor = React.memo(() => {
   const dotRef = useRef(null);
   const trailRef = useRef(null);
+  const currentModeRef = useRef('default');
 
   const [cursorMode, setCursorMode] = useState('default');
 
   useEffect(() => {
+    let rafId = null;
+
     const checkCursorState = (e) => {
       if (!e.target || !(e.target instanceof Element)) return;
       
@@ -15,23 +18,32 @@ export default function CustomCursor() {
         inlineCursor.includes('resize') || 
         e.target.closest('.react-resizable-handle, [class*="resize"]');
 
+      let nextMode = 'default';
       if (isResize) {
-        setCursorMode('resize');
+        nextMode = 'resize';
       } else if (e.target.closest('button, a, .cursor-pointer, input, textarea, .group, [role="button"]')) {
-        setCursorMode('hover');
-      } else {
-        setCursorMode('default');
+        nextMode = 'hover';
+      }
+
+      if (nextMode !== currentModeRef.current) {
+        currentModeRef.current = nextMode;
+        setCursorMode(nextMode);
       }
     };
 
     const onMouseMove = (e) => {
-      const x = e.clientX;
-      const y = e.clientY;
-      if (dotRef.current) {
-        dotRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-      }
-      if (trailRef.current) {
-        trailRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      if (!rafId) {
+        const x = e.clientX;
+        const y = e.clientY;
+        rafId = requestAnimationFrame(() => {
+          if (dotRef.current) {
+            dotRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+          }
+          if (trailRef.current) {
+            trailRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+          }
+          rafId = null;
+        });
       }
     };
 
@@ -41,6 +53,7 @@ export default function CustomCursor() {
     window.addEventListener('mouseover', onMouseOver, { passive: true });
 
     return () => {
+      if (rafId) cancelAnimationFrame(rafId);
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseover', onMouseOver);
     };
@@ -95,4 +108,6 @@ export default function CustomCursor() {
       </div>
     </>
   );
-}
+});
+
+export default CustomCursor;

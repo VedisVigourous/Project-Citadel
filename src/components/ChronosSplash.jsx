@@ -100,8 +100,7 @@ export default function ChronosSplash({ onComplete }) {
         });
       } else {
         tl.to(".center-logo", { scaleY: 0.02, duration: 0.2, ease: "power2.in" })
-          .to(".center-logo", { scaleX: 0, opacity: 0, duration: 0.2, ease: "power2.out" })
-          .set(".phase-1-wrapper", { display: "none" });
+          .to(".center-logo", { scaleX: 0, opacity: 0, duration: 0.2, ease: "power2.out" });
       }
 
       tl.to({}, { duration: 0.3 });

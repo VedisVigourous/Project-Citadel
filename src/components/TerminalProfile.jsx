@@ -37,4 +37,4 @@ const TerminalProfile = ({ themeHue = 0 }) => {
   );
 };
 
-export default TerminalProfile;
+export default React.memo(TerminalProfile);

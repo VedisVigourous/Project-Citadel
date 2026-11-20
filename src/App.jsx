@@ -753,6 +753,7 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
         // 3. Fetch the latest commit for each of those repos concurrently
         const commitPromises = repos.map(async (repo) => {
           try {
+            if (repo.size === 0 || !repo.default_branch) return null;
             const commitResponse = await fetch(
               `https://api.github.com/repos/${username}/${repo.name}/commits?per_page=1`,
             );
@@ -6789,9 +6790,6 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
           <div className="flex-1 w-full relative">
              <Engage2P />
           </div>
-          
-          {/* Subtle Center Divider for the "Tabletop" feel */}
-          <div className="absolute top-1/2 left-0 w-full h-[2px] bg-[#d946ef]/20 -translate-y-1/2 pointer-events-none z-0 border-y border-black"></div>
         </div>
       )}
 

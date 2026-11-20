@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 
-const SurveillanceLogo = () => {
-  const [eyePosition, setEyePosition] = useState({ x: 0, y: 0 });
+const SurveillanceLogo = React.memo(() => {
   const [isDetected, setIsDetected] = useState(false);
   const [showReticle, setShowReticle] = useState(false);
   const [lockedTarget, setLockedTarget] = useState({ x: 0, y: 0 });
 
   const logoRef = useRef(null);
+  const leftPupilRef = useRef(null);
+  const rightPupilRef = useRef(null);
   const currentMouse = useRef({ x: 0, y: 0 });
 
   // 15-second continuous security sweep loop
@@ -28,32 +29,43 @@ const SurveillanceLogo = () => {
     return () => clearInterval(securitySweep);
   }, []);
 
-  // Mouse tracking logic
+  // 60FPS Direct DOM Mouse tracking logic (Zero React re-renders on mousemove!)
   useEffect(() => {
+    let rafId = null;
+
     const handleMouseMove = (e) => {
       currentMouse.current = { x: e.clientX, y: e.clientY };
 
-      if (!logoRef.current) return;
+      if (!rafId) {
+        rafId = requestAnimationFrame(() => {
+          if (logoRef.current) {
+            const rect = logoRef.current.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
 
-      const rect = logoRef.current.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
+            const deltaX = currentMouse.current.x - centerX;
+            const deltaY = currentMouse.current.y - centerY;
+            const angle = Math.atan2(deltaY, deltaX);
 
-      const deltaX = e.clientX - centerX;
-      const deltaY = e.clientY - centerY;
-      const angle = Math.atan2(deltaY, deltaX);
+            const maxDistance = 7;
+            const distance = Math.min(maxDistance, Math.hypot(deltaX, deltaY));
+            const ex = Math.cos(angle) * distance;
+            const ey = Math.sin(angle) * distance;
 
-      const maxDistance = 7;
-      const distance = Math.min(maxDistance, Math.hypot(deltaX, deltaY));
-
-      setEyePosition({
-        x: Math.cos(angle) * distance,
-        y: Math.sin(angle) * distance,
-      });
+            const transformStr = `translate3d(${ex}px, ${ey}px, 0)`;
+            if (leftPupilRef.current) leftPupilRef.current.style.transform = transformStr;
+            if (rightPupilRef.current) rightPupilRef.current.style.transform = transformStr;
+          }
+          rafId = null;
+        });
+      }
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
   }, []);
 
   const eyeColor = isDetected ? "#ef4444" : "#22c55e";
@@ -75,11 +87,12 @@ const SurveillanceLogo = () => {
             style={{ backgroundColor: eyeBgColor, borderColor: eyeBorderColor }}
           >
             <div
-              className="w-4 h-4 rounded-full absolute transition-transform duration-75 ease-out shadow-[0_0_8px_currentColor]"
+              ref={leftPupilRef}
+              className="w-4 h-4 rounded-full absolute transition-transform duration-75 ease-out shadow-[0_0_8px_currentColor] will-change-transform"
               style={{
                 color: eyeColor,
                 backgroundColor: eyeColor,
-                transform: `translate(${eyePosition.x}px, ${eyePosition.y}px)`,
+                transform: `translate3d(0, 0, 0)`,
               }}
             />
           </div>
@@ -90,11 +103,12 @@ const SurveillanceLogo = () => {
             style={{ backgroundColor: eyeBgColor, borderColor: eyeBorderColor }}
           >
             <div
-              className="w-4 h-4 rounded-full absolute transition-transform duration-75 ease-out shadow-[0_0_8px_currentColor]"
+              ref={rightPupilRef}
+              className="w-4 h-4 rounded-full absolute transition-transform duration-75 ease-out shadow-[0_0_8px_currentColor] will-change-transform"
               style={{
                 color: eyeColor,
                 backgroundColor: eyeColor,
-                transform: `translate(${eyePosition.x}px, ${eyePosition.y}px)`,
+                transform: `translate3d(0, 0, 0)`,
               }}
             />
           </div>
@@ -148,6 +162,6 @@ const SurveillanceLogo = () => {
         )}
     </>
   );
-};
+});
 
 export default SurveillanceLogo;

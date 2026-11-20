@@ -435,12 +435,15 @@ const DesktopEngage2P = () => {
 // PART B: BESPOKE MOBILE TABLETOP ARCADE (100% RESPONSIVE DYNAMIC CANVAS)
 // ============================================================================
 
-// 1. MOBILE CYBER AIR HOCKEY (Full Rink with Realistic Momentum & Friction)
+// 1. MOBILE CYBER AIR HOCKEY (Full Rink with Realistic Momentum, Goal Celebration & Cooldown)
 const MobileAirHockey = () => {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
   const [score, setScore] = useState({ p1: 0, p2: 0 });
+  const scoreRef = useRef({ p1: 0, p2: 0 });
   const [matchStarted, setMatchStarted] = useState(false);
+  const [goalBanner, setGoalBanner] = useState(null);
+  const cooldownRef = useRef(false);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -450,7 +453,6 @@ const MobileAirHockey = () => {
     let animId;
     const ctx = canvas.getContext('2d');
 
-    // Dynamic pixel-perfect scaling: exactly matches device width and height
     const resize = () => {
       canvas.width = container.clientWidth;
       canvas.height = container.clientHeight;
@@ -475,14 +477,39 @@ const MobileAirHockey = () => {
     const resetPuck = (towardsP2) => {
       game.puck.x = canvas.width / 2;
       game.puck.y = canvas.height / 2;
-      game.puck.vx = (Math.random() - 0.5) * 4;
-      game.puck.vy = towardsP2 ? -4 : 4;
+      game.puck.vx = (Math.random() - 0.5) * 5;
+      game.puck.vy = towardsP2 ? -5 : 5;
     };
 
     if (matchStarted) resetPuck(true);
 
+    const triggerGoal = (scorer) => {
+      if (cooldownRef.current) return;
+      cooldownRef.current = true;
+
+      if (scorer === 'P1') {
+        scoreRef.current.p1 += 1;
+      } else {
+        scoreRef.current.p2 += 1;
+      }
+      setScore({ ...scoreRef.current });
+      setGoalBanner({
+        scorer: scorer === 'P1' ? 'PLAYER 1' : 'PLAYER 2',
+        color: scorer === 'P1' ? '#22c55e' : '#d946ef',
+        p1: scoreRef.current.p1,
+        p2: scoreRef.current.p2,
+      });
+
+      // 1.3s celebratory cooldown before next faceoff
+      setTimeout(() => {
+        resetPuck(scorer === 'P1');
+        setGoalBanner(null);
+        cooldownRef.current = false;
+      }, 1300);
+    };
+
     const handleTouch = (e) => {
-      if (!matchStarted) return;
+      if (!matchStarted || cooldownRef.current) return;
       e.preventDefault();
       const rect = canvas.getBoundingClientRect();
       const scaleX = canvas.width / rect.width;
@@ -496,7 +523,6 @@ const MobileAirHockey = () => {
         const ty = (t.clientY - rect.top) * scaleY;
 
         if (ty > curH / 2) {
-          // Player 1 (Bottom Half)
           game.p1.prevX = game.p1.x;
           game.p1.prevY = game.p1.y;
           game.p1.x = Math.max(R_MALLET + 8, Math.min(curW - R_MALLET - 8, tx));
@@ -504,7 +530,6 @@ const MobileAirHockey = () => {
           game.p1.vx = game.p1.x - game.p1.prevX;
           game.p1.vy = game.p1.y - game.p1.prevY;
         } else {
-          // Player 2 (Top Half)
           game.p2.prevX = game.p2.x;
           game.p2.prevY = game.p2.y;
           game.p2.x = Math.max(R_MALLET + 8, Math.min(curW - R_MALLET - 8, tx));
@@ -526,10 +551,9 @@ const MobileAirHockey = () => {
       const curGoalLeft = (curW - curGoalW) / 2;
       const curGoalRight = curGoalLeft + curGoalW;
 
-      if (matchStarted) {
-        // Friction
-        game.puck.vx *= 0.99;
-        game.puck.vy *= 0.99;
+      if (matchStarted && !cooldownRef.current) {
+        game.puck.vx *= 0.992;
+        game.puck.vy *= 0.992;
 
         game.puck.x += game.puck.vx;
         game.puck.y += game.puck.vy;
@@ -546,9 +570,7 @@ const MobileAirHockey = () => {
         // Top wall / Goal
         if (game.puck.y - R_PUCK < TOP_SAFE) {
           if (game.puck.x > curGoalLeft && game.puck.x < curGoalRight) {
-            // GOAL P1!
-            setScore(s => ({ ...s, p1: s.p1 + 1 }));
-            resetPuck(false);
+            triggerGoal('P1');
           } else {
             game.puck.y = TOP_SAFE + R_PUCK;
             game.puck.vy *= -1;
@@ -558,9 +580,7 @@ const MobileAirHockey = () => {
         // Bottom wall / Goal
         if (game.puck.y + R_PUCK > curH - BOT_SAFE) {
           if (game.puck.x > curGoalLeft && game.puck.x < curGoalRight) {
-            // GOAL P2!
-            setScore(s => ({ ...s, p2: s.p2 + 1 }));
-            resetPuck(true);
+            triggerGoal('P2');
           } else {
             game.puck.y = curH - BOT_SAFE - R_PUCK;
             game.puck.vy *= -1;
@@ -574,8 +594,8 @@ const MobileAirHockey = () => {
           const dist = Math.hypot(dx, dy);
           if (dist < R_PUCK + R_MALLET) {
             const angle = Math.atan2(dy, dx);
-            const speed = Math.hypot(game.puck.vx, game.puck.vy) + Math.hypot(m.vx, m.vy) * 0.8 + 3.5;
-            const finalSpeed = Math.min(18, Math.max(7, speed));
+            const speed = Math.hypot(game.puck.vx, game.puck.vy) + Math.hypot(m.vx, m.vy) * 0.85 + 4.5;
+            const finalSpeed = Math.min(20, Math.max(8, speed));
             game.puck.vx = Math.cos(angle) * finalSpeed;
             game.puck.vy = Math.sin(angle) * finalSpeed;
             game.puck.x = m.x + Math.cos(angle) * (R_PUCK + R_MALLET + 2);
@@ -643,7 +663,7 @@ const MobileAirHockey = () => {
       ctx.arc(game.p1.x, game.p1.y, R_MALLET * 0.4, 0, Math.PI * 2);
       ctx.fill();
 
-      // Puck (Neon White-Cyan)
+      // Puck (Neon White-Cyan with Speed Blur)
       ctx.fillStyle = '#38bdf8';
       ctx.shadowBlur = 20;
       ctx.shadowColor = '#38bdf8';
@@ -651,7 +671,7 @@ const MobileAirHockey = () => {
       ctx.arc(game.puck.x, game.puck.y, R_PUCK, 0, Math.PI * 2);
       ctx.fill();
 
-      // P2 Inverted Score (Facing Player 2)
+      // Live Inverted Score for P2 (Always reads live scoreRef)
       ctx.save();
       ctx.translate(curW - 25, TOP_SAFE + 35);
       ctx.rotate(Math.PI);
@@ -659,15 +679,15 @@ const MobileAirHockey = () => {
       ctx.fillStyle = '#d946ef';
       ctx.shadowBlur = 10;
       ctx.shadowColor = '#d946ef';
-      ctx.fillText(`P2: ${score.p2}`, 0, 0);
+      ctx.fillText(`P2: ${scoreRef.current.p2}`, 0, 0);
       ctx.restore();
 
-      // P1 Score (Facing Player 1)
+      // Live Score for P1
       ctx.font = 'black 28px monospace';
       ctx.fillStyle = '#22c55e';
       ctx.shadowBlur = 10;
       ctx.shadowColor = '#22c55e';
-      ctx.fillText(`P1: ${score.p1}`, 25, curH - BOT_SAFE - 20);
+      ctx.fillText(`P1: ${scoreRef.current.p1}`, 25, curH - BOT_SAFE - 20);
 
       animId = requestAnimationFrame(loop);
     };
@@ -679,10 +699,30 @@ const MobileAirHockey = () => {
       canvas.removeEventListener('touchmove', handleTouch);
       cancelAnimationFrame(animId);
     };
-  }, [matchStarted, score]);
+  }, [matchStarted]);
 
   return (
     <div ref={containerRef} className="w-full h-full relative overflow-hidden select-none touch-none">
+      {/* Goal Celebration Banner Overlay */}
+      {goalBanner && (
+        <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/60 pointer-events-none animate-[fadeIn_0.15s_ease-out]">
+          <div
+            className="p-5 rounded-2xl border-2 bg-black/95 text-center shadow-[0_0_50px_currentColor] scale-110 transition-transform flex flex-col items-center"
+            style={{ borderColor: goalBanner.color, color: goalBanner.color }}
+          >
+            <div className="text-2xl font-black font-mono tracking-widest animate-bounce">
+              ★ GOAL SCORED! ★
+            </div>
+            <div className="text-xs font-mono font-bold tracking-wider mt-1 text-white">
+              {goalBanner.scorer} GAINED +1 POINT
+            </div>
+            <div className="text-3xl font-mono font-black mt-2 tracking-widest">
+              {goalBanner.p1} : {goalBanner.p2}
+            </div>
+          </div>
+        </div>
+      )}
+
       {!matchStarted && (
         <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 pointer-events-auto">
           <div className="bg-[#0a0a0a] border border-[#22c55e]/50 p-6 rounded-2xl max-w-[320px] w-full text-center shadow-[0_0_35px_rgba(34,197,94,0.25)] flex flex-col items-center">
@@ -716,12 +756,58 @@ const MobileAirHockey = () => {
 };
 
 
-// 2. MOBILE TRON GRID-CYCLE (Straight-Screen Edition with Tap-Turn & Swipes)
+// 2. MOBILE TRON GRID-CYCLE (Tactile Arcade Turn Pedals + Absolute Swipes + Crash Celebration)
 const MobileGridCycle = () => {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
   const [score, setScore] = useState({ p1: 0, p2: 0 });
+  const scoreRef = useRef({ p1: 0, p2: 0 });
   const [gameStarted, setGameStarted] = useState(false);
+  const [crashBanner, setCrashBanner] = useState(null);
+
+  const stateRef = useRef({
+    grid: null,
+    p1: { x: 0, y: 0, dir: 'UP', alive: true },
+    p2: { x: 0, y: 0, dir: 'DOWN', alive: true },
+    resetting: false,
+    cols: 0,
+    rows: 0,
+  });
+
+  // Dedicated Turn Handler (Zero-chaos arcade steering)
+  const steerPlayer = (player, turn) => {
+    const s = stateRef.current;
+    if (!s || s.resetting) return;
+
+    if (player === 'p1') {
+      const cur = s.p1.dir;
+      if (turn === 'left') {
+        if (cur === 'UP') s.p1.dir = 'LEFT';
+        else if (cur === 'LEFT') s.p1.dir = 'DOWN';
+        else if (cur === 'DOWN') s.p1.dir = 'RIGHT';
+        else if (cur === 'RIGHT') s.p1.dir = 'UP';
+      } else {
+        if (cur === 'UP') s.p1.dir = 'RIGHT';
+        else if (cur === 'RIGHT') s.p1.dir = 'DOWN';
+        else if (cur === 'DOWN') s.p1.dir = 'LEFT';
+        else if (cur === 'LEFT') s.p1.dir = 'UP';
+      }
+    } else {
+      // P2 is seated opposite, looking down the screen
+      const cur = s.p2.dir;
+      if (turn === 'left') {
+        if (cur === 'DOWN') s.p2.dir = 'RIGHT';
+        else if (cur === 'RIGHT') s.p2.dir = 'UP';
+        else if (cur === 'UP') s.p2.dir = 'LEFT';
+        else if (cur === 'LEFT') s.p2.dir = 'DOWN';
+      } else {
+        if (cur === 'DOWN') s.p2.dir = 'LEFT';
+        else if (cur === 'LEFT') s.p2.dir = 'UP';
+        else if (cur === 'UP') s.p2.dir = 'RIGHT';
+        else if (cur === 'RIGHT') s.p2.dir = 'DOWN';
+      }
+    }
+  };
 
   useEffect(() => {
     const container = containerRef.current;
@@ -739,75 +825,88 @@ const MobileGridCycle = () => {
     const cols = Math.floor(canvas.width / gridSize);
     const rows = Math.floor(canvas.height / gridSize);
 
-    const state = {
-      grid: Array(cols).fill().map(() => Array(rows).fill(0)),
-      p1: { x: Math.floor(cols / 2), y: rows - 8, dir: 'UP', alive: true },
-      p2: { x: Math.floor(cols / 2), y: 8, dir: 'DOWN', alive: true },
-      resetting: false,
-    };
+    stateRef.current.cols = cols;
+    stateRef.current.rows = rows;
 
     const initRound = () => {
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      state.grid = Array(cols).fill().map(() => Array(rows).fill(0));
-      state.p1 = { x: Math.floor(cols / 2), y: rows - 8, dir: 'UP', alive: true };
-      state.p2 = { x: Math.floor(cols / 2), y: 8, dir: 'DOWN', alive: true };
-      state.resetting = false;
+      stateRef.current.grid = Array(cols).fill().map(() => Array(rows).fill(0));
+      stateRef.current.p1 = { x: Math.floor(cols / 2), y: rows - 8, dir: 'UP', alive: true };
+      stateRef.current.p2 = { x: Math.floor(cols / 2), y: 8, dir: 'DOWN', alive: true };
+      stateRef.current.resetting = false;
+      setCrashBanner(null);
     };
 
-    // Tactical Tap-to-Turn: Tapping left/right side of your zone turns 90 degrees
-    const handleTouch = (e) => {
-      e.preventDefault();
+    // Absolute touch gesture detection (swiping strictly within your half)
+    const touchStarts = {};
+    const handleTouchStart = (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        const t = e.changedTouches[i];
+        touchStarts[t.identifier] = {
+          x: (t.clientX - rect.left) * scaleX,
+          y: (t.clientY - rect.top) * scaleY,
+        };
+      }
+    };
+
+    const handleTouchEnd = (e) => {
       const rect = canvas.getBoundingClientRect();
       const scaleX = canvas.width / rect.width;
       const scaleY = canvas.height / rect.height;
 
       for (let i = 0; i < e.changedTouches.length; i++) {
         const t = e.changedTouches[i];
-        const tx = (t.clientX - rect.left) * scaleX;
-        const ty = (t.clientY - rect.top) * scaleY;
+        const start = touchStarts[t.identifier];
+        if (!start) continue;
 
-        if (ty > canvas.height / 2) {
-          // Player 1 (Bottom)
-          if (tx < canvas.width / 2) {
-            // Turn Left
-            if (state.p1.dir === 'UP') state.p1.dir = 'LEFT';
-            else if (state.p1.dir === 'DOWN') state.p1.dir = 'RIGHT';
-            else if (state.p1.dir === 'LEFT') state.p1.dir = 'DOWN';
-            else if (state.p1.dir === 'RIGHT') state.p1.dir = 'UP';
-          } else {
-            // Turn Right
-            if (state.p1.dir === 'UP') state.p1.dir = 'RIGHT';
-            else if (state.p1.dir === 'DOWN') state.p1.dir = 'LEFT';
-            else if (state.p1.dir === 'LEFT') state.p1.dir = 'UP';
-            else if (state.p1.dir === 'RIGHT') state.p1.dir = 'DOWN';
+        const endX = (t.clientX - rect.left) * scaleX;
+        const endY = (t.clientY - rect.top) * scaleY;
+        const dx = endX - start.x;
+        const dy = endY - start.y;
+        delete touchStarts[t.identifier];
+
+        const s = stateRef.current;
+        if (!s || s.resetting) continue;
+
+        // Player 1 (Bottom Half)
+        if (start.y > canvas.height / 2) {
+          if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 15) {
+            if (dx < 0 && s.p1.dir !== 'RIGHT') s.p1.dir = 'LEFT';
+            if (dx > 0 && s.p1.dir !== 'LEFT') s.p1.dir = 'RIGHT';
+          } else if (Math.abs(dy) > 15) {
+            if (dy < 0 && s.p1.dir !== 'DOWN') s.p1.dir = 'UP';
+            if (dy > 0 && s.p1.dir !== 'UP') s.p1.dir = 'DOWN';
           }
         } else {
-          // Player 2 (Top - oriented for player sitting across)
-          if (tx < canvas.width / 2) {
-            if (state.p2.dir === 'DOWN') state.p2.dir = 'RIGHT';
-            else if (state.p2.dir === 'UP') state.p2.dir = 'LEFT';
-            else if (state.p2.dir === 'LEFT') state.p2.dir = 'UP';
-            else if (state.p2.dir === 'RIGHT') state.p2.dir = 'DOWN';
-          } else {
-            if (state.p2.dir === 'DOWN') state.p2.dir = 'LEFT';
-            else if (state.p2.dir === 'UP') state.p2.dir = 'RIGHT';
-            else if (state.p2.dir === 'LEFT') state.p2.dir = 'DOWN';
-            else if (state.p2.dir === 'RIGHT') state.p2.dir = 'UP';
+          // Player 2 (Top Half)
+          if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 15) {
+            // Note: from P2's viewpoint, screen-left is their right
+            if (dx < 0 && s.p2.dir !== 'RIGHT') s.p2.dir = 'LEFT';
+            if (dx > 0 && s.p2.dir !== 'LEFT') s.p2.dir = 'RIGHT';
+          } else if (Math.abs(dy) > 15) {
+            if (dy < 0 && s.p2.dir !== 'DOWN') s.p2.dir = 'UP';
+            if (dy > 0 && s.p2.dir !== 'UP') s.p2.dir = 'DOWN';
           }
         }
       }
     };
 
-    canvas.addEventListener('touchstart', handleTouch, { passive: false });
+    canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+    canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
 
     const update = (time) => {
       if (!lastTime) lastTime = time;
-      if (time - lastTime > 1000 / 22 && !state.resetting) {
+      const s = stateRef.current;
+
+      if (time - lastTime > 1000 / 22 && s && !s.resetting) {
         lastTime = time;
 
         // Move Players
-        [state.p1, state.p2].forEach((p) => {
+        [s.p1, s.p2].forEach((p) => {
           if (p.dir === 'UP') p.y--;
           if (p.dir === 'DOWN') p.y++;
           if (p.dir === 'LEFT') p.x--;
@@ -815,29 +914,38 @@ const MobileGridCycle = () => {
         });
 
         // Check Collisions
-        const p1Hit = state.p1.x < 0 || state.p1.x >= cols || state.p1.y < 0 || state.p1.y >= rows || state.grid[state.p1.x][state.p1.y] !== 0;
-        const p2Hit = state.p2.x < 0 || state.p2.x >= cols || state.p2.y < 0 || state.p2.y >= rows || state.grid[state.p2.x][state.p2.y] !== 0;
+        const p1Hit = s.p1.x < 0 || s.p1.x >= cols || s.p1.y < 0 || s.p1.y >= rows || s.grid[s.p1.x][s.p1.y] !== 0;
+        const p2Hit = s.p2.x < 0 || s.p2.x >= cols || s.p2.y < 0 || s.p2.y >= rows || s.grid[s.p2.x][s.p2.y] !== 0;
 
         if (p1Hit || p2Hit) {
-          state.resetting = true;
-          setScore((s) => ({
-            p1: s.p1 + (!p1Hit && p2Hit ? 1 : 0),
-            p2: s.p2 + (p1Hit && !p2Hit ? 1 : 0),
-          }));
-          setTimeout(initRound, 1200);
+          s.resetting = true;
+          let winner = null;
+          if (!p1Hit && p2Hit) {
+            scoreRef.current.p1 += 1;
+            winner = { name: 'PLAYER 1', color: '#22c55e', text: 'P2 DEREZZED! P1 SCORES +1' };
+          } else if (p1Hit && !p2Hit) {
+            scoreRef.current.p2 += 1;
+            winner = { name: 'PLAYER 2', color: '#d946ef', text: 'P1 DEREZZED! P2 SCORES +1' };
+          } else {
+            winner = { name: 'MUTUAL CRASH', color: '#eab308', text: 'SIMULTANEOUS SYSTEM DEREZZ' };
+          }
+
+          setScore({ ...scoreRef.current });
+          setCrashBanner(winner);
+          setTimeout(initRound, 1400);
         } else {
-          state.grid[state.p1.x][state.p1.y] = 1;
-          state.grid[state.p2.x][state.p2.y] = 2;
+          s.grid[s.p1.x][s.p1.y] = 1;
+          s.grid[s.p2.x][s.p2.y] = 2;
 
           ctx.fillStyle = '#22c55e';
           ctx.shadowBlur = 10;
           ctx.shadowColor = '#22c55e';
-          ctx.fillRect(state.p1.x * gridSize, state.p1.y * gridSize, gridSize - 1, gridSize - 1);
+          ctx.fillRect(s.p1.x * gridSize, s.p1.y * gridSize, gridSize - 1, gridSize - 1);
 
           ctx.fillStyle = '#d946ef';
           ctx.shadowBlur = 10;
           ctx.shadowColor = '#d946ef';
-          ctx.fillRect(state.p2.x * gridSize, state.p2.y * gridSize, gridSize - 1, gridSize - 1);
+          ctx.fillRect(s.p2.x * gridSize, s.p2.y * gridSize, gridSize - 1, gridSize - 1);
         }
       }
       animId = requestAnimationFrame(update);
@@ -846,13 +954,78 @@ const MobileGridCycle = () => {
     initRound();
     animId = requestAnimationFrame(update);
     return () => {
-      canvas.removeEventListener('touchstart', handleTouch);
+      canvas.removeEventListener('touchstart', handleTouchStart);
+      canvas.removeEventListener('touchend', handleTouchEnd);
       cancelAnimationFrame(animId);
     };
   }, [gameStarted]);
 
   return (
     <div ref={containerRef} className="w-full h-full relative overflow-hidden select-none touch-none">
+      {/* Crash Celebration Banner */}
+      {crashBanner && (
+        <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/60 pointer-events-none animate-[fadeIn_0.15s_ease-out]">
+          <div
+            className="p-5 rounded-2xl border-2 bg-black/95 text-center shadow-[0_0_40px_currentColor] scale-110 transition-transform flex flex-col items-center"
+            style={{ borderColor: crashBanner.color, color: crashBanner.color }}
+          >
+            <div className="text-xl font-black font-mono tracking-widest animate-pulse">
+              💥 {crashBanner.name} 💥
+            </div>
+            <div className="text-xs font-mono font-bold tracking-wider mt-1 text-white">
+              {crashBanner.text}
+            </div>
+            <div className="text-2xl font-mono font-black mt-2 tracking-widest">
+              {scoreRef.current.p1} : {scoreRef.current.p2}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tactile Ergonomic Steer Buttons - P2 (Top, Inverted for Player 2) */}
+      {gameStarted && (
+        <div className="absolute top-2 left-0 w-full px-3 flex justify-between z-20 pointer-events-auto rotate-180">
+          <button
+            type="button"
+            onTouchStart={(e) => { e.preventDefault(); steerPlayer('p2', 'left'); }}
+            onClick={() => steerPlayer('p2', 'left')}
+            className="px-4 py-2 rounded-xl bg-[#d946ef]/20 border border-[#d946ef] text-[#d946ef] font-mono font-black text-xs tracking-wider active:scale-95 shadow-[0_0_15px_rgba(217,70,239,0.5)] cursor-pointer"
+          >
+            ⮜ TURN
+          </button>
+          <button
+            type="button"
+            onTouchStart={(e) => { e.preventDefault(); steerPlayer('p2', 'right'); }}
+            onClick={() => steerPlayer('p2', 'right')}
+            className="px-4 py-2 rounded-xl bg-[#d946ef]/20 border border-[#d946ef] text-[#d946ef] font-mono font-black text-xs tracking-wider active:scale-95 shadow-[0_0_15px_rgba(217,70,239,0.5)] cursor-pointer"
+          >
+            TURN ⮞
+          </button>
+        </div>
+      )}
+
+      {/* Tactile Ergonomic Steer Buttons - P1 (Bottom for Player 1) */}
+      {gameStarted && (
+        <div className="absolute bottom-2 left-0 w-full px-3 flex justify-between z-20 pointer-events-auto">
+          <button
+            type="button"
+            onTouchStart={(e) => { e.preventDefault(); steerPlayer('p1', 'left'); }}
+            onClick={() => steerPlayer('p1', 'left')}
+            className="px-4 py-2 rounded-xl bg-[#22c55e]/20 border border-[#22c55e] text-[#22c55e] font-mono font-black text-xs tracking-wider active:scale-95 shadow-[0_0_15px_rgba(34,197,94,0.5)] cursor-pointer"
+          >
+            ⮜ TURN
+          </button>
+          <button
+            type="button"
+            onTouchStart={(e) => { e.preventDefault(); steerPlayer('p1', 'right'); }}
+            onClick={() => steerPlayer('p1', 'right')}
+            className="px-4 py-2 rounded-xl bg-[#22c55e]/20 border border-[#22c55e] text-[#22c55e] font-mono font-black text-xs tracking-wider active:scale-95 shadow-[0_0_15px_rgba(34,197,94,0.5)] cursor-pointer"
+          >
+            TURN ⮞
+          </button>
+        </div>
+      )}
+
       {!gameStarted && (
         <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 pointer-events-auto">
           <div className="bg-[#0a0a0a] border border-[#d946ef]/50 p-6 rounded-2xl max-w-[320px] w-full text-center shadow-[0_0_35px_rgba(217,70,239,0.25)] flex flex-col items-center">
@@ -863,7 +1036,7 @@ const MobileGridCycle = () => {
               NEON TRON
             </h3>
             <p className="text-white/70 text-xs font-mono leading-relaxed mb-6">
-              Vertical Lightcycle duel. Tap the left or right side of your half to steer 90°. Trap your opponent with your trail!
+              Vertical Lightcycle duel. Use the glowing corner Turn buttons or direct swipes on your half to maneuver. Trap your opponent in your neon trail!
             </p>
             <button
               type="button"
@@ -886,7 +1059,7 @@ const MobileGridCycle = () => {
 };
 
 
-// 3. MOBILE LASER CLASH (High-Voltage Neon Tap Tug-of-War)
+// 3. MOBILE LASER CLASH (High-Voltage Neon Tap Tug-of-War + Celebration)
 const MobileLaserClash = () => {
   const [beamPos, setBeamPos] = useState(0.5); // 0.0 (P1 win) to 1.0 (P2 win)
   const [score, setScore] = useState({ p1: 0, p2: 0 });
@@ -1007,12 +1180,15 @@ const MobileLaserClash = () => {
 };
 
 
-// 4. MOBILE TABLETOP PONG (Straight-Screen Padded Baseline Edition)
+// 4. MOBILE TABLETOP PONG (High-Speed Challenging Ball Rate + Working Score + Goal Celebration)
 const MobilePong = () => {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
   const [score, setScore] = useState({ p1: 0, p2: 0 });
+  const scoreRef = useRef({ p1: 0, p2: 0 });
   const [gameStarted, setGameStarted] = useState(false);
+  const [aceBanner, setAceBanner] = useState(null);
+  const cooldownRef = useRef(false);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -1027,25 +1203,54 @@ const MobilePong = () => {
 
     const W = canvas.width;
     const H = canvas.height;
-    const paddleW = W * 0.3;
+    const paddleW = W * 0.28;
     const paddleH = 14;
     const TOP_PAD = 32;
     const BOT_PAD = 32;
 
+    // Upgraded Ball with Fast, Challenging Dynamics
     const game = {
       p1: { x: (W - paddleW) / 2, y: H - BOT_PAD - paddleH },
       p2: { x: (W - paddleW) / 2, y: TOP_PAD },
-      ball: { x: W / 2, y: H / 2, dx: 3.5, dy: 5, radius: 8 },
+      ball: { x: W / 2, y: H / 2, dx: 6.5, dy: 9, radius: 8 },
+      rallies: 0,
     };
 
-    const resetBall = () => {
+    const resetBall = (towardsP2) => {
       game.ball.x = canvas.width / 2;
       game.ball.y = canvas.height / 2;
-      game.ball.dx = (Math.random() > 0.5 ? 1 : -1) * 3.5;
-      game.ball.dy = (Math.random() > 0.5 ? 1 : -1) * 5;
+      game.ball.dx = (Math.random() > 0.5 ? 1 : -1) * (6 + Math.random() * 2);
+      game.ball.dy = towardsP2 ? -9 : 9;
+      game.rallies = 0;
+    };
+
+    const triggerAce = (scorer) => {
+      if (cooldownRef.current) return;
+      cooldownRef.current = true;
+
+      if (scorer === 'P1') {
+        scoreRef.current.p1 += 1;
+      } else {
+        scoreRef.current.p2 += 1;
+      }
+      setScore({ ...scoreRef.current });
+      setAceBanner({
+        scorer: scorer === 'P1' ? 'PLAYER 1' : 'PLAYER 2',
+        color: scorer === 'P1' ? '#22c55e' : '#d946ef',
+        p1: scoreRef.current.p1,
+        p2: scoreRef.current.p2,
+      });
+
+      // 1.3s celebration freeze
+      setTimeout(() => {
+        resetBall(scorer === 'P1');
+        setAceBanner(null);
+        cooldownRef.current = false;
+      }, 1300);
     };
 
     const handleTouch = (e) => {
+      if (cooldownRef.current) return;
       e.preventDefault();
       const rect = canvas.getBoundingClientRect();
       const scaleX = canvas.width / rect.width;
@@ -1073,52 +1278,56 @@ const MobilePong = () => {
       const curW = canvas.width;
       const curH = canvas.height;
 
-      // Ball Physics
-      game.ball.x += game.ball.dx;
-      game.ball.y += game.ball.dy;
+      if (!cooldownRef.current) {
+        // High Speed Ball Movement
+        game.ball.x += game.ball.dx;
+        game.ball.y += game.ball.dy;
 
-      // Bounce side walls
-      if (game.ball.x - game.ball.radius < 8) {
-        game.ball.x = game.ball.radius + 8;
-        game.ball.dx *= -1;
-      } else if (game.ball.x + game.ball.radius > curW - 8) {
-        game.ball.x = curW - 8 - game.ball.radius;
-        game.ball.dx *= -1;
-      }
+        // Bounce side walls
+        if (game.ball.x - game.ball.radius < 8) {
+          game.ball.x = game.ball.radius + 8;
+          game.ball.dx *= -1;
+        } else if (game.ball.x + game.ball.radius > curW - 8) {
+          game.ball.x = curW - 8 - game.ball.radius;
+          game.ball.dx *= -1;
+        }
 
-      // Hit P1 (Bottom)
-      if (
-        game.ball.y + game.ball.radius >= game.p1.y &&
-        game.ball.y - game.ball.radius <= game.p1.y + paddleH &&
-        game.ball.x >= game.p1.x &&
-        game.ball.x <= game.p1.x + paddleW &&
-        game.ball.dy > 0
-      ) {
-        game.ball.dy = -Math.abs(game.ball.dy) * 1.05;
-        const offset = (game.ball.x - (game.p1.x + paddleW / 2)) / (paddleW / 2);
-        game.ball.dx = offset * 6;
-      }
+        // Hit P1 (Bottom) - Accelerate with deflection angle!
+        if (
+          game.ball.y + game.ball.radius >= game.p1.y &&
+          game.ball.y - game.ball.radius <= game.p1.y + paddleH &&
+          game.ball.x >= game.p1.x &&
+          game.ball.x <= game.p1.x + paddleW &&
+          game.ball.dy > 0
+        ) {
+          game.rallies += 1;
+          const speed = Math.min(22, Math.abs(game.ball.dy) * 1.07);
+          game.ball.dy = -speed;
+          const offset = (game.ball.x - (game.p1.x + paddleW / 2)) / (paddleW / 2);
+          game.ball.dx = offset * 8;
+        }
 
-      // Hit P2 (Top)
-      if (
-        game.ball.y - game.ball.radius <= game.p2.y + paddleH &&
-        game.ball.y + game.ball.radius >= game.p2.y &&
-        game.ball.x >= game.p2.x &&
-        game.ball.x <= game.p2.x + paddleW &&
-        game.ball.dy < 0
-      ) {
-        game.ball.dy = Math.abs(game.ball.dy) * 1.05;
-        const offset = (game.ball.x - (game.p2.x + paddleW / 2)) / (paddleW / 2);
-        game.ball.dx = offset * 6;
-      }
+        // Hit P2 (Top) - Accelerate with deflection angle!
+        if (
+          game.ball.y - game.ball.radius <= game.p2.y + paddleH &&
+          game.ball.y + game.ball.radius >= game.p2.y &&
+          game.ball.x >= game.p2.x &&
+          game.ball.x <= game.p2.x + paddleW &&
+          game.ball.dy < 0
+        ) {
+          game.rallies += 1;
+          const speed = Math.min(22, Math.abs(game.ball.dy) * 1.07);
+          game.ball.dy = speed;
+          const offset = (game.ball.x - (game.p2.x + paddleW / 2)) / (paddleW / 2);
+          game.ball.dx = offset * 8;
+        }
 
-      // Score
-      if (game.ball.y < 0) {
-        setScore((s) => ({ ...s, p1: s.p1 + 1 }));
-        resetBall();
-      } else if (game.ball.y > curH) {
-        setScore((s) => ({ ...s, p2: s.p2 + 1 }));
-        resetBall();
+        // Scoring (Point triggers celebration and increments live scoreRef)
+        if (game.ball.y < 0) {
+          triggerGoal('P1');
+        } else if (game.ball.y > curH) {
+          triggerGoal('P2');
+        }
       }
 
       // Render
@@ -1142,27 +1351,31 @@ const MobilePong = () => {
       ctx.shadowColor = '#d946ef';
       ctx.fillRect(game.p2.x, game.p2.y, paddleW, paddleH);
 
-      // Ball
+      // Ball with Speed Glow
       ctx.fillStyle = '#ffffff';
-      ctx.shadowBlur = 15;
-      ctx.shadowColor = '#ffffff';
+      ctx.shadowBlur = 18;
+      ctx.shadowColor = '#38bdf8';
       ctx.beginPath();
       ctx.arc(game.ball.x, game.ball.y, game.ball.radius, 0, Math.PI * 2);
       ctx.fill();
 
-      // P2 Score
+      // P2 Inverted Score (Reads live scoreRef)
       ctx.save();
       ctx.translate(curW - 25, TOP_PAD + 30);
       ctx.rotate(Math.PI);
       ctx.font = 'bold 26px monospace';
       ctx.fillStyle = '#d946ef';
-      ctx.fillText(`P2: ${score.p2}`, 0, 0);
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = '#d946ef';
+      ctx.fillText(`P2: ${scoreRef.current.p2}`, 0, 0);
       ctx.restore();
 
-      // P1 Score
+      // P1 Score (Reads live scoreRef)
       ctx.font = 'bold 26px monospace';
       ctx.fillStyle = '#22c55e';
-      ctx.fillText(`P1: ${score.p1}`, 25, curH - BOT_PAD - 15);
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = '#22c55e';
+      ctx.fillText(`P1: ${scoreRef.current.p1}`, 25, curH - BOT_PAD - 15);
 
       animId = requestAnimationFrame(loop);
     };
@@ -1177,6 +1390,26 @@ const MobilePong = () => {
 
   return (
     <div ref={containerRef} className="w-full h-full relative overflow-hidden select-none touch-none">
+      {/* Ace Celebration Banner */}
+      {aceBanner && (
+        <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/60 pointer-events-none animate-[fadeIn_0.15s_ease-out]">
+          <div
+            className="p-5 rounded-2xl border-2 bg-black/95 text-center shadow-[0_0_40px_currentColor] scale-110 transition-transform flex flex-col items-center"
+            style={{ borderColor: aceBanner.color, color: aceBanner.color }}
+          >
+            <div className="text-2xl font-black font-mono tracking-widest animate-bounce">
+              ★ POINT SCORED! ★
+            </div>
+            <div className="text-xs font-mono font-bold tracking-wider mt-1 text-white">
+              {aceBanner.scorer} SCORED +1
+            </div>
+            <div className="text-3xl font-mono font-black mt-2 tracking-widest">
+              {aceBanner.p1} : {aceBanner.p2}
+            </div>
+          </div>
+        </div>
+      )}
+
       {!gameStarted && (
         <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 pointer-events-auto">
           <div className="bg-[#0a0a0a] border border-[#22c55e]/50 p-6 rounded-2xl max-w-[320px] w-full text-center shadow-[0_0_35px_rgba(34,197,94,0.25)] flex flex-col items-center">
@@ -1187,7 +1420,7 @@ const MobilePong = () => {
               TABLETOP PONG
             </h3>
             <p className="text-white/70 text-xs font-mono leading-relaxed mb-6">
-              Classic vertical head-to-head tennis. Slide your finger along your baseline to deflect the data packet past your rival!
+              High-velocity reflex tennis. Slide along your baseline to deflect the hyper-ball. Each volley accelerates the speed!
             </p>
             <button
               type="button"

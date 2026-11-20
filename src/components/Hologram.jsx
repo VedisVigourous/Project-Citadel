@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 
-export default function Hologram() {
+const Hologram = React.memo(() => {
   const containerRef = useRef(null);
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
@@ -76,4 +76,6 @@ export default function Hologram() {
       </div>
     </div>
   );
-}
+});
+
+export default Hologram;
