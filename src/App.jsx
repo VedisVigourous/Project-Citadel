@@ -722,9 +722,9 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
   const [isEngageMaximized, setIsEngageMaximized] = useState(false);
   const [engageConfig, setEngageConfig] = useState({
     x: window.innerWidth > 900 ? window.innerWidth / 2 - 450 : 20,
-    y: 50,
+    y: 40,
     width: 900,
-    height: 650,
+    height: 670,
   });
 
   // --- GITHUB LIVE COMMIT STREAM ---

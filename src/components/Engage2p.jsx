@@ -414,17 +414,49 @@ const DesktopCyberVolley = () => {
   );
 };
 
-// 2. MOBILE CYBER CHESS (Tabletop 2P Neon Grandmaster Engine powered by Chess.js)
+// 2. MOBILE & DESKTOP CYBER CHESS (Tabletop 2P Neon Grandmaster Engine powered by Chess.js)
 const CyberChess2P = ({ isDesktop = false }) => {
   const [chess] = useState(() => new Chess());
   const [fen, setFen] = useState(chess.fen());
   const [selectedSquare, setSelectedSquare] = useState(null);
   const [validMoves, setValidMoves] = useState([]);
   const [lastMove, setLastMove] = useState(null);
-  const [matchStarted, setMatchStarted] = useState(false);
-  const [tabletopOrientation, setTabletopOrientation] = useState(!isDesktop);
+  const [matchStarted, setMatchStarted] = useState(isDesktop);
+  const [tabletopOrientation, setTabletopOrientation] = useState(false);
   const [captured, setCaptured] = useState({ w: [], b: [] });
   const [historyCount, setHistoryCount] = useState(0);
+
+  // Keyboard Navigation: { fileIdx: 0..7 (a..h), rankIdx: 0..7 (8..1) }
+  const [kbCursor, setKbCursor] = useState({ fileIdx: 4, rankIdx: 6 }); // Defaults to White e2 pawn
+  const kbCursorRef = useRef(kbCursor);
+  useEffect(() => {
+    kbCursorRef.current = kbCursor;
+  }, [kbCursor]);
+
+  // Responsive Dynamic Board Sizing to physically prevent any overflow
+  const boardBoxRef = useRef(null);
+  const [boardSize, setBoardSize] = useState(320);
+
+  useEffect(() => {
+    if (!boardBoxRef.current) return;
+    const updateSize = () => {
+      if (!boardBoxRef.current) return;
+      const rect = boardBoxRef.current.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        const size = Math.max(160, Math.floor(Math.min(rect.width - 12, rect.height - 12, isDesktop ? 440 : 380)));
+        setBoardSize(size);
+      }
+    };
+
+    updateSize();
+    const ro = new ResizeObserver(updateSize);
+    ro.observe(boardBoxRef.current);
+    window.addEventListener('resize', updateSize);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', updateSize);
+    };
+  }, [isDesktop]);
 
   const turn = chess.turn(); // 'w' or 'b'
   const inCheck = chess.inCheck();
@@ -490,6 +522,8 @@ const CyberChess2P = ({ isDesktop = false }) => {
         if (moveRes) {
           playMoveAudio(Boolean(moveRes.captured));
           updateGameState(moveRes);
+          setSelectedSquare(null);
+          setValidMoves([]);
           return;
         }
       } catch (err) {
@@ -517,9 +551,60 @@ const CyberChess2P = ({ isDesktop = false }) => {
     setValidMoves([]);
   };
 
+  const handleSquareClickRef = useRef(handleSquareClick);
+  useEffect(() => {
+    handleSquareClickRef.current = handleSquareClick;
+  });
+
+  const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+  const ranks = ['8', '7', '6', '5', '4', '3', '2', '1'];
+
+  // KEYBOARD NAVIGATION: WASD & Arrow keys move cursor; Enter / Space selects or moves; Esc deselects
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (chess.isGameOver()) return;
+      if (['INPUT', 'TEXTAREA'].includes(e.target?.tagName) || e.target?.isContentEditable) return;
+
+      const key = e.key.toLowerCase();
+
+      if (key === 'w' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        setKbCursor((prev) => ({ ...prev, rankIdx: Math.max(0, prev.rankIdx - 1) }));
+      } else if (key === 's' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        setKbCursor((prev) => ({ ...prev, rankIdx: Math.min(7, prev.rankIdx + 1) }));
+      } else if (key === 'a' || e.key === 'ArrowLeft') {
+        e.preventDefault();
+        setKbCursor((prev) => ({ ...prev, fileIdx: Math.max(0, prev.fileIdx - 1) }));
+      } else if (key === 'd' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        setKbCursor((prev) => ({ ...prev, fileIdx: Math.min(7, prev.fileIdx + 1) }));
+      } else if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        const sq = files[kbCursorRef.current.fileIdx] + ranks[kbCursorRef.current.rankIdx];
+        if (handleSquareClickRef.current) {
+          handleSquareClickRef.current(sq);
+        }
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        setSelectedSquare(null);
+        setValidMoves([]);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [chess]);
+
+  const onSquareSelect = (sq, fIdx, rIdx) => {
+    setKbCursor({ fileIdx: fIdx, rankIdx: rIdx });
+    handleSquareClick(sq);
+  };
+
   const handleReset = () => {
     chess.reset();
     setLastMove(null);
+    setKbCursor({ fileIdx: 4, rankIdx: 6 });
     updateGameState();
   };
 
@@ -527,9 +612,6 @@ const CyberChess2P = ({ isDesktop = false }) => {
     chess.undo();
     updateGameState();
   };
-
-  const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-  const ranks = ['8', '7', '6', '5', '4', '3', '2', '1'];
 
   const PIECE_GLYPHS = {
     k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟'
@@ -548,37 +630,50 @@ const CyberChess2P = ({ isDesktop = false }) => {
 
   return (
     <div className="w-full h-full flex flex-col bg-[#030604] relative overflow-hidden select-none touch-none font-mono">
-      {/* TABLETOP P2 HUD (Top Player - Black) */}
-      <div className={`w-full px-3 py-1.5 flex items-center justify-between border-b border-white/10 bg-[#080d09] shrink-0 ${tabletopOrientation ? 'rotate-180' : ''}`}>
+      {/* TABLETOP P2 HUD (Top Player - Black) with Integrated Tabletop Orientation Toggle */}
+      <div className={`w-full px-3 py-1 flex items-center justify-between border-b border-white/10 bg-[#080d09] shrink-0 ${tabletopOrientation ? 'rotate-180' : ''}`}>
         <div className="flex items-center gap-2">
           <span className="w-2.5 h-2.5 rounded-full bg-[#d946ef] shadow-[0_0_8px_#d946ef]"></span>
           <span className="text-[11px] font-black text-[#d946ef] tracking-wider">P2 // BLACK</span>
           {turn === 'b' && (
-            <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-[#d946ef]/20 text-[#d946ef] border border-[#d946ef]/50 animate-pulse">
+            <span className="text-[9px] font-black px-1.5 py-0.2 rounded bg-[#d946ef]/20 text-[#d946ef] border border-[#d946ef]/50 animate-pulse">
               YOUR TURN
             </span>
           )}
         </div>
-        {/* Captured White Pieces */}
-        <div className="flex items-center gap-0.5 text-xs text-[#22c55e]/70">
-          {captured.b.map((p, idx) => (
-            <span key={idx}>{PIECE_GLYPHS[p] || p}</span>
-          ))}
+        <div className="flex items-center gap-2">
+          {/* Captured White Pieces */}
+          <div className="flex items-center gap-0.5 text-xs text-[#22c55e]/70">
+            {captured.b.map((p, idx) => (
+              <span key={idx}>{PIECE_GLYPHS[p] || p}</span>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => setTabletopOrientation(!tabletopOrientation)}
+            className="px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500 hover:text-black font-mono text-[8px] font-bold tracking-wider uppercase transition-all cursor-pointer"
+            title="Rotate Black pieces 180° for tabletop view"
+          >
+            ⇅ {tabletopOrientation ? '180°' : '0°'}
+          </button>
         </div>
       </div>
 
       {/* CHECK ALERT BANNER */}
       {inCheck && !isGameOver && (
-        <div className="w-full bg-red-600/30 border-y border-red-500 py-1 text-center shrink-0 animate-pulse">
+        <div className="w-full bg-red-600/30 border-y border-red-500 py-0.5 text-center shrink-0 animate-pulse">
           <span className="text-red-400 text-[10px] font-black tracking-widest uppercase">
             ⚠ SYSTEM ALERT: {turn === 'w' ? 'WHITE' : 'BLACK'} KING IS IN CHECK!
           </span>
         </div>
       )}
 
-      {/* CHESS BOARD CONTAINER */}
-      <div className="flex-1 w-full flex items-center justify-center p-2 min-h-0">
-        <div className="w-full max-w-[370px] md:max-w-[460px] aspect-square rounded-xl border-2 border-[#22c55e]/40 shadow-[0_0_25px_rgba(34,197,94,0.15)] bg-[#040805] p-1 flex flex-col justify-between overflow-hidden">
+      {/* CHESS BOARD CONTAINER (Guaranteed 100% Fit without Vertical or Horizontal Overflow) */}
+      <div ref={boardBoxRef} className="flex-1 w-full min-h-0 flex items-center justify-center p-1 sm:p-2 overflow-hidden">
+        <div
+          style={{ width: `${boardSize}px`, height: `${boardSize}px` }}
+          className="rounded-xl border-2 border-[#22c55e]/40 shadow-[0_0_25px_rgba(34,197,94,0.15)] bg-[#040805] p-1 flex flex-col justify-between overflow-hidden shrink-0 transition-all duration-150"
+        >
           {ranks.map((rank, rankIdx) => (
             <div key={rank} className="flex-1 flex w-full">
               {files.map((file, fileIdx) => {
@@ -589,6 +684,7 @@ const CyberChess2P = ({ isDesktop = false }) => {
                 const isValidDest = validMoves.includes(sq);
                 const isLastMoveSq = lastMove && (lastMove.from === sq || lastMove.to === sq);
                 const isCheckKing = inCheck && piece && piece.type === 'k' && piece.color === turn;
+                const isKbTarget = fileIdx === kbCursor.fileIdx && rankIdx === kbCursor.rankIdx;
 
                 // Base square background
                 let bgClass = isLight ? 'bg-[#0f2417]' : 'bg-[#061009]';
@@ -604,10 +700,10 @@ const CyberChess2P = ({ isDesktop = false }) => {
                   <button
                     key={sq}
                     type="button"
-                    onClick={() => handleSquareClick(sq)}
+                    onClick={() => onSquareSelect(sq, fileIdx, rankIdx)}
                     onTouchEnd={(e) => {
                       e.preventDefault();
-                      handleSquareClick(sq);
+                      onSquareSelect(sq, fileIdx, rankIdx);
                     }}
                     className={`flex-1 h-full relative flex items-center justify-center transition-colors cursor-pointer ${bgClass} ${
                       isSelected ? 'border-2 border-white/80' : 'border border-black/20'
@@ -615,16 +711,20 @@ const CyberChess2P = ({ isDesktop = false }) => {
                   >
                     {/* Destination Dots / Brackets */}
                     {isValidDest && !piece && (
-                      <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#38bdf8] pointer-events-none" />
+                      <span
+                        style={{ width: `${Math.max(6, Math.floor(boardSize / 38))}px`, height: `${Math.max(6, Math.floor(boardSize / 38))}px` }}
+                        className="rounded-full bg-cyan-400 shadow-[0_0_8px_#38bdf8] pointer-events-none"
+                      />
                     )}
                     {isValidDest && piece && (
                       <span className="absolute inset-0.5 border-2 border-red-500 rounded-sm pointer-events-none shadow-[0_0_8px_#ef4444] animate-pulse" />
                     )}
 
-                    {/* Piece Glyph */}
+                    {/* Piece Glyph - Dynamically Scaled */}
                     {piece && (
                       <span
-                        className={`text-2xl sm:text-3xl leading-none font-bold select-none transition-transform active:scale-95 ${
+                        style={{ fontSize: `${Math.max(16, Math.floor(boardSize / 11))}px` }}
+                        className={`leading-none font-bold select-none transition-transform active:scale-95 ${
                           piece.color === 'w'
                             ? 'text-[#4ade80] drop-shadow-[0_0_8px_rgba(74,222,128,0.9)]'
                             : `text-[#f472b6] drop-shadow-[0_0_8px_rgba(244,114,182,0.9)] ${
@@ -634,6 +734,19 @@ const CyberChess2P = ({ isDesktop = false }) => {
                       >
                         {PIECE_GLYPHS[piece.type] || piece.type}
                       </span>
+                    )}
+
+                    {/* KEYBOARD / SELECTION TARGET RETICLE (WASD / Arrow key navigation indicator) */}
+                    {isKbTarget && (
+                      <div className="absolute inset-0 pointer-events-none z-20 border-2 border-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.8),inset_0_0_8px_rgba(251,191,36,0.3)]">
+                        <span className="absolute -top-0.5 -left-0.5 w-1.5 h-1.5 border-t-2 border-l-2 border-amber-300" />
+                        <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 border-t-2 border-r-2 border-amber-300" />
+                        <span className="absolute -bottom-0.5 -left-0.5 w-1.5 h-1.5 border-b-2 border-l-2 border-amber-300" />
+                        <span className="absolute -bottom-0.5 -right-0.5 w-1.5 h-1.5 border-b-2 border-r-2 border-amber-300" />
+                        <span className="absolute top-0.5 right-0.5 px-0.5 bg-black/90 text-amber-400 font-mono text-[6px] font-black leading-none rounded">
+                          {sq.toUpperCase()}
+                        </span>
+                      </div>
                     )}
 
                     {/* Subtle Rank & File Coordinate Watermark on outer edges */}
@@ -655,21 +768,32 @@ const CyberChess2P = ({ isDesktop = false }) => {
         </div>
       </div>
 
-      {/* QUICK TABLETOP CONTROLS (Undo, Reset, Flip Orientation) */}
-      <div className="w-full px-3 py-1 flex items-center justify-between gap-2 shrink-0 bg-[#060b07] border-t border-white/5">
+      {/* TABLETOP P1 HUD (Bottom Player - White) with Integrated Undo & Reset Controls */}
+      <div className="w-full px-3 py-1 flex items-center justify-between border-t border-white/10 bg-[#080d09] shrink-0">
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#22c55e] shadow-[0_0_8px_#22c55e]"></span>
+          <span className="text-[11px] font-black text-[#22c55e] tracking-wider">P1 // WHITE</span>
+          {turn === 'w' && (
+            <span className="text-[9px] font-black px-1.5 py-0.2 rounded bg-[#22c55e]/20 text-[#22c55e] border border-[#22c55e]/50 animate-pulse">
+              YOUR TURN
+            </span>
+          )}
+        </div>
+
+        {/* Captured Black Pieces */}
+        <div className="flex items-center gap-0.5 text-xs text-[#d946ef]/70">
+          {captured.w.map((p, idx) => (
+            <span key={idx}>{PIECE_GLYPHS[p] || p}</span>
+          ))}
+        </div>
+
+        {/* Quick Actions (Undo, Reset) */}
         <div className="flex items-center gap-1.5">
-          <button
-            type="button"
-            onClick={handleReset}
-            className="px-2.5 py-1 rounded bg-red-500/10 border border-red-500/40 text-red-400 hover:bg-red-500 hover:text-black font-mono text-[9px] font-bold tracking-wider uppercase transition-all"
-          >
-            ↺ RESET
-          </button>
           <button
             type="button"
             onClick={handleUndo}
             disabled={historyCount === 0}
-            className={`px-2.5 py-1 rounded border font-mono text-[9px] font-bold tracking-wider uppercase transition-all ${
+            className={`px-2 py-0.5 rounded border font-mono text-[8px] font-bold tracking-wider uppercase transition-all ${
               historyCount === 0
                 ? 'opacity-30 border-white/10 text-white/40 cursor-not-allowed'
                 : 'bg-white/5 border-white/20 text-white hover:bg-white/20 cursor-pointer'
@@ -677,33 +801,13 @@ const CyberChess2P = ({ isDesktop = false }) => {
           >
             ↶ UNDO
           </button>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setTabletopOrientation(!tabletopOrientation)}
-          className="px-2.5 py-1 rounded bg-cyan-500/10 border border-cyan-500/40 text-cyan-400 hover:bg-cyan-500 hover:text-black font-mono text-[9px] font-bold tracking-wider uppercase transition-all"
-        >
-          ⇅ {tabletopOrientation ? 'TABLETOP: 180°' : 'STANDARD: 0°'}
-        </button>
-      </div>
-
-      {/* TABLETOP P1 HUD (Bottom Player - White) */}
-      <div className="w-full px-3 py-1.5 flex items-center justify-between border-t border-white/10 bg-[#080d09] shrink-0">
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#22c55e] shadow-[0_0_8px_#22c55e]"></span>
-          <span className="text-[11px] font-black text-[#22c55e] tracking-wider">P1 // WHITE</span>
-          {turn === 'w' && (
-            <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-[#22c55e]/20 text-[#22c55e] border border-[#22c55e]/50 animate-pulse">
-              YOUR TURN
-            </span>
-          )}
-        </div>
-        {/* Captured Black Pieces */}
-        <div className="flex items-center gap-0.5 text-xs text-[#d946ef]/70">
-          {captured.w.map((p, idx) => (
-            <span key={idx}>{PIECE_GLYPHS[p] || p}</span>
-          ))}
+          <button
+            type="button"
+            onClick={handleReset}
+            className="px-2 py-0.5 rounded bg-red-500/10 border border-red-500/40 text-red-400 hover:bg-red-500 hover:text-black font-mono text-[8px] font-bold tracking-wider uppercase transition-all cursor-pointer"
+          >
+            ↺ RESET
+          </button>
         </div>
       </div>
 
@@ -729,7 +833,7 @@ const CyberChess2P = ({ isDesktop = false }) => {
         </div>
       )}
 
-      {/* START MODAL */}
+      {/* START MODAL (Tabletop Mobile Initializer) */}
       {!matchStarted && (
         <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 pointer-events-auto">
           <div className="bg-[#0a0a0a] border border-[#d946ef]/50 p-6 rounded-2xl max-w-[320px] w-full text-center shadow-[0_0_35px_rgba(217,70,239,0.25)] flex flex-col items-center">
@@ -740,7 +844,7 @@ const CyberChess2P = ({ isDesktop = false }) => {
               CYBER CHESS 2P
             </h3>
             <p className="text-white/70 text-xs font-mono leading-relaxed mb-6">
-              Tabletop 2-Player Grandmaster Chess. Touch pieces to reveal neon legal moves. Tabletop mode rotates Black's pieces 180° for true face-to-face mobile battle!
+              Tabletop 2-Player Grandmaster Chess. Touch pieces or use [W S A D / ARROWS] + [ENTER] to move. Tabletop mode rotates Black's pieces 180° for true face-to-face mobile battle!
             </p>
             <button
               type="button"
@@ -773,28 +877,28 @@ const DesktopEngage2P = () => {
   };
 
   return (
-    <div className="w-full h-full bg-black flex flex-col p-4 relative overflow-hidden">
-      <div className="w-full border border-[#22c55e]/50 py-2 mb-4 bg-[#22c55e]/5 text-center shrink-0 flex items-center justify-between px-4">
-        <span className="text-[#22c55e] font-mono text-sm tracking-[0.3em] uppercase drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]">
+    <div className="w-full h-full bg-black flex flex-col p-2.5 sm:p-3 relative overflow-hidden">
+      <div className="w-full border border-[#22c55e]/50 py-1.5 mb-2 bg-[#22c55e]/5 text-center shrink-0 flex items-center justify-between px-3 sm:px-4">
+        <span className="text-[#22c55e] font-mono text-xs sm:text-sm tracking-[0.25em] sm:tracking-[0.3em] uppercase drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]">
           Life is all about engaging!
         </span>
         <button
           onClick={handleReset}
-          className="px-3 py-1 rounded bg-red-500/10 border border-red-500/50 hover:bg-red-500 hover:text-black text-red-400 font-mono text-[10px] tracking-widest uppercase transition-all duration-200 cursor-pointer shadow-[0_0_10px_rgba(239,68,68,0.3)]"
+          className="px-2.5 py-1 rounded bg-red-500/10 border border-red-500/50 hover:bg-red-500 hover:text-black text-red-400 font-mono text-[9px] sm:text-[10px] tracking-widest uppercase transition-all duration-200 cursor-pointer shadow-[0_0_10px_rgba(239,68,68,0.3)]"
         >
           ↺ RESET MATCH
         </button>
       </div>
 
-      <div className="flex flex-wrap justify-center gap-4 mb-4 shrink-0">
-        <button onClick={() => setActiveGame('pong')} className={`px-5 py-1.5 rounded-full font-mono text-[11px] tracking-widest uppercase transition-all duration-300 border cursor-pointer ${activeGame === 'pong' ? 'bg-[#22c55e] text-black border-[#22c55e] shadow-[0_0_15px_rgba(34,197,94,0.4)] font-bold' : 'bg-black text-[#22c55e] border-[#22c55e]/40 hover:border-[#22c55e]'}`}>Cyber-Pong</button>
-        <button onClick={() => setActiveGame('chess')} className={`px-5 py-1.5 rounded-full font-mono text-[11px] tracking-widest uppercase transition-all duration-300 border cursor-pointer ${activeGame === 'chess' ? 'bg-amber-400 text-black border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.4)] font-bold' : 'bg-black text-amber-400 border-amber-400/40 hover:border-amber-400'}`}>Cyber-Chess</button>
-        <button onClick={() => setActiveGame('tron')} className={`px-5 py-1.5 rounded-full font-mono text-[11px] tracking-widest uppercase transition-all duration-300 border cursor-pointer ${activeGame === 'tron' ? 'bg-[#d946ef] text-black border-[#d946ef] shadow-[0_0_15px_rgba(217,70,239,0.4)] font-bold' : 'bg-black text-[#d946ef] border-[#d946ef]/40 hover:border-[#d946ef]'}`}>Grid-Cycle</button>
-        <button onClick={() => setActiveGame('brawl')} className={`px-6 py-1.5 rounded-full font-mono text-[11px] tracking-widest uppercase transition-all duration-300 border cursor-pointer ${activeGame === 'brawl' ? 'bg-[#3b82f6] text-black border-[#3b82f6] shadow-[0_0_15px_rgba(59,130,246,0.4)] font-bold' : 'bg-black text-[#3b82f6] border-[#3b82f6]/40 hover:border-[#3b82f6]'}`}>Gravity Brawl</button>
-        <button onClick={() => setActiveGame('volley')} className={`px-6 py-1.5 rounded-full font-mono text-[11px] tracking-widest uppercase transition-all duration-300 border cursor-pointer ${activeGame === 'volley' ? 'bg-[#10b981] text-black border-[#10b981] shadow-[0_0_15px_rgba(16,185,129,0.4)] font-bold' : 'bg-black text-[#10b981] border-[#10b981]/40 hover:border-[#10b981]'}`}>Cyber-Volley</button>
+      <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-2 shrink-0">
+        <button onClick={() => setActiveGame('pong')} className={`px-4 py-1 sm:px-5 sm:py-1.5 rounded-full font-mono text-[10px] sm:text-[11px] tracking-widest uppercase transition-all duration-300 border cursor-pointer ${activeGame === 'pong' ? 'bg-[#22c55e] text-black border-[#22c55e] shadow-[0_0_15px_rgba(34,197,94,0.4)] font-bold' : 'bg-black text-[#22c55e] border-[#22c55e]/40 hover:border-[#22c55e]'}`}>Cyber-Pong</button>
+        <button onClick={() => setActiveGame('chess')} className={`px-4 py-1 sm:px-5 sm:py-1.5 rounded-full font-mono text-[10px] sm:text-[11px] tracking-widest uppercase transition-all duration-300 border cursor-pointer ${activeGame === 'chess' ? 'bg-amber-400 text-black border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.4)] font-bold' : 'bg-black text-amber-400 border-amber-400/40 hover:border-amber-400'}`}>Cyber-Chess</button>
+        <button onClick={() => setActiveGame('tron')} className={`px-4 py-1 sm:px-5 sm:py-1.5 rounded-full font-mono text-[10px] sm:text-[11px] tracking-widest uppercase transition-all duration-300 border cursor-pointer ${activeGame === 'tron' ? 'bg-[#d946ef] text-black border-[#d946ef] shadow-[0_0_15px_rgba(217,70,239,0.4)] font-bold' : 'bg-black text-[#d946ef] border-[#d946ef]/40 hover:border-[#d946ef]'}`}>Grid-Cycle</button>
+        <button onClick={() => setActiveGame('brawl')} className={`px-4 py-1 sm:px-6 sm:py-1.5 rounded-full font-mono text-[10px] sm:text-[11px] tracking-widest uppercase transition-all duration-300 border cursor-pointer ${activeGame === 'brawl' ? 'bg-[#3b82f6] text-black border-[#3b82f6] shadow-[0_0_15px_rgba(59,130,246,0.4)] font-bold' : 'bg-black text-[#3b82f6] border-[#3b82f6]/40 hover:border-[#3b82f6]'}`}>Gravity Brawl</button>
+        <button onClick={() => setActiveGame('volley')} className={`px-4 py-1 sm:px-6 sm:py-1.5 rounded-full font-mono text-[10px] sm:text-[11px] tracking-widest uppercase transition-all duration-300 border cursor-pointer ${activeGame === 'volley' ? 'bg-[#10b981] text-black border-[#10b981] shadow-[0_0_15px_rgba(16,185,129,0.4)] font-bold' : 'bg-black text-[#10b981] border-[#10b981]/40 hover:border-[#10b981]'}`}>Cyber-Volley</button>
       </div>
 
-      <div className="flex-1 w-full border border-[#22c55e]/30 bg-[#020202] relative overflow-hidden flex items-center justify-center p-2 z-10 shadow-[inset_0_0_50px_rgba(0,0,0,0.9)]">
+      <div className="flex-1 w-full border border-[#22c55e]/30 bg-[#020202] relative overflow-hidden flex items-center justify-center p-1 sm:p-2 z-10 shadow-[inset_0_0_50px_rgba(0,0,0,0.9)] min-h-0">
         {activeGame === 'pong' && <DesktopCyberPong key={resetKey} />}
         {activeGame === 'chess' && <CyberChess2P key={resetKey} isDesktop={true} />}
         {activeGame === 'tron' && <DesktopGridCycle key={resetKey} />}
@@ -802,9 +906,11 @@ const DesktopEngage2P = () => {
         {activeGame === 'volley' && <DesktopCyberVolley key={resetKey} />}
       </div>
       
-      <div className="mt-2 text-center font-mono text-[10px] tracking-widest flex justify-center gap-8 shrink-0">
+      <div className="mt-1.5 text-center font-mono text-[9px] sm:text-[10px] tracking-wider flex justify-center gap-4 sm:gap-6 shrink-0">
         {activeGame === 'chess' ? (
-          <span className="text-[#22c55e]/90 font-bold tracking-wider">CHESS CONTROLS: CLICK / TOUCH TO SELECT & MOVE PIECES [WHITE VS BLACK]</span>
+          <span className="text-amber-400 font-bold tracking-wider">
+            CONTROLS: [W S A D / ARROWS] MOVE RETICLE • [ENTER / SPACE] SELECT & MOVE • [ESC] DESELECT • MOUSE CLICK
+          </span>
         ) : (
           <>
             <span className="text-[#22c55e]/80">PLAYER 1: [ W S A D ]</span>
