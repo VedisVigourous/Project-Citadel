@@ -414,6 +414,356 @@ const DesktopCyberVolley = () => {
   );
 };
 
+// 2. MOBILE CYBER CHESS (Tabletop 2P Neon Grandmaster Engine powered by Chess.js)
+const CyberChess2P = ({ isDesktop = false }) => {
+  const [chess] = useState(() => new Chess());
+  const [fen, setFen] = useState(chess.fen());
+  const [selectedSquare, setSelectedSquare] = useState(null);
+  const [validMoves, setValidMoves] = useState([]);
+  const [lastMove, setLastMove] = useState(null);
+  const [matchStarted, setMatchStarted] = useState(false);
+  const [tabletopOrientation, setTabletopOrientation] = useState(!isDesktop);
+  const [captured, setCaptured] = useState({ w: [], b: [] });
+  const [historyCount, setHistoryCount] = useState(0);
+
+  const turn = chess.turn(); // 'w' or 'b'
+  const inCheck = chess.inCheck();
+  const isGameOver = chess.isGameOver();
+
+  // Play micro beep for tactical moves
+  const playMoveAudio = (isCapture = false) => {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = isCapture ? 'sawtooth' : 'sine';
+      osc.frequency.setValueAtTime(isCapture ? 320 : 640, ctx.currentTime);
+      if (isCapture) {
+        osc.frequency.exponentialRampToValueAtTime(160, ctx.currentTime + 0.12);
+      }
+      gain.gain.setValueAtTime(0.08, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.15);
+    } catch (e) {
+      // Audio fallback silent
+    }
+  };
+
+  const updateGameState = (m = null) => {
+    setFen(chess.fen());
+    setSelectedSquare(null);
+    setValidMoves([]);
+    if (m) setLastMove({ from: m.from, to: m.to });
+    setHistoryCount(chess.history().length);
+
+    // Compute captured pieces
+    const history = chess.history({ verbose: true });
+    const wCaps = [];
+    const bCaps = [];
+    history.forEach(step => {
+      if (step.captured) {
+        if (step.color === 'w') bCaps.push(step.captured);
+        else wCaps.push(step.captured);
+      }
+    });
+    setCaptured({ w: wCaps, b: bCaps });
+  };
+
+  const handleSquareClick = (square) => {
+    if (chess.isGameOver()) return;
+
+    const piece = chess.get(square);
+
+    // 1. If currently a piece is selected and user taps a valid destination move
+    if (selectedSquare && validMoves.includes(square)) {
+      try {
+        const moveRes = chess.move({
+          from: selectedSquare,
+          to: square,
+          promotion: 'q', // auto-promote to Queen in blitz
+        });
+        if (moveRes) {
+          playMoveAudio(Boolean(moveRes.captured));
+          updateGameState(moveRes);
+          return;
+        }
+      } catch (err) {
+        // Invalid move attempt
+      }
+    }
+
+    // 2. If user taps the already selected square, deselect it
+    if (square === selectedSquare) {
+      setSelectedSquare(null);
+      setValidMoves([]);
+      return;
+    }
+
+    // 3. If user taps their own piece, select it and compute legal moves
+    if (piece && piece.color === chess.turn()) {
+      setSelectedSquare(square);
+      const moves = chess.moves({ square, verbose: true }).map(m => m.to);
+      setValidMoves(moves);
+      return;
+    }
+
+    // 4. Otherwise clear selection
+    setSelectedSquare(null);
+    setValidMoves([]);
+  };
+
+  const handleReset = () => {
+    chess.reset();
+    setLastMove(null);
+    updateGameState();
+  };
+
+  const handleUndo = () => {
+    chess.undo();
+    updateGameState();
+  };
+
+  const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+  const ranks = ['8', '7', '6', '5', '4', '3', '2', '1'];
+
+  const PIECE_GLYPHS = {
+    k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟'
+  };
+
+  const getGameOverMessage = () => {
+    if (chess.isCheckmate()) {
+      const winner = chess.turn() === 'w' ? 'PLAYER 2 (BLACK)' : 'PLAYER 1 (WHITE)';
+      return { title: 'CHECKMATE', sub: `${winner} WINS!` };
+    }
+    if (chess.isDraw()) {
+      return { title: 'STALEMATE / DRAW', sub: 'MATCH CONCLUDED IN A DRAW' };
+    }
+    return { title: 'GAME OVER', sub: 'MATCH FINISHED' };
+  };
+
+  return (
+    <div className="w-full h-full flex flex-col bg-[#030604] relative overflow-hidden select-none touch-none font-mono">
+      {/* TABLETOP P2 HUD (Top Player - Black) */}
+      <div className={`w-full px-3 py-1.5 flex items-center justify-between border-b border-white/10 bg-[#080d09] shrink-0 ${tabletopOrientation ? 'rotate-180' : ''}`}>
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#d946ef] shadow-[0_0_8px_#d946ef]"></span>
+          <span className="text-[11px] font-black text-[#d946ef] tracking-wider">P2 // BLACK</span>
+          {turn === 'b' && (
+            <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-[#d946ef]/20 text-[#d946ef] border border-[#d946ef]/50 animate-pulse">
+              YOUR TURN
+            </span>
+          )}
+        </div>
+        {/* Captured White Pieces */}
+        <div className="flex items-center gap-0.5 text-xs text-[#22c55e]/70">
+          {captured.b.map((p, idx) => (
+            <span key={idx}>{PIECE_GLYPHS[p] || p}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* CHECK ALERT BANNER */}
+      {inCheck && !isGameOver && (
+        <div className="w-full bg-red-600/30 border-y border-red-500 py-1 text-center shrink-0 animate-pulse">
+          <span className="text-red-400 text-[10px] font-black tracking-widest uppercase">
+            ⚠ SYSTEM ALERT: {turn === 'w' ? 'WHITE' : 'BLACK'} KING IS IN CHECK!
+          </span>
+        </div>
+      )}
+
+      {/* CHESS BOARD CONTAINER */}
+      <div className="flex-1 w-full flex items-center justify-center p-2 min-h-0">
+        <div className="w-full max-w-[370px] md:max-w-[460px] aspect-square rounded-xl border-2 border-[#22c55e]/40 shadow-[0_0_25px_rgba(34,197,94,0.15)] bg-[#040805] p-1 flex flex-col justify-between overflow-hidden">
+          {ranks.map((rank, rankIdx) => (
+            <div key={rank} className="flex-1 flex w-full">
+              {files.map((file, fileIdx) => {
+                const sq = `${file}${rank}`;
+                const piece = chess.get(sq);
+                const isLight = (fileIdx + rankIdx) % 2 === 0;
+                const isSelected = selectedSquare === sq;
+                const isValidDest = validMoves.includes(sq);
+                const isLastMoveSq = lastMove && (lastMove.from === sq || lastMove.to === sq);
+                const isCheckKing = inCheck && piece && piece.type === 'k' && piece.color === turn;
+
+                // Base square background
+                let bgClass = isLight ? 'bg-[#0f2417]' : 'bg-[#061009]';
+                if (isCheckKing) {
+                  bgClass = 'bg-red-950/80 shadow-[inset_0_0_15px_#ef4444] animate-pulse';
+                } else if (isSelected) {
+                  bgClass = turn === 'w' ? 'bg-[#22c55e]/30 shadow-[inset_0_0_12px_#22c55e]' : 'bg-[#d946ef]/30 shadow-[inset_0_0_12px_#d946ef]';
+                } else if (isLastMoveSq) {
+                  bgClass = 'bg-cyan-950/40 border border-cyan-500/30';
+                }
+
+                return (
+                  <button
+                    key={sq}
+                    type="button"
+                    onClick={() => handleSquareClick(sq)}
+                    onTouchEnd={(e) => {
+                      e.preventDefault();
+                      handleSquareClick(sq);
+                    }}
+                    className={`flex-1 h-full relative flex items-center justify-center transition-colors cursor-pointer ${bgClass} ${
+                      isSelected ? 'border-2 border-white/80' : 'border border-black/20'
+                    }`}
+                  >
+                    {/* Destination Dots / Brackets */}
+                    {isValidDest && !piece && (
+                      <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#38bdf8] pointer-events-none" />
+                    )}
+                    {isValidDest && piece && (
+                      <span className="absolute inset-0.5 border-2 border-red-500 rounded-sm pointer-events-none shadow-[0_0_8px_#ef4444] animate-pulse" />
+                    )}
+
+                    {/* Piece Glyph */}
+                    {piece && (
+                      <span
+                        className={`text-2xl sm:text-3xl leading-none font-bold select-none transition-transform active:scale-95 ${
+                          piece.color === 'w'
+                            ? 'text-[#4ade80] drop-shadow-[0_0_8px_rgba(74,222,128,0.9)]'
+                            : `text-[#f472b6] drop-shadow-[0_0_8px_rgba(244,114,182,0.9)] ${
+                                tabletopOrientation ? 'rotate-180' : ''
+                              }`
+                        }`}
+                      >
+                        {PIECE_GLYPHS[piece.type] || piece.type}
+                      </span>
+                    )}
+
+                    {/* Subtle Rank & File Coordinate Watermark on outer edges */}
+                    {fileIdx === 0 && (
+                      <span className="absolute top-0.5 left-0.5 text-[7px] text-white/20 font-mono leading-none">
+                        {rank}
+                      </span>
+                    )}
+                    {rankIdx === 7 && (
+                      <span className="absolute bottom-0.5 right-0.5 text-[7px] text-white/20 font-mono leading-none">
+                        {file}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* QUICK TABLETOP CONTROLS (Undo, Reset, Flip Orientation) */}
+      <div className="w-full px-3 py-1 flex items-center justify-between gap-2 shrink-0 bg-[#060b07] border-t border-white/5">
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={handleReset}
+            className="px-2.5 py-1 rounded bg-red-500/10 border border-red-500/40 text-red-400 hover:bg-red-500 hover:text-black font-mono text-[9px] font-bold tracking-wider uppercase transition-all"
+          >
+            ↺ RESET
+          </button>
+          <button
+            type="button"
+            onClick={handleUndo}
+            disabled={historyCount === 0}
+            className={`px-2.5 py-1 rounded border font-mono text-[9px] font-bold tracking-wider uppercase transition-all ${
+              historyCount === 0
+                ? 'opacity-30 border-white/10 text-white/40 cursor-not-allowed'
+                : 'bg-white/5 border-white/20 text-white hover:bg-white/20 cursor-pointer'
+            }`}
+          >
+            ↶ UNDO
+          </button>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setTabletopOrientation(!tabletopOrientation)}
+          className="px-2.5 py-1 rounded bg-cyan-500/10 border border-cyan-500/40 text-cyan-400 hover:bg-cyan-500 hover:text-black font-mono text-[9px] font-bold tracking-wider uppercase transition-all"
+        >
+          ⇅ {tabletopOrientation ? 'TABLETOP: 180°' : 'STANDARD: 0°'}
+        </button>
+      </div>
+
+      {/* TABLETOP P1 HUD (Bottom Player - White) */}
+      <div className="w-full px-3 py-1.5 flex items-center justify-between border-t border-white/10 bg-[#080d09] shrink-0">
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#22c55e] shadow-[0_0_8px_#22c55e]"></span>
+          <span className="text-[11px] font-black text-[#22c55e] tracking-wider">P1 // WHITE</span>
+          {turn === 'w' && (
+            <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-[#22c55e]/20 text-[#22c55e] border border-[#22c55e]/50 animate-pulse">
+              YOUR TURN
+            </span>
+          )}
+        </div>
+        {/* Captured Black Pieces */}
+        <div className="flex items-center gap-0.5 text-xs text-[#d946ef]/70">
+          {captured.w.map((p, idx) => (
+            <span key={idx}>{PIECE_GLYPHS[p] || p}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* GAME OVER DIALOG */}
+      {isGameOver && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-[fadeIn_0.2s_ease-out]">
+          <div className="bg-[#080d09] border-2 border-[#22c55e] p-6 rounded-2xl max-w-[320px] w-full text-center shadow-[0_0_40px_rgba(34,197,94,0.3)] flex flex-col items-center">
+            <div className="text-3xl mb-2">🏆</div>
+            <h3 className="text-[#22c55e] text-2xl font-black font-mono tracking-widest mb-1">
+              {getGameOverMessage().title}
+            </h3>
+            <p className="text-white/80 text-xs font-mono font-bold tracking-wider mb-6">
+              {getGameOverMessage().sub}
+            </p>
+            <button
+              type="button"
+              onClick={handleReset}
+              className="w-full py-3 rounded-xl bg-[#22c55e] hover:bg-[#16a34a] active:scale-95 text-black font-mono font-black text-xs tracking-widest uppercase shadow-[0_0_20px_rgba(34,197,94,0.6)] cursor-pointer transition-transform"
+            >
+              PLAY NEW MATCH
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* START MODAL */}
+      {!matchStarted && (
+        <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 pointer-events-auto">
+          <div className="bg-[#0a0a0a] border border-[#d946ef]/50 p-6 rounded-2xl max-w-[320px] w-full text-center shadow-[0_0_35px_rgba(217,70,239,0.25)] flex flex-col items-center">
+            <div className="w-12 h-12 rounded-full bg-[#d946ef]/10 border border-[#d946ef] flex items-center justify-center mb-3 text-2xl">
+              ♟️
+            </div>
+            <h3 className="text-[#d946ef] text-xl font-black font-mono tracking-widest mb-2">
+              CYBER CHESS 2P
+            </h3>
+            <p className="text-white/70 text-xs font-mono leading-relaxed mb-6">
+              Tabletop 2-Player Grandmaster Chess. Touch pieces to reveal neon legal moves. Tabletop mode rotates Black's pieces 180° for true face-to-face mobile battle!
+            </p>
+            <button
+              type="button"
+              onClick={() => setMatchStarted(true)}
+              onTouchEnd={(e) => {
+                e.preventDefault();
+                setMatchStarted(true);
+              }}
+              className="w-full py-3 rounded-xl bg-[#d946ef] hover:bg-[#c026d3] active:scale-95 text-black font-mono font-black text-xs tracking-widest uppercase shadow-[0_0_20px_rgba(217,70,239,0.6)] cursor-pointer transition-transform"
+            >
+              INITIALIZE CHESS BOARD
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const MobileCyberChess = CyberChess2P;
+
+
+
 const DesktopEngage2P = () => {
   const [activeGame, setActiveGame] = useState('pong'); 
   const [resetKey, setResetKey] = useState(0);
@@ -437,23 +787,31 @@ const DesktopEngage2P = () => {
       </div>
 
       <div className="flex flex-wrap justify-center gap-4 mb-4 shrink-0">
-        <button onClick={() => setActiveGame('pong')} className={`px-6 py-1.5 rounded-full font-mono text-[11px] tracking-widest uppercase transition-all duration-300 border cursor-pointer ${activeGame === 'pong' ? 'bg-[#22c55e] text-black border-[#22c55e] shadow-[0_0_15px_rgba(34,197,94,0.4)] font-bold' : 'bg-black text-[#22c55e] border-[#22c55e]/40 hover:border-[#22c55e]'}`}>Cyber-Pong</button>
-        <button onClick={() => setActiveGame('tron')} className={`px-6 py-1.5 rounded-full font-mono text-[11px] tracking-widest uppercase transition-all duration-300 border cursor-pointer ${activeGame === 'tron' ? 'bg-[#d946ef] text-black border-[#d946ef] shadow-[0_0_15px_rgba(217,70,239,0.4)] font-bold' : 'bg-black text-[#d946ef] border-[#d946ef]/40 hover:border-[#d946ef]'}`}>Grid-Cycle</button>
+        <button onClick={() => setActiveGame('pong')} className={`px-5 py-1.5 rounded-full font-mono text-[11px] tracking-widest uppercase transition-all duration-300 border cursor-pointer ${activeGame === 'pong' ? 'bg-[#22c55e] text-black border-[#22c55e] shadow-[0_0_15px_rgba(34,197,94,0.4)] font-bold' : 'bg-black text-[#22c55e] border-[#22c55e]/40 hover:border-[#22c55e]'}`}>Cyber-Pong</button>
+        <button onClick={() => setActiveGame('chess')} className={`px-5 py-1.5 rounded-full font-mono text-[11px] tracking-widest uppercase transition-all duration-300 border cursor-pointer ${activeGame === 'chess' ? 'bg-amber-400 text-black border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.4)] font-bold' : 'bg-black text-amber-400 border-amber-400/40 hover:border-amber-400'}`}>Cyber-Chess</button>
+        <button onClick={() => setActiveGame('tron')} className={`px-5 py-1.5 rounded-full font-mono text-[11px] tracking-widest uppercase transition-all duration-300 border cursor-pointer ${activeGame === 'tron' ? 'bg-[#d946ef] text-black border-[#d946ef] shadow-[0_0_15px_rgba(217,70,239,0.4)] font-bold' : 'bg-black text-[#d946ef] border-[#d946ef]/40 hover:border-[#d946ef]'}`}>Grid-Cycle</button>
         <button onClick={() => setActiveGame('brawl')} className={`px-6 py-1.5 rounded-full font-mono text-[11px] tracking-widest uppercase transition-all duration-300 border cursor-pointer ${activeGame === 'brawl' ? 'bg-[#3b82f6] text-black border-[#3b82f6] shadow-[0_0_15px_rgba(59,130,246,0.4)] font-bold' : 'bg-black text-[#3b82f6] border-[#3b82f6]/40 hover:border-[#3b82f6]'}`}>Gravity Brawl</button>
         <button onClick={() => setActiveGame('volley')} className={`px-6 py-1.5 rounded-full font-mono text-[11px] tracking-widest uppercase transition-all duration-300 border cursor-pointer ${activeGame === 'volley' ? 'bg-[#10b981] text-black border-[#10b981] shadow-[0_0_15px_rgba(16,185,129,0.4)] font-bold' : 'bg-black text-[#10b981] border-[#10b981]/40 hover:border-[#10b981]'}`}>Cyber-Volley</button>
       </div>
 
       <div className="flex-1 w-full border border-[#22c55e]/30 bg-[#020202] relative overflow-hidden flex items-center justify-center p-2 z-10 shadow-[inset_0_0_50px_rgba(0,0,0,0.9)]">
         {activeGame === 'pong' && <DesktopCyberPong key={resetKey} />}
+        {activeGame === 'chess' && <CyberChess2P key={resetKey} isDesktop={true} />}
         {activeGame === 'tron' && <DesktopGridCycle key={resetKey} />}
         {activeGame === 'brawl' && <DesktopGravityBrawl key={resetKey} />}
         {activeGame === 'volley' && <DesktopCyberVolley key={resetKey} />}
       </div>
       
       <div className="mt-2 text-center font-mono text-[10px] tracking-widest flex justify-center gap-8 shrink-0">
-        <span className="text-[#22c55e]/80">PLAYER 1: [ W S A D ]</span>
-        <span className="text-white/30">|</span>
-        <span className="text-[#d946ef]/80">PLAYER 2: [ ARROWS ]</span>
+        {activeGame === 'chess' ? (
+          <span className="text-[#22c55e]/90 font-bold tracking-wider">CHESS CONTROLS: CLICK / TOUCH TO SELECT & MOVE PIECES [WHITE VS BLACK]</span>
+        ) : (
+          <>
+            <span className="text-[#22c55e]/80">PLAYER 1: [ W S A D ]</span>
+            <span className="text-white/30">|</span>
+            <span className="text-[#d946ef]/80">PLAYER 2: [ ARROWS ]</span>
+          </>
+        )}
       </div>
     </div>
   );
@@ -780,353 +1138,6 @@ const MobileAirHockey = () => {
         </div>
       )}
       <canvas ref={canvasRef} className="w-full h-full block touch-none" />
-    </div>
-  );
-};
-
-
-// 2. MOBILE CYBER CHESS (Tabletop 2P Neon Grandmaster Engine powered by Chess.js)
-const MobileCyberChess = () => {
-  const [chess] = useState(() => new Chess());
-  const [fen, setFen] = useState(chess.fen());
-  const [selectedSquare, setSelectedSquare] = useState(null);
-  const [validMoves, setValidMoves] = useState([]);
-  const [lastMove, setLastMove] = useState(null);
-  const [matchStarted, setMatchStarted] = useState(false);
-  const [tabletopOrientation, setTabletopOrientation] = useState(true); // Player 2 pieces rotated 180° for true face-to-face tabletop!
-  const [captured, setCaptured] = useState({ w: [], b: [] });
-  const [historyCount, setHistoryCount] = useState(0);
-
-  const turn = chess.turn(); // 'w' or 'b'
-  const inCheck = chess.inCheck();
-  const isGameOver = chess.isGameOver();
-
-  // Play micro beep for tactical moves
-  const playMoveAudio = (isCapture = false) => {
-    try {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return;
-      const ctx = new AudioCtx();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = isCapture ? 'sawtooth' : 'sine';
-      osc.frequency.setValueAtTime(isCapture ? 320 : 640, ctx.currentTime);
-      if (isCapture) {
-        osc.frequency.exponentialRampToValueAtTime(160, ctx.currentTime + 0.12);
-      }
-      gain.gain.setValueAtTime(0.08, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.15);
-    } catch (e) {
-      // Audio fallback silent
-    }
-  };
-
-  const updateGameState = (m = null) => {
-    setFen(chess.fen());
-    setSelectedSquare(null);
-    setValidMoves([]);
-    if (m) setLastMove({ from: m.from, to: m.to });
-    setHistoryCount(chess.history().length);
-
-    // Compute captured pieces
-    const history = chess.history({ verbose: true });
-    const wCaps = [];
-    const bCaps = [];
-    history.forEach(step => {
-      if (step.captured) {
-        if (step.color === 'w') bCaps.push(step.captured);
-        else wCaps.push(step.captured);
-      }
-    });
-    setCaptured({ w: wCaps, b: bCaps });
-  };
-
-  const handleSquareClick = (square) => {
-    if (chess.isGameOver()) return;
-
-    const piece = chess.get(square);
-
-    // 1. If currently a piece is selected and user taps a valid destination move
-    if (selectedSquare && validMoves.includes(square)) {
-      try {
-        const moveRes = chess.move({
-          from: selectedSquare,
-          to: square,
-          promotion: 'q', // auto-promote to Queen in blitz
-        });
-        if (moveRes) {
-          playMoveAudio(Boolean(moveRes.captured));
-          updateGameState(moveRes);
-          return;
-        }
-      } catch (err) {
-        // Invalid move attempt
-      }
-    }
-
-    // 2. If user taps the already selected square, deselect it
-    if (square === selectedSquare) {
-      setSelectedSquare(null);
-      setValidMoves([]);
-      return;
-    }
-
-    // 3. If user taps their own piece, select it and compute legal moves
-    if (piece && piece.color === chess.turn()) {
-      setSelectedSquare(square);
-      const moves = chess.moves({ square, verbose: true }).map(m => m.to);
-      setValidMoves(moves);
-      return;
-    }
-
-    // 4. Otherwise clear selection
-    setSelectedSquare(null);
-    setValidMoves([]);
-  };
-
-  const handleReset = () => {
-    chess.reset();
-    setLastMove(null);
-    updateGameState();
-  };
-
-  const handleUndo = () => {
-    chess.undo();
-    updateGameState();
-  };
-
-  const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-  const ranks = ['8', '7', '6', '5', '4', '3', '2', '1'];
-
-  const PIECE_GLYPHS = {
-    k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟'
-  };
-
-  const getGameOverMessage = () => {
-    if (chess.isCheckmate()) {
-      const winner = chess.turn() === 'w' ? 'PLAYER 2 (BLACK)' : 'PLAYER 1 (WHITE)';
-      return { title: 'CHECKMATE', sub: `${winner} WINS!` };
-    }
-    if (chess.isDraw()) {
-      return { title: 'STALEMATE / DRAW', sub: 'MATCH CONCLUDED IN A DRAW' };
-    }
-    return { title: 'GAME OVER', sub: 'MATCH FINISHED' };
-  };
-
-  return (
-    <div className="w-full h-full flex flex-col bg-[#030604] relative overflow-hidden select-none touch-none font-mono">
-      {/* TABLETOP P2 HUD (Top Player - Black) */}
-      <div className={`w-full px-3 py-1.5 flex items-center justify-between border-b border-white/10 bg-[#080d09] shrink-0 ${tabletopOrientation ? 'rotate-180' : ''}`}>
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#d946ef] shadow-[0_0_8px_#d946ef]"></span>
-          <span className="text-[11px] font-black text-[#d946ef] tracking-wider">P2 // BLACK</span>
-          {turn === 'b' && (
-            <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-[#d946ef]/20 text-[#d946ef] border border-[#d946ef]/50 animate-pulse">
-              YOUR TURN
-            </span>
-          )}
-        </div>
-        {/* Captured White Pieces */}
-        <div className="flex items-center gap-0.5 text-xs text-[#22c55e]/70">
-          {captured.b.map((p, idx) => (
-            <span key={idx}>{PIECE_GLYPHS[p] || p}</span>
-          ))}
-        </div>
-      </div>
-
-      {/* CHECK ALERT BANNER */}
-      {inCheck && !isGameOver && (
-        <div className="w-full bg-red-600/30 border-y border-red-500 py-1 text-center shrink-0 animate-pulse">
-          <span className="text-red-400 text-[10px] font-black tracking-widest uppercase">
-            ⚠ SYSTEM ALERT: {turn === 'w' ? 'WHITE' : 'BLACK'} KING IS IN CHECK!
-          </span>
-        </div>
-      )}
-
-      {/* CHESS BOARD CONTAINER */}
-      <div className="flex-1 w-full flex items-center justify-center p-2 min-h-0">
-        <div className="w-full max-w-[370px] aspect-square rounded-xl border-2 border-[#22c55e]/40 shadow-[0_0_25px_rgba(34,197,94,0.15)] bg-[#040805] p-1 flex flex-col justify-between overflow-hidden">
-          {ranks.map((rank, rankIdx) => (
-            <div key={rank} className="flex-1 flex w-full">
-              {files.map((file, fileIdx) => {
-                const sq = `${file}${rank}`;
-                const piece = chess.get(sq);
-                const isLight = (fileIdx + rankIdx) % 2 === 0;
-                const isSelected = selectedSquare === sq;
-                const isValidDest = validMoves.includes(sq);
-                const isLastMoveSq = lastMove && (lastMove.from === sq || lastMove.to === sq);
-                const isCheckKing = inCheck && piece && piece.type === 'k' && piece.color === turn;
-
-                // Base square background
-                let bgClass = isLight ? 'bg-[#0f2417]' : 'bg-[#061009]';
-                if (isCheckKing) {
-                  bgClass = 'bg-red-950/80 shadow-[inset_0_0_15px_#ef4444] animate-pulse';
-                } else if (isSelected) {
-                  bgClass = turn === 'w' ? 'bg-[#22c55e]/30 shadow-[inset_0_0_12px_#22c55e]' : 'bg-[#d946ef]/30 shadow-[inset_0_0_12px_#d946ef]';
-                } else if (isLastMoveSq) {
-                  bgClass = 'bg-cyan-950/40 border border-cyan-500/30';
-                }
-
-                return (
-                  <button
-                    key={sq}
-                    type="button"
-                    onClick={() => handleSquareClick(sq)}
-                    onTouchEnd={(e) => {
-                      e.preventDefault();
-                      handleSquareClick(sq);
-                    }}
-                    className={`flex-1 h-full relative flex items-center justify-center transition-colors cursor-pointer ${bgClass} ${
-                      isSelected ? 'border-2 border-white/80' : 'border border-black/20'
-                    }`}
-                  >
-                    {/* Destination Dots / Brackets */}
-                    {isValidDest && !piece && (
-                      <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#38bdf8] pointer-events-none" />
-                    )}
-                    {isValidDest && piece && (
-                      <span className="absolute inset-0.5 border-2 border-red-500 rounded-sm pointer-events-none shadow-[0_0_8px_#ef4444] animate-pulse" />
-                    )}
-
-                    {/* Piece Glyph */}
-                    {piece && (
-                      <span
-                        className={`text-2xl sm:text-3xl leading-none font-bold select-none transition-transform active:scale-95 ${
-                          piece.color === 'w'
-                            ? 'text-[#4ade80] drop-shadow-[0_0_8px_rgba(74,222,128,0.9)]'
-                            : `text-[#f472b6] drop-shadow-[0_0_8px_rgba(244,114,182,0.9)] ${
-                                tabletopOrientation ? 'rotate-180' : ''
-                              }`
-                        }`}
-                      >
-                        {PIECE_GLYPHS[piece.type] || piece.type}
-                      </span>
-                    )}
-
-                    {/* Subtle Rank & File Coordinate Watermark on outer edges */}
-                    {fileIdx === 0 && (
-                      <span className="absolute top-0.5 left-0.5 text-[7px] text-white/20 font-mono leading-none">
-                        {rank}
-                      </span>
-                    )}
-                    {rankIdx === 7 && (
-                      <span className="absolute bottom-0.5 right-0.5 text-[7px] text-white/20 font-mono leading-none">
-                        {file}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* QUICK TABLETOP CONTROLS (Undo, Reset, Flip Orientation) */}
-      <div className="w-full px-3 py-1 flex items-center justify-between gap-2 shrink-0 bg-[#060b07] border-t border-white/5">
-        <div className="flex items-center gap-1.5">
-          <button
-            type="button"
-            onClick={handleReset}
-            className="px-2.5 py-1 rounded bg-red-500/10 border border-red-500/40 text-red-400 hover:bg-red-500 hover:text-black font-mono text-[9px] font-bold tracking-wider uppercase transition-all"
-          >
-            ↺ RESET
-          </button>
-          <button
-            type="button"
-            onClick={handleUndo}
-            disabled={historyCount === 0}
-            className={`px-2.5 py-1 rounded border font-mono text-[9px] font-bold tracking-wider uppercase transition-all ${
-              historyCount === 0
-                ? 'opacity-30 border-white/10 text-white/40 cursor-not-allowed'
-                : 'bg-white/5 border-white/20 text-white hover:bg-white/20 cursor-pointer'
-            }`}
-          >
-            ↶ UNDO
-          </button>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setTabletopOrientation(!tabletopOrientation)}
-          className="px-2.5 py-1 rounded bg-cyan-500/10 border border-cyan-500/40 text-cyan-400 hover:bg-cyan-500 hover:text-black font-mono text-[9px] font-bold tracking-wider uppercase transition-all"
-        >
-          ⇅ {tabletopOrientation ? 'TABLETOP: 180°' : 'STANDARD: 0°'}
-        </button>
-      </div>
-
-      {/* TABLETOP P1 HUD (Bottom Player - White) */}
-      <div className="w-full px-3 py-1.5 flex items-center justify-between border-t border-white/10 bg-[#080d09] shrink-0">
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#22c55e] shadow-[0_0_8px_#22c55e]"></span>
-          <span className="text-[11px] font-black text-[#22c55e] tracking-wider">P1 // WHITE</span>
-          {turn === 'w' && (
-            <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-[#22c55e]/20 text-[#22c55e] border border-[#22c55e]/50 animate-pulse">
-              YOUR TURN
-            </span>
-          )}
-        </div>
-        {/* Captured Black Pieces */}
-        <div className="flex items-center gap-0.5 text-xs text-[#d946ef]/70">
-          {captured.w.map((p, idx) => (
-            <span key={idx}>{PIECE_GLYPHS[p] || p}</span>
-          ))}
-        </div>
-      </div>
-
-      {/* GAME OVER DIALOG */}
-      {isGameOver && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-[fadeIn_0.2s_ease-out]">
-          <div className="bg-[#080d09] border-2 border-[#22c55e] p-6 rounded-2xl max-w-[320px] w-full text-center shadow-[0_0_40px_rgba(34,197,94,0.3)] flex flex-col items-center">
-            <div className="text-3xl mb-2">🏆</div>
-            <h3 className="text-[#22c55e] text-2xl font-black font-mono tracking-widest mb-1">
-              {getGameOverMessage().title}
-            </h3>
-            <p className="text-white/80 text-xs font-mono font-bold tracking-wider mb-6">
-              {getGameOverMessage().sub}
-            </p>
-            <button
-              type="button"
-              onClick={handleReset}
-              className="w-full py-3 rounded-xl bg-[#22c55e] hover:bg-[#16a34a] active:scale-95 text-black font-mono font-black text-xs tracking-widest uppercase shadow-[0_0_20px_rgba(34,197,94,0.6)] cursor-pointer transition-transform"
-            >
-              PLAY NEW MATCH
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* START MODAL */}
-      {!matchStarted && (
-        <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 pointer-events-auto">
-          <div className="bg-[#0a0a0a] border border-[#d946ef]/50 p-6 rounded-2xl max-w-[320px] w-full text-center shadow-[0_0_35px_rgba(217,70,239,0.25)] flex flex-col items-center">
-            <div className="w-12 h-12 rounded-full bg-[#d946ef]/10 border border-[#d946ef] flex items-center justify-center mb-3 text-2xl">
-              ♟️
-            </div>
-            <h3 className="text-[#d946ef] text-xl font-black font-mono tracking-widest mb-2">
-              CYBER CHESS 2P
-            </h3>
-            <p className="text-white/70 text-xs font-mono leading-relaxed mb-6">
-              Tabletop 2-Player Grandmaster Chess. Touch pieces to reveal neon legal moves. Tabletop mode rotates Black's pieces 180° for true face-to-face mobile battle!
-            </p>
-            <button
-              type="button"
-              onClick={() => setMatchStarted(true)}
-              onTouchEnd={(e) => {
-                e.preventDefault();
-                setMatchStarted(true);
-              }}
-              className="w-full py-3 rounded-xl bg-[#d946ef] hover:bg-[#c026d3] active:scale-95 text-black font-mono font-black text-xs tracking-widest uppercase shadow-[0_0_20px_rgba(217,70,239,0.6)] cursor-pointer transition-transform"
-            >
-              INITIALIZE CHESS BOARD
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
