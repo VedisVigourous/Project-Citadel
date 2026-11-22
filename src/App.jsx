@@ -270,18 +270,6 @@ function App() {
     }
   };
 
-  // Auto-play BGM as soon as the desktop finishes booting
-  useEffect(() => {
-    if (!loading && !isMusicMuted && !hasAudioStarted) {
-      try {
-        playBgm();
-        setHasAudioStarted(true);
-      } catch (e) {
-        // Fallback if browser blocked autoplay before gesture
-      }
-    }
-  }, [loading, isMusicMuted, hasAudioStarted, playBgm]);
-
   // --- TOUCH RIPPLE SYSTEM ---
   const [ripples, setRipples] = useState([]);
 
@@ -1864,6 +1852,14 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
         <ChronosSplash
           onComplete={(target = "os") => {
             setLoading(false);
+            if (!isMusicMuted && !hasAudioStarted) {
+              try {
+                playBgm();
+                setHasAudioStarted(true);
+              } catch (e) {
+                // Browser gesture fallback
+              }
+            }
             if (target === "recruiter") {
               setIsRecruiterModeOpen(true);
               window.history.replaceState(null, "", "#recruiter");
