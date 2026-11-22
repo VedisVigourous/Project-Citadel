@@ -4,6 +4,7 @@ import bootLogo from '../assets/bootLogo1.png';
 
 export default function ChronosSplash({ onComplete }) {
   const containerRef = useRef(null);
+  const [mode, setMode] = useState('choose'); // 'choose' | 'os-boot'
   const [randomizedLines, setRandomizedLines] = useState([]);
   const [rainColumns, setRainColumns] = useState([]);
   const [decryptedTitle, setDecryptedTitle] = useState("");
@@ -43,6 +44,7 @@ export default function ChronosSplash({ onComplete }) {
     }
   };
 
+  // 1. Initial State: ROOT://VADANTA decrypts on clean dark background
   useEffect(() => {
     const mobileCheck = window.innerWidth < 768;
     setIsMobile(mobileCheck);
@@ -58,18 +60,13 @@ export default function ChronosSplash({ onComplete }) {
       
       if (iteration >= finalName.length) {
         clearInterval(cypherInterval);
-        // Reveal minimal square selector once ROOT://VADANTA has decrypted
+        // Step 2: Show minimal square OS selection on the dark background
         setTimeout(() => setShowSelector(true), 150);
       }
-      iteration += mobileCheck ? 1 : 0.35; 
+      iteration += mobileCheck ? 1 : 0.4; 
     }, 35);
 
-    const lines = Array(15).fill(0).map(() => {
-      const shuffled = [...snippets].sort(() => 0.5 - Math.random());
-      return Array(10).fill(shuffled.join(" | ")).join(" | ");
-    });
-    setRandomizedLines(lines);
-
+    // Prepare matrix rain columns for when OS mode is selected
     if (!mobileCheck) {
       const techWords = ["VIGOUROUS", "GSOC", "ROOT", "C++", "JAVA", "DEDSEC", "SYS", "0x8F", "EXEC"];
       const rainChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=\"#&_(),.;:?!\\|{}<>[]^~";
@@ -89,6 +86,59 @@ export default function ChronosSplash({ onComplete }) {
       setRainColumns(columns);
     }
 
+    const lines = Array(15).fill(0).map(() => {
+      const shuffled = [...snippets].sort(() => 0.5 - Math.random());
+      return Array(10).fill(shuffled.join(" | ")).join(" | ");
+    });
+    setRandomizedLines(lines);
+
+    return () => clearInterval(cypherInterval);
+  }, []);
+
+  // Countdown timer in choose mode
+  useEffect(() => {
+    if (mode !== 'choose' || !showSelector || isPaused) return;
+
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          triggerOsBoot();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [mode, showSelector, isPaused]);
+
+  // Step 3: If we select recruiter thing -> opens recruiter mode directly
+  const triggerRecruiterBoot = () => {
+    if (hasTriggeredRef.current) return;
+    hasTriggeredRef.current = true;
+    playTacticalBeep(640);
+
+    gsap.to(containerRef.current, {
+      opacity: 0,
+      duration: 0.25,
+      ease: "power2.inOut",
+      onComplete: () => onComplete('recruiter')
+    });
+  };
+
+  // Step 4: If we select OS mode -> matrix rain comes up, then OS is launched
+  const triggerOsBoot = () => {
+    if (hasTriggeredRef.current) return;
+    hasTriggeredRef.current = true;
+    playTacticalBeep(440);
+    setMode('os-boot');
+  };
+
+  // When OS mode starts: run matrix rain and Vigourous boot sequence
+  useEffect(() => {
+    if (mode !== 'os-boot') return;
+
     const stencilTween = gsap.to(".stencil-layer", {
       "--mask-size": "35%",
       duration: 1.5,
@@ -105,73 +155,13 @@ export default function ChronosSplash({ onComplete }) {
       ease: "rough({ template: none.out, strength: 2, points: 20, taper: none, randomize: true, clamp: false })"
     });
 
-    return () => {
-      clearInterval(cypherInterval);
-      if (stencilTween) stencilTween.kill();
-      if (glitchTween) glitchTween.kill();
-    };
-  }, []);
-
-  // Countdown timer for auto-booting to Vadanta OS
-  useEffect(() => {
-    if (!showSelector || isPaused) return;
-
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          triggerOsBoot();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [showSelector, isPaused]);
-
-  // ACTION 1: Boot Recruiter Mode immediately
-  const triggerRecruiterBoot = () => {
-    if (hasTriggeredRef.current) return;
-    hasTriggeredRef.current = true;
-    playTacticalBeep(640);
-
-    gsap.to(containerRef.current, {
-      opacity: 0,
-      duration: 0.25,
-      ease: "power2.inOut",
-      onComplete: () => onComplete('recruiter')
-    });
-  };
-
-  // ACTION 2: Boot Vadanta OS with the original matrix rain and Vigourous boot sequence preserved!
-  const triggerOsBoot = () => {
-    if (hasTriggeredRef.current) return;
-    hasTriggeredRef.current = true;
-    playTacticalBeep(440);
-
     const tl = gsap.timeline({
       onComplete: () => {
         onComplete('os');
       }
     });
 
-    // Hide the minimal dual boot square cards
-    tl.to(".dual-boot-selector", {
-      opacity: 0,
-      scale: 0.95,
-      duration: 0.18,
-      ease: "power2.in"
-    });
-
-    // Hide the background matrix & stencil
-    tl.to([".bg-matrix", ".stencil-layer"], {
-      opacity: 0,
-      duration: 0.15,
-      ease: "power4.out"
-    });
-
-    // Center logo collapse animation
+    // 1. Shrink/collapse initial root title
     if (isMobile) {
       tl.to(".center-logo", {
         opacity: 0,
@@ -185,9 +175,9 @@ export default function ChronosSplash({ onComplete }) {
         .to(".center-logo", { scaleX: 0, opacity: 0, duration: 0.2, ease: "power2.out" });
     }
 
-    tl.to({}, { duration: 0.3 });
+    tl.to({}, { duration: 0.15 });
 
-    // Matrix Rain Falling Columns (Preserved Original)
+    // 2. THE MATRIX RAIN BURSTS IN!
     if (!isMobile) {
       tl.set(".rain-container", { display: "flex" })
         .fromTo(".rain-col",
@@ -197,9 +187,9 @@ export default function ChronosSplash({ onComplete }) {
         );
     }
 
-    const logoEntryTime = isMobile ? "+=0.1" : "rain-start+=2.8";
+    const logoEntryTime = isMobile ? "+=0.1" : "rain-start+=2.6";
 
-    // Vigourous Boot Logo and BOOTING UP... (Preserved Original)
+    // 3. Vigourous Boot Logo and BOOTING UP...
     tl.set(".wd2-container", { display: "flex" }, logoEntryTime)
       .fromTo(".wd2-container",
         { opacity: 0, scale: 0.8 },
@@ -212,11 +202,17 @@ export default function ChronosSplash({ onComplete }) {
         duration: 0.7,
         ease: "power2.inOut"
       });
-  };
 
-  // Keyboard navigation: [1], [2], [Arrows], [Enter], [Esc]
+    return () => {
+      stencilTween.kill();
+      glitchTween.kill();
+      tl.kill();
+    };
+  }, [mode]);
+
+  // Keyboard controls in choose mode: [1], [2], [Arrows], [Enter], [Esc]
   useEffect(() => {
-    if (!showSelector) return;
+    if (mode !== 'choose' || !showSelector) return;
 
     const handleKeyDown = (e) => {
       if (['INPUT', 'TEXTAREA'].includes(e.target?.tagName)) return;
@@ -249,34 +245,56 @@ export default function ChronosSplash({ onComplete }) {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showSelector, selectedOption]);
+  }, [mode, showSelector, selectedOption]);
 
   return (
     <div 
       ref={containerRef} 
-      className="fixed inset-0 w-screen h-[100dvh] z-[999999] overflow-hidden bg-black flex flex-col items-center justify-center font-mono select-none"
+      className="fixed inset-0 w-screen h-[100dvh] z-[999999] overflow-hidden bg-[#040605] flex flex-col items-center justify-center font-mono select-none"
     >
-      {/* MATRIX BACKGROUND CODE STREAM */}
-      <div className="bg-matrix-container absolute inset-0 whitespace-nowrap opacity-15 max-md:opacity-10 text-neutral-900 font-mono text-2xl font-black flex flex-col justify-center gap-4 rotate-[-12deg] scale-150 pointer-events-none">
-        {randomizedLines.map((line, i) => (
-          <div key={`bg-${i}`} className="bg-matrix w-[400%]">{line}</div>
-        ))}
-      </div>
+      {/* ========================================================================= */}
+      {/* MATRIX RAIN & STENCIL (ONLY ACTIVE IN 'os-boot' MODE)                     */}
+      {/* ========================================================================= */}
+      {mode === 'os-boot' && (
+        <>
+          <div className="bg-matrix-container absolute inset-0 whitespace-nowrap opacity-15 max-md:opacity-10 text-neutral-900 font-mono text-2xl font-black flex flex-col justify-center gap-4 rotate-[-12deg] scale-150 pointer-events-none">
+            {randomizedLines.map((line, i) => (
+              <div key={`bg-${i}`} className="bg-matrix w-[400%]">{line}</div>
+            ))}
+          </div>
 
-      <div
-        className="stencil-layer absolute inset-0 whitespace-nowrap text-green-500 font-mono text-2xl max-md:text-lg font-black flex flex-col justify-center gap-4 rotate-[-12deg] scale-150 pointer-events-none"
-        style={{
-          "--mask-size": "30%",
-          WebkitMaskImage: 'radial-gradient(circle at center, black var(--mask-size), transparent 50%)',
-          maskImage: 'radial-gradient(circle at center, black var(--mask-size), transparent 50%)'
-        }}
-      >
-        {randomizedLines.map((line, i) => (
-          <div key={`fg-${i}`} className="bg-matrix w-[400%] shadow-[0_0_15px_#22c55e]">{line}</div>
-        ))}
-      </div>
+          <div
+            className="stencil-layer absolute inset-0 whitespace-nowrap text-green-500 font-mono text-2xl max-md:text-lg font-black flex flex-col justify-center gap-4 rotate-[-12deg] scale-150 pointer-events-none"
+            style={{
+              "--mask-size": "30%",
+              WebkitMaskImage: 'radial-gradient(circle at center, black var(--mask-size), transparent 50%)',
+              maskImage: 'radial-gradient(circle at center, black var(--mask-size), transparent 50%)'
+            }}
+          >
+            {randomizedLines.map((line, i) => (
+              <div key={`fg-${i}`} className="bg-matrix w-[400%] shadow-[0_0_15px_#22c55e]">{line}</div>
+            ))}
+          </div>
 
-      {/* CENTER LOGO: ROOT://VADANTA */}
+          {!isMobile && (
+            <div className="rain-container hidden absolute inset-0 z-20 justify-between overflow-hidden px-2 pointer-events-none">
+              {rainColumns.map((col, i) => (
+                <div
+                  key={`rain-${i}`}
+                  className="rain-col text-green-500 font-mono text-xl whitespace-pre-wrap leading-[0.85] font-bold text-center mt-[-20vh]"
+                  style={{ textShadow: "0px 0px 10px #22c55e" }}
+                >
+                  {col}
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* ========================================================================= */}
+      {/* STEP 1: ROOT://VADANTA (CLEAN DARK BACKGROUND)                            */}
+      {/* ========================================================================= */}
       <div className="center-logo relative z-20 flex flex-col items-center justify-center pointer-events-none mb-6 sm:mb-8">
         <div className="bg-black/95 border-l-2 border-[#22c55e] px-5 py-2 max-md:px-3 max-md:py-1 flex items-center gap-4 max-md:gap-2 shadow-[0_0_20px_rgba(0,0,0,0.9)] rounded-none whitespace-nowrap">
           <span className="text-[#22c55e] font-mono text-2xl max-md:text-base animate-pulse shrink-0 font-bold">
@@ -289,9 +307,11 @@ export default function ChronosSplash({ onComplete }) {
         </div>
       </div>
 
-      {/* MINIMAL DUAL-BOOT SELECTOR (EXACT SQUARES, NO ROUNDED CORNERS) */}
-      {showSelector && (
-        <div className="dual-boot-selector relative z-30 flex flex-col items-center animate-[fadeIn_0.25s_ease-out]">
+      {/* ========================================================================= */}
+      {/* STEP 2: MINIMAL DUAL-BOOT SQUARE CARDS (ON DARK BACKGROUND)              */}
+      {/* ========================================================================= */}
+      {mode === 'choose' && showSelector && (
+        <div className="dual-boot-selector relative z-30 flex flex-col items-center animate-[fadeIn_0.2s_ease-out]">
           
           <div className="flex items-center justify-center gap-3 sm:gap-5 md:gap-6">
             
@@ -306,7 +326,7 @@ export default function ChronosSplash({ onComplete }) {
               }}
               className={`w-32 h-32 xs:w-36 xs:h-36 sm:w-44 sm:h-44 md:w-48 md:h-48 aspect-square rounded-none border p-3 sm:p-4 flex flex-col justify-between cursor-pointer transition-all duration-150 text-left group ${
                 selectedOption === 'recruiter'
-                  ? 'bg-[#051409]/95 border-[#22c55e] shadow-[0_0_25px_rgba(34,197,94,0.4)] scale-105'
+                  ? 'bg-[#051409] border-[#22c55e] shadow-[0_0_25px_rgba(34,197,94,0.4)] scale-105'
                   : 'bg-black/90 border-[#22c55e]/40 hover:border-[#22c55e] opacity-80 hover:opacity-100'
               }`}
             >
@@ -341,7 +361,7 @@ export default function ChronosSplash({ onComplete }) {
               }}
               className={`w-32 h-32 xs:w-36 xs:h-36 sm:w-44 sm:h-44 md:w-48 md:h-48 aspect-square rounded-none border p-3 sm:p-4 flex flex-col justify-between cursor-pointer transition-all duration-150 text-left group ${
                 selectedOption === 'os'
-                  ? 'bg-[#040e16]/95 border-cyan-400 shadow-[0_0_25px_rgba(56,189,248,0.4)] scale-105'
+                  ? 'bg-[#040e16] border-cyan-400 shadow-[0_0_25px_rgba(56,189,248,0.4)] scale-105'
                   : 'bg-black/90 border-cyan-500/40 hover:border-cyan-400 opacity-80 hover:opacity-100'
               }`}
             >
@@ -383,22 +403,9 @@ export default function ChronosSplash({ onComplete }) {
         </div>
       )}
 
-      {/* MATRIX RAIN CONTAINER (TRIGGERED ON VADANTA_OS SELECTION) */}
-      {!isMobile && (
-        <div className="rain-container hidden absolute inset-0 z-20 justify-between overflow-hidden px-2 pointer-events-none">
-          {rainColumns.map((col, i) => (
-            <div
-              key={`rain-${i}`}
-              className="rain-col text-green-500 font-mono text-xl whitespace-pre-wrap leading-[0.85] font-bold text-center mt-[-20vh]"
-              style={{ textShadow: "0px 0px 10px #22c55e" }}
-            >
-              {col}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* VADANTA_OS LOGO & BOOTING UP BANNER (TRIGGERED ON VADANTA_OS SELECTION) */}
+      {/* ========================================================================= */}
+      {/* VADANTA_OS LOGO & BOOTING UP BANNER (STEP 4)                              */}
+      {/* ========================================================================= */}
       <div className="wd2-container hidden absolute z-30 flex flex-col items-center justify-center pointer-events-none">
         {!isMobile ? (
           <>
