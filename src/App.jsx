@@ -258,13 +258,29 @@ function App() {
     setTimeout(() => setAudioToast((prev) => ({ ...prev, show: false })), 2500);
   };
 
-  // Starts BGM on first click anywhere on the page
+  // Starts BGM on first interaction
   const handleFirstInteraction = () => {
-    if (!hasAudioStarted) {
-      playBgm();
-      setHasAudioStarted(true);
+    if (!hasAudioStarted && !isMusicMuted) {
+      try {
+        playBgm();
+        setHasAudioStarted(true);
+      } catch (e) {
+        // Browser gesture fallback
+      }
     }
   };
+
+  // Auto-play BGM as soon as the desktop finishes booting
+  useEffect(() => {
+    if (!loading && !isMusicMuted && !hasAudioStarted) {
+      try {
+        playBgm();
+        setHasAudioStarted(true);
+      } catch (e) {
+        // Fallback if browser blocked autoplay before gesture
+      }
+    }
+  }, [loading, isMusicMuted, hasAudioStarted, playBgm]);
 
   // --- TOUCH RIPPLE SYSTEM ---
   const [ripples, setRipples] = useState([]);
