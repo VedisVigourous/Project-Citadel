@@ -217,9 +217,10 @@ function App() {
   });
 
   // --- AUDIO ENGINE ---
-  const [playBgm, { pause: pauseBgm }] = useSound("/sounds/bgm-ambient.mp3", {
+  const [playBgm, { pause: pauseBgm, stop: stopBgm }] = useSound("/sounds/bgm-ambient.mp3", {
     volume: 0.25,
     loop: true,
+    interrupt: true,
   });
   const [playSwoosh] = useSound("/sounds/air-swoosh.mp3", { volume: 0.75 });
   const [playAppOpen] = useSound("/sounds/app-open.mp3", { volume: 0.65 });
@@ -233,6 +234,27 @@ function App() {
 
   const [hasAudioStarted, setHasAudioStarted] = useState(false);
   const [isMusicMuted, setIsMusicMuted] = useState(false);
+  const isBgmPlayingRef = useRef(false);
+
+  const startBgm = () => {
+    if (isBgmPlayingRef.current || isMusicMuted) return;
+    try {
+      isBgmPlayingRef.current = true;
+      setHasAudioStarted(true);
+      playBgm();
+    } catch (e) {
+      isBgmPlayingRef.current = false;
+    }
+  };
+
+  const stopOrPauseBgm = () => {
+    try {
+      pauseBgm();
+      isBgmPlayingRef.current = false;
+    } catch (e) {
+      isBgmPlayingRef.current = false;
+    }
+  };
 
   const swooshCooldown = useRef(false);
 
@@ -247,26 +269,22 @@ function App() {
 
   const toggleMusic = () => {
     if (isMusicMuted) {
-      playBgm();
       setIsMusicMuted(false);
+      startBgm();
       setAudioToast({ show: true, muted: false });
     } else {
-      pauseBgm();
+      stopOrPauseBgm();
       setIsMusicMuted(true);
       setAudioToast({ show: true, muted: true });
     }
     setTimeout(() => setAudioToast((prev) => ({ ...prev, show: false })), 2500);
   };
 
-  // Starts BGM on first interaction
+  // Starts BGM on first interaction (only if not already playing and not inside recruiter mode)
   const handleFirstInteraction = () => {
-    if (!hasAudioStarted && !isMusicMuted) {
-      try {
-        playBgm();
-        setHasAudioStarted(true);
-      } catch (e) {
-        // Browser gesture fallback
-      }
+    if (isRecruiterModeOpen) return;
+    if (!isBgmPlayingRef.current && !isMusicMuted) {
+      startBgm();
     }
   };
 
@@ -1852,22 +1870,16 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
         <ChronosSplash
           onComplete={(target = "os") => {
             setLoading(false);
-            if (!isMusicMuted && !hasAudioStarted) {
-              try {
-                playBgm();
-                setHasAudioStarted(true);
-              } catch (e) {
-                // Browser gesture fallback
-              }
-            }
-            if (target === "recruiter") {
+            if (target === "os") {
+              startBgm();
+            } else if (target === "recruiter") {
               setIsRecruiterModeOpen(true);
               window.history.replaceState(null, "", "#recruiter");
             }
           }}
         />
       ) : (
-        <div className="flex flex-col h-screen w-full relative z-10 bg-[#050505]">
+        <div className={`flex flex-col h-screen w-full relative z-10 bg-[#050505] ${isRecruiterModeOpen ? 'invisible pointer-events-none' : ''}`}>
           {/* LAYER 1: THE CLEAN CYBER GRID */}
           <div
             className="absolute top-[-100px] bottom-[-100px] left-[-100px] right-[-100px] cyber-grid pointer-events-none z-[1] max-md:!transform-none"
@@ -5539,9 +5551,12 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
         <RecruiterMode
           onClose={() => {
             setIsRecruiterModeOpen(false);
+            startBgm();
             window.history.replaceState(null, "", window.location.pathname);
           }}
           onOpenApp={(appId) => {
+            setIsRecruiterModeOpen(false);
+            startBgm();
             if (appId === "projects") {
               setIsProjectsWindowOpen(true);
               window.history.replaceState(null, "", "#projects");

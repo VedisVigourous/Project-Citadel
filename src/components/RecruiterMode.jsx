@@ -39,7 +39,7 @@ const RecruiterMode = React.memo(({ onClose, onOpenApp }) => {
   ];
 
   return (
-    <div className="fixed inset-0 z-[99999] bg-[#050505]/95 backdrop-blur-xl overflow-y-auto no-scrollbar flex flex-col text-white font-mono animate-fade-in">
+    <div className="fixed inset-0 z-[99999] bg-[#050505] overflow-y-auto no-scrollbar flex flex-col text-white font-mono">
       {/* Background Matrix/Grid Overlay */}
       <div className="fixed inset-0 bg-[linear-gradient(rgba(34,197,94,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(34,197,94,0.03)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none"></div>
 
