@@ -9,6 +9,7 @@ export default function ChronosSplash({ onComplete }) {
   const [rainColumns, setRainColumns] = useState([]);
   const [decryptedTitle, setDecryptedTitle] = useState("ROOT://VADANTA");
   const [isMobile, setIsMobile] = useState(false);
+  const [showSelector, setShowSelector] = useState(false);
   const [selectedOption, setSelectedOption] = useState('recruiter'); // 'recruiter' | 'os'
   const [countdown, setCountdown] = useState(6);
   const [isPaused, setIsPaused] = useState(false);
@@ -84,6 +85,8 @@ export default function ChronosSplash({ onComplete }) {
       
       if (iteration >= finalName.length) {
         clearInterval(cypherInterval);
+        // Step 2: Reveal the choice ONLY AFTER root://Vadanta finishes decrypting
+        setTimeout(() => setShowSelector(true), 250);
       }
       iteration += mobileCheck ? 1 : 0.45; 
     }, 35);
@@ -128,9 +131,9 @@ export default function ChronosSplash({ onComplete }) {
     };
   }, []);
 
-  // Countdown timer in choose mode
+  // Countdown timer in choose mode (starts only after selector is revealed)
   useEffect(() => {
-    if (mode !== 'choose' || isPaused) return;
+    if (mode !== 'choose' || !showSelector || isPaused) return;
 
     const timer = setInterval(() => {
       setCountdown((prev) => {
@@ -144,7 +147,7 @@ export default function ChronosSplash({ onComplete }) {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [mode, isPaused]);
+  }, [mode, showSelector, isPaused]);
 
   // Recruiter Selection: direct launch into Recruiter Mode
   const triggerRecruiterBoot = () => {
@@ -218,9 +221,9 @@ export default function ChronosSplash({ onComplete }) {
     };
   }, [mode]);
 
-  // Keyboard navigation: [1], [2], [Arrows], [Enter], [Esc]
+  // Keyboard navigation: [1], [2], [Arrows], [Enter], [Esc] (active only when selector is revealed)
   useEffect(() => {
-    if (mode !== 'choose') return;
+    if (mode !== 'choose' || !showSelector) return;
 
     const handleKeyDown = (e) => {
       if (['INPUT', 'TEXTAREA'].includes(e.target?.tagName)) return;
@@ -253,7 +256,7 @@ export default function ChronosSplash({ onComplete }) {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [mode, selectedOption]);
+  }, [mode, showSelector, selectedOption]);
 
   return (
     <div 
@@ -305,95 +308,97 @@ export default function ChronosSplash({ onComplete }) {
             </div>
           </div>
 
-          {/* TWO MINIMAL EXACT SQUARE CARDS */}
-          <div className="dual-boot-selector flex flex-col items-center">
-            <div className="flex items-center justify-center gap-3 sm:gap-5 md:gap-6">
-              
-              {/* CARD 1: RECRUITER */}
-              <button
-                type="button"
-                onClick={triggerRecruiterBoot}
-                onMouseEnter={() => {
-                  setIsPaused(true);
-                  setSelectedOption('recruiter');
-                  playTacticalBeep(520);
-                }}
-                className={`w-32 h-32 xs:w-36 xs:h-36 sm:w-44 sm:h-44 md:w-48 md:h-48 aspect-square rounded-none border p-3 sm:p-4 flex flex-col justify-between cursor-pointer transition-all duration-150 text-left group ${
-                  selectedOption === 'recruiter'
-                    ? 'bg-[#051409] border-[#22c55e] shadow-[0_0_25px_rgba(34,197,94,0.4)] scale-105'
-                    : 'bg-black/90 border-[#22c55e]/40 hover:border-[#22c55e] opacity-80 hover:opacity-100'
-                }`}
-              >
-                <div className="flex items-center justify-between w-full">
-                  <span className="text-[10px] sm:text-xs text-[#22c55e] font-mono font-bold tracking-wider">[ 1 ]</span>
-                  <span className="w-1.5 h-1.5 rounded-none bg-[#22c55e]" />
-                </div>
+          {/* TWO MINIMAL EXACT SQUARE CARDS (REVEALED ONLY AFTER ROOT://VADANTA FINISHES) */}
+          {showSelector && (
+            <div className="dual-boot-selector flex flex-col items-center animate-[fadeIn_0.3s_ease-out]">
+              <div className="flex items-center justify-center gap-3 sm:gap-5 md:gap-6">
+                
+                {/* CARD 1: RECRUITER */}
+                <button
+                  type="button"
+                  onClick={triggerRecruiterBoot}
+                  onMouseEnter={() => {
+                    setIsPaused(true);
+                    setSelectedOption('recruiter');
+                    playTacticalBeep(520);
+                  }}
+                  className={`w-32 h-32 xs:w-36 xs:h-36 sm:w-44 sm:h-44 md:w-48 md:h-48 aspect-square rounded-none border p-3 sm:p-4 flex flex-col justify-between cursor-pointer transition-all duration-150 text-left group ${
+                    selectedOption === 'recruiter'
+                      ? 'bg-[#051409] border-[#22c55e] shadow-[0_0_25px_rgba(34,197,94,0.4)] scale-105'
+                      : 'bg-black/90 border-[#22c55e]/40 hover:border-[#22c55e] opacity-80 hover:opacity-100'
+                  }`}
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <span className="text-[10px] sm:text-xs text-[#22c55e] font-mono font-bold tracking-wider">[ 1 ]</span>
+                    <span className="w-1.5 h-1.5 rounded-none bg-[#22c55e]" />
+                  </div>
 
-                <div className="flex flex-col items-center justify-center my-auto text-center w-full">
-                  <span className="text-xs sm:text-sm md:text-base font-black tracking-widest text-white uppercase group-hover:text-[#22c55e] transition-colors leading-tight">
-                    RECRUITER
+                  <div className="flex flex-col items-center justify-center my-auto text-center w-full">
+                    <span className="text-xs sm:text-sm md:text-base font-black tracking-widest text-white uppercase group-hover:text-[#22c55e] transition-colors leading-tight">
+                      RECRUITER
+                    </span>
+                    <span className="text-[8px] sm:text-[9px] md:text-[10px] tracking-[0.2em] text-[#22c55e]/70 uppercase font-bold mt-1">
+                      DOSSIER
+                    </span>
+                  </div>
+
+                  <div className="w-full flex items-center justify-between text-[8px] sm:text-[9px] text-[#22c55e]/60 font-mono tracking-wider">
+                    <span>&gt; EXEC_BRIEF</span>
+                    <span className="text-[#22c55e] opacity-0 group-hover:opacity-100 transition-opacity">↵</span>
+                  </div>
+                </button>
+
+                {/* CARD 2: VADANTA_OS */}
+                <button
+                  type="button"
+                  onClick={triggerOsBoot}
+                  onMouseEnter={() => {
+                    setIsPaused(true);
+                    setSelectedOption('os');
+                    playTacticalBeep(520);
+                  }}
+                  className={`w-32 h-32 xs:w-36 xs:h-36 sm:w-44 sm:h-44 md:w-48 md:h-48 aspect-square rounded-none border p-3 sm:p-4 flex flex-col justify-between cursor-pointer transition-all duration-150 text-left group ${
+                    selectedOption === 'os'
+                      ? 'bg-[#040e16] border-cyan-400 shadow-[0_0_25px_rgba(56,189,248,0.4)] scale-105'
+                      : 'bg-black/90 border-cyan-500/40 hover:border-cyan-400 opacity-80 hover:opacity-100'
+                  }`}
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <span className="text-[10px] sm:text-xs text-cyan-400 font-mono font-bold tracking-wider">[ 2 ]</span>
+                    <span className="w-1.5 h-1.5 rounded-none bg-cyan-400" />
+                  </div>
+
+                  <div className="flex flex-col items-center justify-center my-auto text-center w-full">
+                    <span className="text-xs sm:text-sm md:text-base font-black tracking-widest text-white uppercase group-hover:text-cyan-400 transition-colors leading-tight">
+                      VADANTA_OS
+                    </span>
+                    <span className="text-[8px] sm:text-[9px] md:text-[10px] tracking-[0.2em] text-cyan-400/70 uppercase font-bold mt-1">
+                      DESKTOP
+                    </span>
+                  </div>
+
+                  <div className="w-full flex items-center justify-between text-[8px] sm:text-[9px] text-cyan-400/60 font-mono tracking-wider">
+                    <span>&gt; FULL_SYSTEM</span>
+                    <span className="text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity">↵</span>
+                  </div>
+                </button>
+
+              </div>
+
+              {/* MINIMAL FOOTER */}
+              <div className="mt-4 sm:mt-6 flex flex-col items-center gap-1 font-mono text-[9px] sm:text-[10px] tracking-widest text-white/50">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <span>[ 1 ] RECRUITER</span>
+                  <span className="text-white/20">|</span>
+                  <span>[ 2 ] VADANTA OS</span>
+                  <span className="text-white/20">|</span>
+                  <span className="text-[#22c55e] font-bold">
+                    {isPaused ? 'PAUSED' : `AUTO: ${countdown}s`}
                   </span>
-                  <span className="text-[8px] sm:text-[9px] md:text-[10px] tracking-[0.2em] text-[#22c55e]/70 uppercase font-bold mt-1">
-                    DOSSIER
-                  </span>
                 </div>
-
-                <div className="w-full flex items-center justify-between text-[8px] sm:text-[9px] text-[#22c55e]/60 font-mono tracking-wider">
-                  <span>&gt; EXEC_BRIEF</span>
-                  <span className="text-[#22c55e] opacity-0 group-hover:opacity-100 transition-opacity">↵</span>
-                </div>
-              </button>
-
-              {/* CARD 2: VADANTA_OS */}
-              <button
-                type="button"
-                onClick={triggerOsBoot}
-                onMouseEnter={() => {
-                  setIsPaused(true);
-                  setSelectedOption('os');
-                  playTacticalBeep(520);
-                }}
-                className={`w-32 h-32 xs:w-36 xs:h-36 sm:w-44 sm:h-44 md:w-48 md:h-48 aspect-square rounded-none border p-3 sm:p-4 flex flex-col justify-between cursor-pointer transition-all duration-150 text-left group ${
-                  selectedOption === 'os'
-                    ? 'bg-[#040e16] border-cyan-400 shadow-[0_0_25px_rgba(56,189,248,0.4)] scale-105'
-                    : 'bg-black/90 border-cyan-500/40 hover:border-cyan-400 opacity-80 hover:opacity-100'
-                }`}
-              >
-                <div className="flex items-center justify-between w-full">
-                  <span className="text-[10px] sm:text-xs text-cyan-400 font-mono font-bold tracking-wider">[ 2 ]</span>
-                  <span className="w-1.5 h-1.5 rounded-none bg-cyan-400" />
-                </div>
-
-                <div className="flex flex-col items-center justify-center my-auto text-center w-full">
-                  <span className="text-xs sm:text-sm md:text-base font-black tracking-widest text-white uppercase group-hover:text-cyan-400 transition-colors leading-tight">
-                    VADANTA_OS
-                  </span>
-                  <span className="text-[8px] sm:text-[9px] md:text-[10px] tracking-[0.2em] text-cyan-400/70 uppercase font-bold mt-1">
-                    DESKTOP
-                  </span>
-                </div>
-
-                <div className="w-full flex items-center justify-between text-[8px] sm:text-[9px] text-cyan-400/60 font-mono tracking-wider">
-                  <span>&gt; FULL_SYSTEM</span>
-                  <span className="text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity">↵</span>
-                </div>
-              </button>
-
-            </div>
-
-            {/* MINIMAL FOOTER */}
-            <div className="mt-4 sm:mt-6 flex flex-col items-center gap-1 font-mono text-[9px] sm:text-[10px] tracking-widest text-white/50">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <span>[ 1 ] RECRUITER</span>
-                <span className="text-white/20">|</span>
-                <span>[ 2 ] VADANTA OS</span>
-                <span className="text-white/20">|</span>
-                <span className="text-[#22c55e] font-bold">
-                  {isPaused ? 'PAUSED' : `AUTO: ${countdown}s`}
-                </span>
               </div>
             </div>
-          </div>
+          )}
 
         </div>
       )}
