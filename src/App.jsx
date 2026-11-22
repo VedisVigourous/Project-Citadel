@@ -1845,7 +1845,15 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
         />
       ))}
       {loading ? (
-        <ChronosSplash onComplete={() => setLoading(false)} />
+        <ChronosSplash
+          onComplete={(target = "os") => {
+            setLoading(false);
+            if (target === "recruiter") {
+              setIsRecruiterModeOpen(true);
+              window.history.replaceState(null, "", "#recruiter");
+            }
+          }}
+        />
       ) : (
         <div className="flex flex-col h-screen w-full relative z-10 bg-[#050505]">
           {/* LAYER 1: THE CLEAN CYBER GRID */}
