@@ -217,7 +217,7 @@ function App() {
   });
 
   // --- AUDIO ENGINE ---
-  const [playBgm, { pause: pauseBgm, stop: stopBgm }] = useSound("/sounds/bgm-ambient.mp3", {
+  const [playBgm, { pause: pauseBgm, stop: stopBgm, sound: bgmSound }] = useSound("/sounds/bgm-ambient.mp3", {
     volume: 0.25,
     loop: true,
     interrupt: true,
@@ -234,12 +234,15 @@ function App() {
 
   const [hasAudioStarted, setHasAudioStarted] = useState(false);
   const [isMusicMuted, setIsMusicMuted] = useState(false);
+  const isMusicMutedRef = useRef(false);
+  const hasAudioStartedRef = useRef(false);
   const isBgmPlayingRef = useRef(false);
 
   const startBgm = () => {
-    if (isBgmPlayingRef.current || isMusicMuted) return;
+    if (isBgmPlayingRef.current || isMusicMutedRef.current) return;
     try {
       isBgmPlayingRef.current = true;
+      hasAudioStartedRef.current = true;
       setHasAudioStarted(true);
       playBgm();
     } catch (e) {
@@ -250,10 +253,14 @@ function App() {
   const stopOrPauseBgm = () => {
     try {
       pauseBgm();
-      isBgmPlayingRef.current = false;
+      stopBgm();
+      if (bgmSound) {
+        bgmSound.stop();
+      }
     } catch (e) {
-      isBgmPlayingRef.current = false;
+      // ignore
     }
+    isBgmPlayingRef.current = false;
   };
 
   const swooshCooldown = useRef(false);
@@ -267,25 +274,29 @@ function App() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const toggleMusic = () => {
-    if (isMusicMuted) {
+  const toggleMusic = (e) => {
+    if (e && e.stopPropagation) {
+      e.stopPropagation();
+    }
+    if (isMusicMutedRef.current) {
+      isMusicMutedRef.current = false;
       setIsMusicMuted(false);
       startBgm();
       setAudioToast({ show: true, muted: false });
     } else {
-      stopOrPauseBgm();
+      isMusicMutedRef.current = true;
       setIsMusicMuted(true);
+      stopOrPauseBgm();
       setAudioToast({ show: true, muted: true });
     }
     setTimeout(() => setAudioToast((prev) => ({ ...prev, show: false })), 2500);
   };
 
-  // Starts BGM on first interaction (only if not already playing and not inside recruiter mode)
+  // Starts BGM on first interaction (only if not already playing and not muted and not inside recruiter mode)
   const handleFirstInteraction = () => {
     if (isRecruiterModeOpen) return;
-    if (!isBgmPlayingRef.current && !isMusicMuted) {
-      startBgm();
-    }
+    if (hasAudioStartedRef.current || isMusicMutedRef.current || isBgmPlayingRef.current) return;
+    startBgm();
   };
 
   // --- TOUCH RIPPLE SYSTEM ---
@@ -1339,7 +1350,7 @@ ${dynamicHistory || "  > No terminal commands executed during this session."}
           toggleMusic();
           newHistory.push({
             type: "output",
-            text: `[SYSTEM] Background Audio Engine: ${isMusicMuted ? "ONLINE" : "MUTED"}`,
+            text: `[SYSTEM] Background Audio Engine: ${isMusicMutedRef.current ? "MUTED" : "ONLINE"}`,
           });
         } else if (lowerCmd === "help") {
           newHistory.push({
@@ -2238,7 +2249,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
                 <div className="relative hidden sm:flex items-center">
                   <div
                     className="flex items-center gap-2 cursor-pointer group"
-                    onClick={toggleMusic}
+                    onClick={(e) => toggleMusic(e)}
                   >
                     <div
                       className={`w-7 h-3.5 border rounded-full relative transition-colors duration-300 ${isMusicMuted ? "bg-red-900/30 border-red-700/50 group-hover:border-red-500" : "bg-[#22c55e]/20 border-[#22c55e]/50 group-hover:border-[#22c55e]"}`}
@@ -2285,7 +2296,7 @@ tcp4       0   1420 AI_PROXY_SERVICE:22     GROQ_LLM:ssh            ESTABLISHED`
 
                 {/* MOBILE AUDIO TOGGLE (Replaces WiFi on Right Side) */}
                 <div
-                  onClick={toggleMusic}
+                  onClick={(e) => toggleMusic(e)}
                   className="cursor-pointer flex sm:hidden items-center justify-center mr-1"
                 >
                   {isMusicMuted ? (
